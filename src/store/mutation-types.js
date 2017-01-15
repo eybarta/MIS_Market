@@ -1,0 +1,5 @@
+export const TOGGLE_OVERLAY = 'TOGGLE_OVERLAY';
+export const HIDE_OVERLAY = 'HIDE_OVERLAY';
+export const SEARCH_FILTER_STRING = 'SEARCH_FILTER_STRING';
+
+export const ADD_TO_CART = 'ADD_TO_CART';

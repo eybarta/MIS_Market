@@ -12,7 +12,47 @@ export const categories = [
 		{
 			id:3,
 			src: "dist/img/categories/print.png",
-			name: "Printed Materials"
+			name: "Printed Materials",
+			children: [
+				{
+					id: 5,
+              		name: "Catalogs",
+					children: [
+						{
+							id: 11,
+                    		name: "Product Catalog"
+						},
+						{
+							 id: 37,
+                    		name: "Mini-Catalogs"
+						}
+					]
+				},
+				{
+              		id: 38,
+              		name: "Stationary"
+            	},
+				{
+					id: 84,
+					name: "User Guide"
+				},
+				{
+					id: 33,
+					name: "Posters"
+				},
+				{
+					id: 65,
+					name: "Leaflets"
+				},
+				{
+					id: 81,
+					name: "Flyers"
+				},
+				{
+				id: 79,
+				name: "Exhibitions"
+				},
+			]
 		},
 		{
 			id:4,
@@ -20,7 +60,7 @@ export const categories = [
 			name: "Scientific Research"
 		},
 		{
-			id:5,
+			id:9,
 			src: "dist/img/categories/accessories.png",
 			name: "Accessories"
 		},

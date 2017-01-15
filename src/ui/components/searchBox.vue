@@ -1,16 +1,16 @@
 <template>
 	<div class="search-box">
-		<input type="text" :placeholder="placeholder">
+		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @input="$emit('input', searchval)">
 		<i class="icon-search"></i>
 	</div>
 </template>
 <script>
 	export default {
-		props: ['placeholder'],
-		created() {
-			console.log("search box created");
-		},
-		components: {
+		props: ['placeholder', 'value'],
+		data() {
+			return {
+				searchval:''
+			}
 		}
 	}
 </script>

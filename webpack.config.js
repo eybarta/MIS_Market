@@ -1,9 +1,10 @@
 ﻿var ExtractTextPlugin = require("extract-text-webpack-plugin"),
 path = require('path'),
 webpack = require('webpack'),
-poststylus = require('poststylus');
-
+poststylus = require('poststylus'),
+rupture = require('rupture');
 const settings = path.resolve(__dirname, './src/styl/settings.styl');
+const utils = path.resolve(__dirname, './src/utils.js');
 // webpack.config.js
 module.exports = {
 	// entry point of our application
@@ -89,7 +90,8 @@ module.exports = {
 	resolve: {
 		alias: {
 			'vue$': 'vue/dist/vue.common.js',
-			settings
+			settings,
+			utils
 		}
 	},
 	devServer: {

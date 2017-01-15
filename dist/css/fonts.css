@@ -24,7 +24,12 @@ i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.icon-cart:before {
+  content: "\e904";
+}
+.icon-close:before {
+  content: "\e90b";
+}
 .icon-images:before {
   content:"\e912";
 }

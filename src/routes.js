@@ -11,13 +11,73 @@ const routes = [
 	{ 
 		path: '/', 
 		component: Home,
-		name: 'home'
+		name: 'home',
 	},
 	{ 
-		path: '/results/:filteredBy',
+		path: '/results',
 		component: Results,
-		name: 'results'
-	}
+		name: 'results',
+		children: [
+			{
+				path:':rootFilter',
+				name: 'results-root',
+				children: [
+					{
+						path:':childFilter',
+						name: 'results-child',
+						children: [
+							{
+								path:':grandchildFilter',
+								name: 'results-grandchild',
+							},
+							
+						]
+					}
+				]
+			}
+
+		]
+	},
+	// {
+	// 	path: '/results/:rootFilter/:childFilter',
+	// 	component: Results,
+	// 	name: 'results-1',
+	// 	meta: {
+	// 		label: ':childFilter'
+	// 	}
+	// },
+	// {
+	// 	path: '/results/:rootFilter/:childFilter/:grandchildFilter',
+	// 	component: Results,
+	// 	name: 'results-2',
+	// 	meta: {
+	// 		label: ':grandchildFilter'
+	// 	}
+	// }
+	// { 
+	// 	path: '/results/:rootFilter',
+	// 	component: Results,
+	// 	name: 'results',
+	// 	meta: {
+	// 		label: ':rootFilter'
+	// 	}
+	// },
+	// {
+	// 	path: '/results/:rootFilter/:childFilter',
+	// 	component: Results,
+	// 	name: 'results-1',
+	// 	meta: {
+	// 		label: ':childFilter'
+	// 	}
+	// },
+	// {
+	// 	path: '/results/:rootFilter/:childFilter/:grandchildFilter',
+	// 	component: Results,
+	// 	name: 'results-2',
+	// 	meta: {
+	// 		label: ':grandchildFilter'
+	// 	}
+	// }
 ]
 
 

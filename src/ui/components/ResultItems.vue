@@ -1,0 +1,140 @@
+<template>
+    <div class="result-items" :class="[items.length<5 ? 'one-line' : '']">
+        <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
+        <paginate
+            name="items"
+            :list="items"
+            :per="itemsPerPage"
+            tag="div"
+            class="paginate-langs"
+            >
+
+            <transition-group ref="list" name="list" tag="ul" appear
+                class="item-list"
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @leave="leave"
+                mode="out-in">
+                <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', overlay.active ? 'blur' : '']">
+					<item-preview type="result" :item="item" size="big" :actions="['open','plus','images']"></item-preview>
+                </li>
+            </transition-group>
+        </paginate>
+        <div class="pager" v-if="items.length > itemsPerPage">
+	        <paginate-links for="items" :limit="4"></paginate-links>
+        </div>
+    </div>
+</template>
+<script>
+import { mapGetters, mapState } from 'vuex';
+import $ from 'jquery';
+import velocity from 'velocity-animate';
+import ItemPreview from './ItemPreview.vue';
+export default {
+    props: ['items'],
+    data() {
+        return {
+            paginate: ['items'],
+            itemsPerPage: 12
+        }
+    },
+	components: {
+		ItemPreview
+	},
+    methods: {
+		beforeEnter: function (el) {
+			$(el).css({
+				opacity:0,
+				transform: 'translateY(20%)'
+			})
+		},
+		enter: function (el, done) {
+			var delay = el.dataset.index * 100;
+			setTimeout(function () {
+				Velocity(
+				el,
+				{ opacity: 1, transform: 'translateY(0)' },
+				{ complete: done }
+				)
+			}, delay)
+		},
+		leave: function (el, done) {
+			$(el).css({
+				opacity:0,
+				transform: 'translateY(120%)'
+			})
+			done();
+		}
+    },
+    computed: {
+        ...mapState([
+			'overlay'
+		])
+    }
+}
+</script>
+<style lang="stylus">
+@import '~settings';
+.result-items
+    padding 60px 0 0
+    min-height 30vh
+    clear both
+    .pager
+        @extend $inline-mid
+        height 136px
+        background #05121a
+        border-top 1px solid #505a5f
+        list-style none
+        color #fff
+        text-align center
+        ul
+            @extend $inline-mid
+            @extend $zero
+            width 100%
+            li
+                @extend $zero
+                width auto
+                display inline-block
+                vertical-align middle
+                float none
+                margin 0 8px
+                cursor pointer
+                opacity 0.7
+                transition opacity 200ms ease-out
+                a
+                    font-size 20px
+                &.active
+                    cursor default
+                    width 30px
+                    height 30px
+                    background #05a5e6
+                    border-radius 100%
+                    text-align center
+                    line-height 30px
+                    margin 0
+                    opacity 1
+                &:hover
+                    opacity 1
+    .item-list
+        padding 0
+        margin 0 auto
+        lost-utility clearfix
+        transform translate3d(0,0,0)
+        backface-visibility hidden
+		& > .item
+			lost-column 1/4 4
+			position relative
+			list-style none
+			text-align center
+			margin-bottom 30px
+			transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
+			@media screen and (max-width:1024px)
+				lost-column 1/3 3
+			&.blur
+				-webkit-filter blur(5px)
+				filter url('assets/blur.svg#blur')
+				filter blur(5px)
+			
+
+    
+</style>

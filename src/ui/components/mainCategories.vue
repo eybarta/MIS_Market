@@ -1,8 +1,8 @@
 <template>
-	<div class="categories">
-		<swiper :options="swiperOption" ref="mySwiperA">
+	<div class="main-categories">
+		<swiper :options="swiperOption">
 			<swiper-slide v-for="category in categories">
-				<router-link :to="{ name: 'results', params: { filteredBy: category.name } }">
+				<router-link :to="{ name: 'results-root', params: { rootFilter: category.name } }">
 					<img :src="category.src" alt="">
 					<span v-text="category.name"></span>
 				</router-link>
@@ -12,13 +12,12 @@
 	</div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
 export default {
 	created() {
 		console.log("MAIN CATEGORIES created >> ", this.categories);
-
 	},
 	data() {
 		return {
@@ -60,7 +59,7 @@ export default {
 }
 </script>
 <style lang="stylus">
-.categories
+.main-categories
 	display inline-block
 	vertical-align middle
 	white-space nowrap

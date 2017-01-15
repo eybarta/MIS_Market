@@ -8,7 +8,38 @@
   font-weight: 300;
   font-style: normal;
 }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 body {
   font-family: "helveticaLT", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
+}
+a:focus,
+button:focus,
+a:active,
+button:active {
+  outline: 0;
+}
+.btn {
+  font-size: 16px;
+  line-height: 50px;
+  color: #fff;
+  border: 1px solid #01cefd;
+  padding: 0 30px;
+  background: none;
+  cursor: pointer;
+}
+h4.no-items {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 30vh;
 }

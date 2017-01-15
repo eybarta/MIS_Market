@@ -22,11 +22,18 @@ export default {
 .app-wrap
 	height 100%
 	min-width 768px
+	&:after
+		content ''
+		display table
+		clear both
 footer
 	width 100%
 	height 78px
 	background #2e2e2e
 	lost-align center
+	.results + &
+		border-top 1px solid #50595e
+		background #061016
 	span
 		font-size 12px
 		color #bcbcbd

@@ -1,27 +1,51 @@
 <template>
 	<div class="menu-bar">
-		<span class="hamburger"></span>
+		<span class="hamburger" :class="{active: overlay.active}" @click="toggleOverlay('menu')"></span>
 		<h4 class="title" v-text="resultsTitle"></h4>
-		<search-box class="menu-search" placeholder="TYPE TO SEARCH"></search-box>
+		<search-box v-model="searchfilter" class="menu-search" placeholder="TYPE TO SEARCH"></search-box>
+
+		<transition name="fade" appear>
+			<sort-nav-menu v-if="overlay.active && overlay.type=='menu'"></sort-nav-menu>
+		</transition>
+		
 	</div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import searchBox from '../../components/searchBox.vue';
-
+import SortNavMenu from '../../components/SortNavMenu.vue';
 export default {
 	created() {
 		console.log("Intro search partial created!");
 	},
 	data() {
 		return {
+			searchfilter: '',
 			images:['dist/img/backgrounds/background-1.jpg']
 		}
 	},
+	methods: {
+		...mapActions([
+			'toggleOverlay',
+			'searchFilterString'
+		])
+	},
+	watch: {
+		'searchfilter'() {
+			setTimeout(function() {
+				this.searchFilterString(this.searchfilter);
+			}.bind(this), 300)
+			
+		}
+	},
 	components: {
-		searchBox
+		searchBox,
+		SortNavMenu
 	},
 	computed: {
+		...mapState([
+			'overlay'
+		]),
 		...mapGetters([
 			'resultsTitle'
 		])
@@ -31,11 +55,12 @@ export default {
 <style lang="stylus">
 @import '~settings'
 .menu-bar
-	@extend $vmid
+	@extend $inline-mid
 	padding-left round(percentage(40/1880))
 	height 80px
 	background #fff
 	position relative
+	z-index 10
 	h4.title
 		color #2f2f2f
 		margin 0
@@ -58,6 +83,12 @@ export default {
 		border-bottom 2px solid #2e2e2e
 		position relative
 		cursor pointer
+		border-radius 0px
+		transition width 100ms ease-out, border-radius 100ms ease-out, margin-right 100ms ease-out
+		&.active
+			border-radius 100% 0 0 100%
+			width 27px
+			margin-right 3px
 		&:after
 			content ''
 			width 100%
@@ -67,4 +98,7 @@ export default {
 			transform translate(0,-50%)
 			height 2px
 			background #2e2e2e
+			transition width 200ms ease-out
+		&.active::after
+			width 120%
 </style>
