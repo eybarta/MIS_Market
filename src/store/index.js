@@ -20,7 +20,10 @@ const state = {
 	categories,
 	items,
 	itemsFilterString,
-	cart,
+	cart:{
+		items:[],
+		subtotal:0
+	},
 	overlay:{
 		active:false,
 		type: null
@@ -46,6 +49,17 @@ const mutations = {
 		Vue.set(itemsrc, 'inCart', true);
 		Vue.set(itemsrc, 'amount', amount);
 		state.cart.items.push(item);
+	},
+
+	REMOVE_FROM_CART(state, item) {
+		let itemsrc = _.find(state.items, {id:item.id});
+		Vue.set(itemsrc, 'inCart', false);
+		Vue.set(itemsrc, 'amount', 0);
+
+		let items = _.reject(state.cart.items, item);
+		Vue.set(state.cart, 'items', items)
+		// Vue.delete(state.cart.items, item);
+		_.remove(state.cart.items, item);
 	}
 }
 
@@ -132,10 +146,11 @@ const getters = {
 		|| state.route.params.rootFilter;
 			return "Results for: " + filtername;
 	},
+	cartItems: state => {
+		return state.cart.items;
+	},
 	cartSubtotal: state => {
-		let items = state.cart.items;
-		//_.sum(_.map(a, function(obj) { return _.multiply(obj.price, obj.amount)}))
-		return _.sum(_.map(items, item => { return _.multiply(item.price, item.amount)}))
+		return _.sum(_.map(state.cart.items, item => { return _.multiply(item.price, item.amount)}))
 	}
 
 }

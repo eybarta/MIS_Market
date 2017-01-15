@@ -16,3 +16,8 @@ export const searchFilterString = ({commit}, filter_string) => {
 export const addToCart = ({commit}, item) => {
     commit('ADD_TO_CART', item);
 }
+
+export const removeFromCart = ({commit}, item) => {
+    commit('REMOVE_FROM_CART', item);
+}
+

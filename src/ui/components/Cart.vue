@@ -1,12 +1,12 @@
 <template>
     <div class="cart-wrap">
-        <h4 v-if="!cart.items.length" class="not-me no-items">There's no items in your cart.</h4>
-        <div v-else class="cart">
+        
+        <div v-if="!!cartSubtotal" class="cart">
             <h3 class="not-me"><i class="icon-cart"></i> MY CART</h3>
-            <div class="cart-item-slider" :class="[cart.items.length > 5 ? 'many-items' : '']">
-            <swiper :options="swiperOptions">
+            <div class="cart-item-slider" :class="[cartItems.length > 5 ? 'many-items' : '']">
+            <swiper v-if="!!cart.items.length" :options="swiperOptions">
                 <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
-                    <item-preview type="cart" :item="item" size="small" :actions="[]"></item-preview>
+                    <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']"></item-preview>
                 </swiper-slide>
             </swiper>
             <!--
@@ -31,6 +31,7 @@
                 <button class="btn">CHECKOUT</button>
             </div>
         </div>
+        <h4 v-else class="not-me no-items">There's no items in your cart.</h4>
     </div>
 
 </template>
@@ -51,7 +52,8 @@ export default {
                 freeModeMomentum: true,
                 spaceBetween: 0,
                 grabCursor: true,
-                paginationHide:true
+                // paginationHide:true,
+                preventClicks: false
             }
         }
     },
@@ -66,8 +68,15 @@ export default {
             'cart'
         ]),
         ...mapGetters([
+            'cartItems',
             'cartSubtotal'
-        ])
+        ]),
+        noItems() {
+            if (!!this.cartItems) {
+                return this.cartItems.length<1
+            }
+            return true
+        }
     }
 }    
 </script>

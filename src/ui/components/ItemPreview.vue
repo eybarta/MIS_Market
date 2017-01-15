@@ -1,7 +1,7 @@
 <template>
     <div class="item-preview">
     <div class="item-preview-image" :class="['item-'+size]" :style="previewImageStyle">
-        <div class="item-actions" v-if="!item.inCart">
+        <div class="item-actions" v-if="showActions">
             <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
         </div>
     </div>
@@ -42,23 +42,31 @@ export default {
                 case 'plus':
                     console.log('Add to Cart');
                     this.addToCart(this.item);
-                    
                     break;
                 case 'images':
                     return 'Go to Images';
                     break;
+                case 'remove':
+                    this.removeFromCart(this.item);
+                    break;
+                case 'view':
+                    console.log('view item');
                 default: 
                     return '';
             }
         },
         ...mapActions([
-            'addToCart'
+            'addToCart',
+            'removeFromCart'
         ])
     },
     computed: {
         previewImageStyle() {
             // IF item is in CART, remove image-preview from RESULTS item
             return this.type!='cart' && this.item.inCart ? '' : 'background-image:url('+this.item.image+');';
+        },
+        showActions() {
+            return !!this.actions && (this.type=='cart' || !this.item.inCart)
         }
     }
 }
@@ -74,8 +82,8 @@ export default {
         color rgba(#fff, 0.7)
         padding-top 20px
         white-space normal
-        .small + &
-            font-size 12px
+    .item-small + .label
+            font-size 12px    
     .item-preview-image
         position relative
         background-position 50% 50%
@@ -106,6 +114,7 @@ export default {
             transform scale(1.01)
             transition opacity 0.5s ease-out-circ
             border-radius 50%
+            text-align center
             .action
                 @extend $absolute-mid
                 position relative
@@ -117,8 +126,13 @@ export default {
                 border 2px solid #fff
                 text-align center
                 color #fff
-                font-size responsive 18px 28px
                 cursor pointer
+                /.item-big .action
+                    font-size responsive 18px 28px
+                /.item-small .action
+                    font-size responsive 12px 16px
+                    width 28%
+                    padding-top 25%
                 span
                     opacity 0
                     position absolute

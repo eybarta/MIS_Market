@@ -27,7 +27,7 @@ i {
 .icon-cart:before {
   content: "\e904";
 }
-.icon-close:before {
+.icon-remove:before {
   content: "\e90b";
 }
 .icon-images:before {
