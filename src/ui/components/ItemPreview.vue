@@ -4,6 +4,9 @@
         <div class="item-actions" v-if="showActions">
             <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
         </div>
+        <div class="item-info" v-if="!!info">
+            <div class="info" v-for="i in info">{{ i }}</div>
+        </div>
     </div>
     <div class='label'>
         <span class="item-mct">{{item.catNo}}</span><br>
@@ -14,7 +17,7 @@
 <script>
 import { mapActions } from 'vuex';
 export default {
-    props: ['type', 'item', 'size', 'actions'],
+    props: ['type', 'info', 'item', 'size', 'actions'],
     created() {
 
     },
@@ -105,7 +108,20 @@ export default {
             width 80%
             margin 0 auto
             padding-top 80%
-        
+        .item-info
+            opacity 0
+            transition opacity 0.5s ease-out-circ
+            position absolute
+            top 50%
+            left 50%
+            transform translate(-50%,160%)
+            .info
+                color rgba(#fff, 0.55)
+                font-size 13px
+                font-weight 300
+                -webkit-font-smoothing antialiased
+                text-shadow 1px 1px 1px rgba(0,0,0,0.18)
+                -moz-osx-font-smoothing grayscale
         .item-actions
             @extend $inline-mid
             opacity 0
@@ -119,8 +135,6 @@ export default {
                 @extend $absolute-mid
                 position relative
                 background transparent
-                width 20%
-                padding-top 20%
                 border-radius 50%
                 margin 0 2.5%
                 border 2px solid #fff
@@ -129,6 +143,8 @@ export default {
                 cursor pointer
                 /.item-big .action
                     font-size responsive 18px 28px
+                    width 21%
+                    padding-top 20%
                 /.item-small .action
                     font-size responsive 12px 16px
                     width 28%
@@ -154,6 +170,7 @@ export default {
                     span
                         opacity 1 
         &:hover .item-actions
+        &:hover .item-info
             opacity 1
     
 </style>

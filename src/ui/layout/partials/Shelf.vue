@@ -3,7 +3,9 @@
             <div class="shelf-body">
                 <component v-if="active" :is="currentView"></component>
             </div>        
-        <div class="shelf-toggle" @click="active=!active"></div>
+        <div class="shelf-toggle" @click="active=!active">
+            <div class="arrow"></div>
+        </div>
     </div>
 
 </template>
@@ -48,6 +50,22 @@ export default {
         width 238px
         height 36px
         transition bottom 200ms ease-out
+        .arrow
+            width 20px
+            height 20px
+            position absolute
+            border 2px solid rgba(#fff,0.9)
+            top 50%
+            left 50%
+            transform: translate(-50%, -80%) rotate(45deg);
+            border-top: 0;
+            border-left: 0;
+            transition transform 400ms ease
+            /.active .arrow
+                transform: translate(-50%, -30%) rotate(-495deg) !important;
+                
+
+            
 &.active
     transform translateY(0)
 </style>

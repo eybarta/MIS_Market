@@ -35,6 +35,7 @@ button:active {
   background: none;
   cursor: pointer;
 }
+.no-items h4,
 h4.no-items {
   display: inline-block;
   width: 100%;
