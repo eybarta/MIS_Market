@@ -1,16 +1,32 @@
+@import '~normalize'
 @import './fonts.styl'
-@import './settings.styl'		
+@import './settings.styl'
 @import './transitions.styl'
-
 
 body
 	font-family "helveticaLT", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
 	font-weight 300
-
+	& *
+		font-family "helveticaLT", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
+		font-weight 300
+		box-sizing border-box
+		font-style normal
 // COMMON STYLES
 a,button
+
 	&:focus, &:active
 		outline 0
+	&:visited, &:link, &:-webkit-any-link
+		color #fff
+.backdrop
+	position absolute
+	background rgba(#2f2f2f, 0.97)
+	height 100vh
+	width 100%
+	z-index 99999
+	left 0
+	top 100%
+	padding-top 10vh
 .btn
 	font-size 16px
 	line-height 50px
@@ -27,3 +43,22 @@ a,button
 	font-size 28px
 	font-weight 300
 	line-height 30vh
+
+
+.circle-item
+	background-position 50% 50%
+	background-size 105%
+	background-repeat no-repeat
+	border-radius 50%
+	overflow hidden
+	width 80%
+	margin 0 auto
+	padding-top 80%
+	box-shadow 2px 2px 8px rgba(0,0,0,0.2)
+	background-color #2e2e2e
+.item-big
+	max-width 394px
+	min-width 200px
+.item-small
+	max-width 198px
+	min-width 100px

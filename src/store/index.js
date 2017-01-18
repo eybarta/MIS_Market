@@ -26,7 +26,12 @@ const state = {
 	},
 	overlay:{
 		active:false,
-		type: null
+		type:'sortmenu',
+		data: null
+	},
+	shelf: {
+		active: false,
+		type: 'cart'
 	}
 }
 
@@ -35,26 +40,50 @@ const mutations = {
 		state.overlay.active = !state.overlay.active;
 		state.overlay.type = (!!type) ? type : null;
 	},
+	SHOW_OVERLAY (state, type) {
+		console.log("show overlay > ", state.overlay);
+		state.overlay.active = true;
+		state.overlay.type = (!!type) ? type : null;
+	},
 	HIDE_OVERLAY (state) {
 		state.overlay.active = false;
 	},
 	SEARCH_FILTER_STRING (state, filter_string) {
 		state.itemsFilterString = filter_string;
 	},
-
 	// CART Mutations
-	ADD_TO_CART(state, item, amount = 1) {
-		item.amount = amount;
-		let itemsrc = _.find(state.items, {id:item.id});
-		Vue.set(itemsrc, 'inCart', true);
-		Vue.set(itemsrc, 'amount', amount);
-		state.cart.items.push(item);
+	TOGGLE_SHELF (state, type) {
+		state.shelf.active = !state.shelf.active;
+		state.shelf.type = (!!type) ? type : 'cart';
+	},
+	CHANGE_SHELF_TYPE (state,type) {
+		state.shelf.type = type;
+	},
+	SHOW_SHELF (state) {
+		state.shelf.active = true;
+		state.shelf.type = 'cart';
+	},
+	HIDE_SHELF (state) {
+		state.shelf.active = false;
 	},
 
+	OPEN_ITEM(state, item) {
+		console.log("MUTATION ITEM > ", item);
+		state.overlay.data = item;
+	},
+	ADD_TO_CART(state, item) {
+		let itemsrc = _.find(state.items, {id:item.id});
+		Vue.set(itemsrc, 'inCart', true);
+		state.cart.items.push(item);
+	},
+	UPDATE_ITEM_IN_CART(state, item) {
+		let cartitem = _.find(state.cart.items, {id:item.id})
+		Vue.set(cartitem, 'amount', item.amount);
+	},
 	REMOVE_FROM_CART(state, item) {
 		let itemsrc = _.find(state.items, {id:item.id});
 		Vue.set(itemsrc, 'inCart', false);
-		Vue.set(itemsrc, 'amount', 0);
+		Vue.delete(itemsrc, 'amount');
 
 		let items = _.reject(state.cart.items, item);
 		Vue.set(state.cart, 'items', items)
@@ -151,8 +180,7 @@ const getters = {
 	},
 	cartSubtotal: state => {
 		return _.sum(_.map(state.cart.items, item => { return _.multiply(item.price, item.amount)}))
-	}
-
+	},
 }
 
 export default new Vuex.Store({

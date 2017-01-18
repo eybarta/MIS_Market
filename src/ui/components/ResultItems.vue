@@ -1,5 +1,5 @@
 <template>
-    <div class="result-items" :class="[items.length<5 ? 'one-line' : '']">
+    <div class="result-items" :class="[singleLine ? 'single-line' : '']">
         <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
         <paginate
             name="items"
@@ -69,7 +69,10 @@ export default {
     computed: {
         ...mapState([
 			'overlay'
-		])
+		]),
+        singleLine() {
+            return this.items.length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
+        }
     }
 }
 </script>
@@ -79,6 +82,11 @@ export default {
     padding 60px 0 0
     min-height 30vh
     clear both
+    &.single-line
+        position absolute
+        bottom 0
+        width 100%
+        height 80%
     .pager
         @extend $inline-mid
         height 136px
@@ -128,7 +136,7 @@ export default {
 			text-align center
 			margin-bottom 30px
 			transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
-			@media screen and (max-width:1024px)
+			@media (max-width:breaks.small)
 				lost-column 1/3 3
 			&.blur
 				-webkit-filter blur(5px)

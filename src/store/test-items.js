@@ -132,6 +132,13 @@ export const itemGenerator = (amount) => {
 			image: "dist/img/items/item"+upTo5+".png",			
 			catNo: "FFF1212"+ i,
 			name: "Asian Girl Poster (Canvas/Foam)" + i,
+			attachments: [
+				{
+					type:"pdf",
+					label: "PDF File",
+					link: "http://mis-implants.com/upload/PDF/Catalog_SEVEN_Italy.pdf"
+				}
+			],
 			price,
 		})
 	}

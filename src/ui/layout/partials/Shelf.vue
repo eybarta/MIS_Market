@@ -1,15 +1,16 @@
 <template>
-    <div class="shelf-wrap" :class="[active ? 'active' : '']">
+    <div class="shelf-wrap" :class="[shelf.active ? 'active' : '']">
             <div class="shelf-body">
-                <component v-if="active" :is="currentView"></component>
+                <component v-if="shelf.active" :is="currentView"></component>
             </div>        
-        <div class="shelf-toggle" @click="active=!active">
+        <div class="shelf-toggle" @click="toggleShelf">
             <div class="arrow"></div>
         </div>
     </div>
 
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 import Cart from '../../components/Cart.vue'
 export default {
 	created() {
@@ -23,6 +24,17 @@ export default {
 	},
     components: {
         Cart
+    },
+    methods: {
+        ...mapActions([
+            'toggleShelf'
+        ])
+    },
+    computed: {
+        ...mapState([
+            'shelf'
+        ])
+        
     }
 }
 
@@ -35,7 +47,7 @@ export default {
     height: 500px;
     transform: translateY(-100%);
     width: 100%;
-    transition transform 400ms ease
+    transition transform 600ms ease-out-back
     .shelf-body
         position absolute
         top 0

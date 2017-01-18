@@ -1,3 +1,30 @@
+// COLORS
+blue = #01cefd
+lightgray = #d0d0d0
+darkgray = #464646
+txtgray = #bcbcbd
+
+
+// breakpoints
+breaks = {
+	min: 768px,
+	small: 1024px,
+	med: 1200px,
+	big: 1600px,
+	max: 1880px
+}
+
+// mixins
+fontsizer(min = 13px, max = 24px, rangemin = breaks.min, rangemax = breaks.max)
+	font-size responsive min max
+	font-range rangemin rangemax
+
+responsify(prop, min, max, range=[breaks.min..breaks.max])
+	for key, value in range
+		@media (min-width:value)
+			prop: min
+
+
 $inline-mid
 	& > *:not(.not-me)
 		display inline-block
@@ -20,3 +47,8 @@ $absolute-mid
 $zero
 	padding 0
 	margin 0
+
+$sharpen
+	-webkit-font-smoothing antialiased
+	text-shadow 1px 1px 1px rgba(0,0,0,0.18)
+	-moz-osx-font-smoothing grayscale

@@ -1,19 +1,20 @@
 <template>
 	<div class="menu-bar">
-		<span class="hamburger" :class="{active: overlay.active}" @click="toggleOverlay('menu')"></span>
+		<span class="hamburger" :class="{active: overlay.active}" @click="toggleOverlay('sortmenu')"></span>
 		<h4 class="title" v-text="resultsTitle"></h4>
 		<search-box v-model="searchfilter" class="menu-search" placeholder="TYPE TO SEARCH"></search-box>
 
 		<transition name="fade" appear>
-			<sort-nav-menu v-if="overlay.active && overlay.type=='menu'"></sort-nav-menu>
+			<component :is="overlay.type" v-if="overlay.active"></component>
 		</transition>
 		
 	</div>
 </template>
 <script>
-import { mapGetters, mapState, mapActions } from 'vuex';
-import searchBox from '../../components/searchBox.vue';
-import SortNavMenu from '../../components/SortNavMenu.vue';
+import { mapGetters, mapState, mapActions } from 'vuex'
+import searchBox from '../../components/searchBox.vue'
+import SortMenu from '../../components/SortMenu.vue'
+import Item from '../../components/Item.vue'
 export default {
 	created() {
 		console.log("Intro search partial created!");
@@ -40,7 +41,8 @@ export default {
 	},
 	components: {
 		searchBox,
-		SortNavMenu
+		sortmenu: SortMenu,
+		item: Item
 	},
 	computed: {
 		...mapState([

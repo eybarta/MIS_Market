@@ -3,8 +3,11 @@ path = require('path'),
 webpack = require('webpack'),
 poststylus = require('poststylus'),
 rupture = require('rupture');
+
+const normalize = path.resolve(__dirname, './node_modules/css-reset-and-normalize/stylus/flavored-reset-and-normalize.styl');
 const settings = path.resolve(__dirname, './src/styl/settings.styl');
 const utils = path.resolve(__dirname, './src/utils.js');
+
 // webpack.config.js
 module.exports = {
 	// entry point of our application
@@ -91,7 +94,8 @@ module.exports = {
 		alias: {
 			'vue$': 'vue/dist/vue.common.js',
 			settings,
-			utils
+			utils,
+			normalize
 		}
 	},
 	devServer: {

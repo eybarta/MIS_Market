@@ -40,10 +40,18 @@ export default {
         actionHandler(action) {
             switch(action) {
                 case 'open':
-                    console.log('Show Details');
+                    console.log('open item > ', this.item);
+                    this.openItem(this.item);
+                    break;
+                case 'view':
+                    console.log('update cart item > ', this.item);
+                    let item = _.clone(this.item);
+                    item.editmode = true;
+                    this.openItem(item);
                     break;
                 case 'plus':
                     console.log('Add to Cart');
+                    // this.$set(this, 'item.amount', 1);
                     this.addToCart(this.item);
                     break;
                 case 'images':
@@ -52,14 +60,13 @@ export default {
                 case 'remove':
                     this.removeFromCart(this.item);
                     break;
-                case 'view':
-                    console.log('view item');
                 default: 
                     return '';
             }
         },
         ...mapActions([
             'addToCart',
+            'openItem',
             'removeFromCart'
         ])
     },
@@ -97,17 +104,8 @@ export default {
         width 80%
         margin 0 auto
         padding-top 80%
-        box-shadow: inset 4px 4px 12px rgba(0,0,0,0.5);
+        box-shadow: inset 2px 2px 8px rgba(0,0,0,0.2)
         background-color: #2e2e2e;
-        &.item-big
-            max-width 394px
-            min-width 200px
-        &.item-small
-            max-width 198px
-            min-width 100px
-            width 80%
-            margin 0 auto
-            padding-top 80%
         .item-info
             opacity 0
             transition opacity 0.5s ease-out-circ
@@ -116,12 +114,12 @@ export default {
             left 50%
             transform translate(-50%,160%)
             .info
+                @extend $sharpen
                 color rgba(#fff, 0.55)
                 font-size 13px
                 font-weight 300
-                -webkit-font-smoothing antialiased
-                text-shadow 1px 1px 1px rgba(0,0,0,0.18)
-                -moz-osx-font-smoothing grayscale
+                &:first-child
+                    margin-bottom 3px
         .item-actions
             @extend $inline-mid
             opacity 0

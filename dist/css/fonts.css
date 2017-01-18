@@ -24,6 +24,20 @@ i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.icon-share:before {
+  content: "\e914";
+}
+.icon-gallery:before {
+  content: "\e90d";
+}
+.icon-pdf:before {
+  content: "\e913";
+}
+
+.icon-cart-items:before {
+  content: "\e905";
+}
 .icon-cart:before {
   content: "\e904";
 }

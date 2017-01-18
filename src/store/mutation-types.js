@@ -1,6 +1,14 @@
 export const TOGGLE_OVERLAY = 'TOGGLE_OVERLAY';
 export const HIDE_OVERLAY = 'HIDE_OVERLAY';
+export const SHOW_OVERLAY = 'SHOW_OVERLAY';
 export const SEARCH_FILTER_STRING = 'SEARCH_FILTER_STRING';
 
+export const TOGGLE_SHELF = 'TOGGLE_SHELF';
+export const CHANGE_SHELF_TYPE = 'CHANGE_SHELF_TYPE';
+export const HIDE_SHELF = 'HIDE_SHELF';
+export const SHOW_SHELF = 'SHOW_SHELF';
+export const OPEN_ITEM = 'OPEN_ITEM';
+
 export const ADD_TO_CART = 'ADD_TO_CART';
+export const UPDATE_ITEM_IN_CART = 'UPDATE_ITEM_IN_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
