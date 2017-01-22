@@ -1,36 +1,14 @@
 <template>
     <div class="cart-wrap" :class="[cartItems.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
         <div v-show="cartItems.length>0" class="cart">
-            <h3 class="not-me">
-                <i class="icon-cart">
-                    <span class="icon-wrap">
-                        <i class="icon-cart-items"></i>
-                    </span>
-                </i>
-                <vue-typer
-                    :text='[cartLabel]'
-                    :repeat='0'
-                    :shuffle='false'
-                    :initial-action='typeAction'
-                    :pre-type-delay='420'
-                    :type-delay='30'
-                    :pre-erase-delay='100'
-                    :erase-delay='250'
-                    erase-style='select-back'
-                    :erase-on-complete='false'
-                    caret-animation='blink'
-                ></vue-typer>
-            </h3>
             <transition name="slide-fade" mode="out-in" appear>
                 <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[cartItems.length > slidesPerView ? 'many-items' : '']">
-                
                     <swiper ref="swiper" :options="swiperOptions">
-                        
-                            <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
-                                <transition name="slide-fade" mode="out-in" appear> 
-                                    <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="['$'+item.price+' per unit', 'Quantity: ' + item.amount]"></item-preview>
-                                </transition>
-                            </swiper-slide>
+                        <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
+                            <transition name="slide-fade" mode="out-in" appear> 
+                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="['$'+item.price+' per unit', 'Quantity: ' + item.amount]"></item-preview>
+                            </transition>
+                        </swiper-slide>
                     </swiper>
                 </div>
                 <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
@@ -49,13 +27,11 @@
                 </ul>
             </div>
             </transition>
-            
-            
             <div class="cart-info">
                 <div class="subtotal">
                     <div>
                         <h5>SUBTOTAL</h5>
-                        <div class="amount">$ <count-up :start="0" :end="cartSubtotal" :decimals="0" :duration="1" :options="countOptions"></count-up></div>
+                        <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="0" :duration="1" :options="countOptions"></count-up></div>
                     </div>
                 </div>
                 <div class="cart-actions">
@@ -66,6 +42,27 @@
         </div>
         <h4 v-show="cartItems.length<1" class="not-me">There's no items in your cart.</h4>
         <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
+
+        <h3 v-if="cartItems.length>0" class="not-me">
+            <i class="icon-cart">
+                <span class="icon-wrap">
+                    <i class="icon-cart-items"></i>
+                </span>
+            </i>
+            <vue-typer
+                :text='[cartLabel]'
+                :repeat='0'
+                :shuffle='false'
+                :initial-action='typeAction'
+                :pre-type-delay='420'
+                :type-delay='30'
+                :pre-erase-delay='100'
+                :erase-delay='250'
+                erase-style='select-back'
+                :erase-on-complete='false'
+                caret-animation='blink'
+            ></vue-typer>
+        </h3>
     </div>
 
 </template>
@@ -127,7 +124,6 @@ export default {
     },
     watch: {
         'shelf.type'() {
-            console.log('shelf type watch');
             this.typeAction = "typing";
             setTimeout(_.bind(()=> {
                 this.typeAction = "erasing";
@@ -194,12 +190,14 @@ export default {
                 this.vueTyperAction = type;
             }
         },
+        subtotal() {
+            return _.sum(_.map(this.cart.items, item => { return _.multiply(parseInt(item.price), parseInt(item.amount))}))
+        },
         checkoutStatus() {
             let items = this.cart.items,
                 categories = _.uniq(_.flatMap(items, 'catId')),
                 orderedBefore = 0, // TODO:: Get 'ordered before' from User account
                 orderedNew = items.length - orderedBefore;
-
             return [
                 {
                     amount: items.length,
@@ -241,7 +239,7 @@ export default {
     opacity 1
 
 .wider
-    width calc(97% - 500px)
+    width calc(92% - 500px)
     @media (max-width:breaks.small)
         width calc(97% - 400px)
 .vue-typer
@@ -252,8 +250,7 @@ export default {
         color #fff !important
 .cart-wrap
     height 100%
-    &.has-items
-        @extend $inline-mid
+    @extend $inline-mid
     .back-link
         position absolute
         top 40px
@@ -279,8 +276,9 @@ export default {
         font-weight 400
         color rgba(#fff, 0.7);
         text-align center
-        margin-left 5%
-        margin-bottom 2%
+        position absolute
+        top 15%
+        left 5%
         & > i
             position relative
             font-size 70px
@@ -308,6 +306,7 @@ export default {
                         top 12px !important
     .cart
         width 100%
+        margin-top 10%
         @extend $inline-mid
         .cart-info
             @extend $inline-mid
@@ -336,11 +335,7 @@ export default {
             .cart-actions
                 width 60%
                 .btn
-                    font-size responsive 12px 16px
                     margin-bottom 10px
-                    @media (max-width:breaks.small) {
-                        padding 0 15px
-                    }
                 .continue
                     font-size 14px
                     text-decoration underline
@@ -350,7 +345,7 @@ export default {
             @extend .wider
             padding 0 1%
             @media (min-width:breaks.small)
-                padding 0 5%
+                padding 0 4%
             ul
                 @extend $zero
                 li

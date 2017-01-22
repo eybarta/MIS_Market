@@ -60,7 +60,7 @@ export default {
             let $d = this.item.data,
                 item = _.clone($d);
 
-            item.amount = this.quantity;
+            item.amount = parseInt(this.quantity);
             // item.price = this.priceTotal;
             if (this.editMode) {
                 this.updateItemInCart(item);
@@ -109,6 +109,9 @@ export default {
 .item-overview
     padding-right 15%
     padding-left 15%
+    @media (max-width:breaks.small)
+        padding-right 5%
+        padding-left 5%
     .title
         h4
             @extend $zero
@@ -181,9 +184,6 @@ export default {
                     display block
                 button
                     margin-top 40%
-                    width 100%
-                    fontsizer(20px, 30px)
-
-                
+                    width 100%                
 
 </style>

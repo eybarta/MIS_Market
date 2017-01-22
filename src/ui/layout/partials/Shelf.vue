@@ -1,7 +1,7 @@
 <template>
-    <div class="shelf-wrap" :class="[shelf.active ? 'active' : '']">
+    <div class="shelf-wrap" :class="[shelf.active ? 'active' : '', !shelf.animate ? 'no-anim' : '']">
             <div class="shelf-body">
-                <component v-if="shelf.active" :is="currentView"></component>
+                <component v-if="shelf.active" :is="currentView" keep-alive></component>
             </div>        
         <div class="shelf-toggle" @click="toggleShelf">
             <div class="arrow"></div>
@@ -47,7 +47,7 @@ export default {
     height: 500px;
     transform: translateY(-100%);
     width: 100%;
-    transition transform 600ms ease-out-back
+    transition transform 400ms ease-out-back
     .shelf-body
         position absolute
         top 0
@@ -73,11 +73,14 @@ export default {
             border-top: 0;
             border-left: 0;
             transition transform 400ms ease
+            /.no-anim .arrow
+                transition none !important
             /.active .arrow
+                transition transform 400ms ease 
                 transform: translate(-50%, -30%) rotate(-495deg) !important;
-                
-
-            
-&.active
-    transform translateY(0)
+    &.active
+        transform translateY(0)
+        transition transform 600ms ease-out-back
+    &.no-anim
+        transition none
 </style>

@@ -35,7 +35,7 @@ export default {
     data() {
         return {
             paginate: ['items'],
-            itemsPerPage: 12
+            itemsPerPage: 32
         }
     },
 	components: {
@@ -71,7 +71,7 @@ export default {
 			'overlay'
 		]),
         singleLine() {
-            return this.items.length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
+            return this.paginated('items').length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
         }
     }
 }
@@ -82,11 +82,6 @@ export default {
     padding 60px 0 0
     min-height 30vh
     clear both
-    &.single-line
-        position absolute
-        bottom 0
-        width 100%
-        height 80%
     .pager
         @extend $inline-mid
         height 136px
@@ -142,7 +137,16 @@ export default {
 				-webkit-filter blur(5px)
 				filter url('assets/blur.svg#blur')
 				filter blur(5px)
-			
+	&.single-line
+        position absolute
+        bottom 0
+        width 100%
+        height 80%
+        .pager
+            position absolute
+            width 100%
+            bottom 0
 
     
+
 </style>

@@ -9,7 +9,7 @@ import { itemGenerator } from './test-items';
 
 Vue.use(Vuex);
 
-let items = itemGenerator(500);
+let items = itemGenerator(1200);
 
 const itemsFilterString = '';
 const cart = {
@@ -31,6 +31,7 @@ const state = {
 	},
 	shelf: {
 		active: false,
+		animate: true,
 		type: 'cart'
 	}
 }
@@ -41,7 +42,6 @@ const mutations = {
 		state.overlay.type = (!!type) ? type : null;
 	},
 	SHOW_OVERLAY (state, type) {
-		console.log("show overlay > ", state.overlay);
 		state.overlay.active = true;
 		state.overlay.type = (!!type) ? type : null;
 	},
@@ -63,31 +63,40 @@ const mutations = {
 		state.shelf.active = true;
 		state.shelf.type = 'cart';
 	},
-	HIDE_SHELF (state) {
+	HIDE_SHELF (state, animate) {
+		state.shelf.animate = _.isNull(animate) || _.isUndefined(animate) ? true : animate;
 		state.shelf.active = false;
+		setTimeout(()=> {state.shelf.animate = true;}, 600)
 	},
-
 	OPEN_ITEM(state, item) {
-		console.log("MUTATION ITEM > ", item);
+		/*
+			Receives item information, casts it to overlay.data
+			@/components/Item.vue
+		*/
 		state.overlay.data = item;
 	},
 	ADD_TO_CART(state, item) {
+		/*
+			Find source of item, add it to cart.
+		*/
 		let itemsrc = _.find(state.items, {id:item.id});
 		Vue.set(itemsrc, 'inCart', true);
 		state.cart.items.push(item);
 	},
 	UPDATE_ITEM_IN_CART(state, item) {
-		let cartitem = _.find(state.cart.items, {id:item.id})
-		Vue.set(cartitem, 'amount', item.amount);
+		/*
+			Find item in cart, update the amount.
+		*/
+		let cart_item = _.find(state.cart.items, {id:item.id});
+		Vue.set(cart_item, 'amount', item.amount);
 	},
 	REMOVE_FROM_CART(state, item) {
+		/*
+			Find source of item, remove it from cart.
+		*/
 		let itemsrc = _.find(state.items, {id:item.id});
 		Vue.set(itemsrc, 'inCart', false);
 		Vue.delete(itemsrc, 'amount');
-
-		let items = _.reject(state.cart.items, item);
-		Vue.set(state.cart, 'items', items)
-		// Vue.delete(state.cart.items, item);
 		_.remove(state.cart.items, item);
 	}
 }
@@ -177,10 +186,7 @@ const getters = {
 	},
 	cartItems: state => {
 		return state.cart.items;
-	},
-	cartSubtotal: state => {
-		return _.sum(_.map(state.cart.items, item => { return _.multiply(item.price, item.amount)}))
-	},
+	}
 }
 
 export default new Vuex.Store({

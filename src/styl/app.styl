@@ -21,28 +21,34 @@ a,button
 .backdrop
 	position absolute
 	background rgba(#2f2f2f, 0.97)
-	height 100vh
 	width 100%
 	z-index 99999
 	left 0
 	top 100%
 	padding-top 10vh
+	padding-bottom 49%
+	overflow hidden
 .btn
-	font-size 16px
+	fontsizer(12px,26px)
 	line-height 50px
 	color #fff
 	border 1px solid #01cefd
-	padding 0 30px
+	padding 0 20px
 	background none
 	cursor pointer
+	white-space nowrap
+	@media (max-width:breaks.small)
+		padding 0 15px
+
+
 
 .no-items h4, h4.no-items
 	display inline-block
-	width 100%
+	vertical-align middle
+	width 99%
 	text-align center
 	font-size 28px
 	font-weight 300
-	line-height 30vh
 
 
 .circle-item

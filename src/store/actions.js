@@ -10,17 +10,17 @@ export const toggleOverlay = async ({commit, dispatch}, type) => {
     
 }
 export const showOverlay = async ({commit, dispatch}, type) => {
-    commit('SHOW_OVERLAY', type, await dispatch('hideShelf'));
+    commit('SHOW_OVERLAY', type, await dispatch('hideShelf', false));
 }
-export const hideOverlay = ({commit}) => {
+export const hideOverlay = async ({commit}) => {
     commit('HIDE_OVERLAY');
 }
 
 export const toggleShelf = async ({commit}, type) => {
     type = (!!type && typeof type==='string') ? type : 'cart';
+    commit('TOGGLE_SHELF', type);
      return new Promise((resolve, reject) => {
       setTimeout(() => {
-        commit('TOGGLE_SHELF', type);
         resolve()
       }, 400)
      })
@@ -28,20 +28,20 @@ export const toggleShelf = async ({commit}, type) => {
 export const changeShelfType =  ({commit}, type) => {
     commit('CHANGE_SHELF_TYPE', type);
 }
-export const showShelf = async ({commit}) => {
+export const showShelf = async ({commit, dispatch}) => {
+    commit('SHOW_SHELF', await dispatch('hideOverlay'));
     return new Promise((resolve, reject) => {
-        commit('SHOW_SHELF');
-      setTimeout(() => {
-        resolve()
-      }, 400)
+        setTimeout(() => {
+            resolve()
+        }, 400)
     })
 }
-export const hideShelf = async ({commit}) => {
-    commit('HIDE_SHELF');
+export const hideShelf = async ({commit}, animate) => {
+    commit('HIDE_SHELF', animate);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve()
-      }, 50)
+      }, 0)
     })
     
 }
@@ -55,13 +55,15 @@ export const searchFilterString = ({commit}, filter_string) => {
 export const addToCart = async ({commit, dispatch}, item) => {
     await dispatch('hideOverlay');
     item.amount = (!!item.amount) ? item.amount : 1;
-    commit('ADD_TO_CART', item, await dispatch('showShelf'));
+    commit('ADD_TO_CART', item);
+    dispatch('showShelf');
     // dispatch('showShelf');   
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
-    await dispatch('hideOverlay');
-    commit('UPDATE_ITEM_IN_CART', item, await dispatch('showShelf'));
-    // dispatch('showShelf');
+    commit('UPDATE_ITEM_IN_CART', item);
+    setTimeout(() => {
+        dispatch('showShelf')
+    },100)
 }
 export const removeFromCart = ({commit}, item) => {
     commit('REMOVE_FROM_CART', item);

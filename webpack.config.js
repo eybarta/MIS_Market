@@ -32,6 +32,13 @@ module.exports = {
 						css: ExtractTextPlugin.extract({
 							  loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
 							  fallbackLoader: 'style-loader',
+								resolve: {
+									alias: {
+										'assets': path.resolve(__dirname,'dist'),
+									}
+								}
+								
+								
 						}),
 					},
 				}
@@ -66,11 +73,8 @@ module.exports = {
 				{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{
 				test: /\.(png|jpg|gif|svg)$/,
-				loader: 'file-loader',
-				options: {
-					
-				  name: 'img/[name].[ext]?[hash]'
-				}
+				loader: 'url-loader?limit=5000&name=img/img-[hash:6].[ext]',
+				
 			},
 
 		]
@@ -93,6 +97,7 @@ module.exports = {
 	resolve: {
 		alias: {
 			'vue$': 'vue/dist/vue.common.js',
+			'assets': path.resolve(__dirname,'dist'),
 			settings,
 			utils,
 			normalize

@@ -26,7 +26,7 @@
 .topbar
 	position relative
 	height 49px
-	background url('assets/texture.jpg') repeat-x 0 0
+	background url('./assets/texture.jpg') repeat-x 0 0
 	width 100%
 	padding 0 44px 0 32px
 	z-index 11

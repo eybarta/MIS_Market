@@ -38,50 +38,10 @@ const routes = [
 
 		]
 	},
-	// {
-	// 	path: '/results/:rootFilter/:childFilter',
-	// 	component: Results,
-	// 	name: 'results-1',
-	// 	meta: {
-	// 		label: ':childFilter'
-	// 	}
-	// },
-	// {
-	// 	path: '/results/:rootFilter/:childFilter/:grandchildFilter',
-	// 	component: Results,
-	// 	name: 'results-2',
-	// 	meta: {
-	// 		label: ':grandchildFilter'
-	// 	}
-	// }
-	// { 
-	// 	path: '/results/:rootFilter',
-	// 	component: Results,
-	// 	name: 'results',
-	// 	meta: {
-	// 		label: ':rootFilter'
-	// 	}
-	// },
-	// {
-	// 	path: '/results/:rootFilter/:childFilter',
-	// 	component: Results,
-	// 	name: 'results-1',
-	// 	meta: {
-	// 		label: ':childFilter'
-	// 	}
-	// },
-	// {
-	// 	path: '/results/:rootFilter/:childFilter/:grandchildFilter',
-	// 	component: Results,
-	// 	name: 'results-2',
-	// 	meta: {
-	// 		label: ':grandchildFilter'
-	// 	}
-	// }
 ]
 
 
 export default new VueRouter({
-	// mode: 'history',
+	mode: 'history',
 	routes
 })

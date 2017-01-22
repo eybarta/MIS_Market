@@ -110,13 +110,13 @@ export default {
             opacity 0
             transition opacity 0.5s ease-out-circ
             position absolute
-            top 50%
+            bottom 13%
             left 50%
-            transform translate(-50%,160%)
+            transform translateX(-50%)
             .info
                 @extend $sharpen
                 color rgba(#fff, 0.55)
-                font-size 13px
+                fontsizer(11px, 13px)
                 font-weight 300
                 &:first-child
                     margin-bottom 3px
@@ -140,21 +140,22 @@ export default {
                 color #fff
                 cursor pointer
                 /.item-big .action
-                    font-size responsive 18px 28px
+                    fontsizer(18px, 28px)
                     width 21%
                     padding-top 20%
                 /.item-small .action
-                    font-size responsive 12px 16px
+                    fontsizer(12px, 16px)
                     width 28%
                     padding-top 25%
                 span
+                    @extend $sharpen
                     opacity 0
                     position absolute
                     bottom -20px
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase
-                    font-size 11px
+                    fontsizer(9px, 11px)
                     white-space nowrap
                     transition opacity 0.5s ease-out-circ
                     backface-visibility hidden
