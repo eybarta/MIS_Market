@@ -25,5 +25,5 @@ export default {
 <style lang="stylus">
 .home
 	width 100%
-	height calc(100% - 127px)
+	height calc(100% - 78px)
 </style>

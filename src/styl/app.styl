@@ -2,7 +2,6 @@
 @import './fonts.styl'
 @import './settings.styl'
 @import './transitions.styl'
-
 body
 	font-family "helveticaLT", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
 	font-weight 300
@@ -13,7 +12,6 @@ body
 		font-style normal
 // COMMON STYLES
 a,button
-
 	&:focus, &:active
 		outline 0
 	&:visited, &:link, &:-webkit-any-link
@@ -29,7 +27,7 @@ a,button
 	padding-bottom 49%
 	overflow hidden
 .btn
-	fontsizer(12px,26px)
+	font-size 18px
 	line-height 50px
 	color #fff
 	border 1px solid #01cefd
@@ -40,8 +38,6 @@ a,button
 	@media (max-width:breaks.small)
 		padding 0 15px
 
-
-
 .no-items h4, h4.no-items
 	display inline-block
 	vertical-align middle
@@ -49,22 +45,21 @@ a,button
 	text-align center
 	font-size 28px
 	font-weight 300
-
-
 .circle-item
 	background-position 50% 50%
 	background-size 105%
 	background-repeat no-repeat
 	border-radius 50%
 	overflow hidden
-	width 80%
 	margin 0 auto
-	padding-top 80%
 	box-shadow 2px 2px 8px rgba(0,0,0,0.2)
 	background-color #2e2e2e
 .item-big
-	max-width 394px
-	min-width 200px
+	// width 394px
+	// height 394px
+	// @media (max-width:1700px)
+	// 	width 354px
+	// 	height 354px
 .item-small
-	max-width 198px
-	min-width 100px
+	width 198px
+	height 198px

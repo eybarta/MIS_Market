@@ -1,6 +1,7 @@
 <template>
 	<div class="intro">
 		<search-box placeholder="FIND THE FORCE"></search-box>
+		
 		<bg-slider :imglist="images"></bg-slider>
 	</div>
 </template>

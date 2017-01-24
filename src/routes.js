@@ -34,6 +34,10 @@ const routes = [
 						]
 					}
 				]
+			},
+			{
+				path: ':searchFilter',
+				name: 'results-search'
 			}
 
 		]

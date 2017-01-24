@@ -1,10 +1,12 @@
 ﻿var ExtractTextPlugin = require("extract-text-webpack-plugin"),
 path = require('path'),
 webpack = require('webpack'),
-poststylus = require('poststylus'),
-rupture = require('rupture');
+stylus = require('stylus'),
+poststylus = require('poststylus');
 
 const normalize = path.resolve(__dirname, './node_modules/css-reset-and-normalize/stylus/flavored-reset-and-normalize.styl');
+const rupture = path.resolve(__dirname, './node_modules/rupture/rupture/index.styl');
+
 const settings = path.resolve(__dirname, './src/styl/settings.styl');
 const utils = path.resolve(__dirname, './src/utils.js');
 
@@ -21,6 +23,7 @@ module.exports = {
 		publicPath: 'dist/',
 		filename: 'js/[name].js'
 	},
+	
 	module: { 
 		rules: [
 			{
@@ -77,11 +80,13 @@ module.exports = {
 				
 			},
 
-		]
+		],
 		
 	},
+	
 	plugins: [		
-		new webpack.LoaderOptionsPlugin({
+		new webpack.LoaderOptionsPlugin(
+			{
 			test: /\.styl$/,
 			options: {
 			context: path.resolve(__dirname, 'src/styl'),
@@ -90,8 +95,10 @@ module.exports = {
 					import: ['settings.styl']	
 
 				}
+			},
 			}
-		}),		
+			),		
+	
 		new ExtractTextPlugin("css/style.css")
 	],
 	resolve: {
@@ -100,7 +107,8 @@ module.exports = {
 			'assets': path.resolve(__dirname,'dist'),
 			settings,
 			utils,
-			normalize
+			normalize,
+			rupture
 		}
 	},
 	devServer: {

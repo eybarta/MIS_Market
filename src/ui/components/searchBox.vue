@@ -1,7 +1,7 @@
 <template>
 	<div class="search-box">
 		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @input="$emit('input', searchval)">
-		<i class="icon-search"></i>
+		<i class="icon-search" @click="search"></i>
 	</div>
 </template>
 <script>
@@ -10,6 +10,11 @@
 		data() {
 			return {
 				searchval:''
+			}
+		},
+		methods: {
+			search() {
+				this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})
 			}
 		}
 	}

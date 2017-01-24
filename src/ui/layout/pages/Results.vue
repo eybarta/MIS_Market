@@ -2,16 +2,18 @@
 	<div class='results'>
 		<menu-bar></menu-bar>
 		<shelf></shelf>
-		<bread-crumbs></bread-crumbs>
-		<span class="total-label">Total: <count-up 
-				:start="0"
-				:end="totalResults"
-				:decimals="0"
-				:duration="3"
-				:options="countOptions"
-				:callback="afterCount"></count-up> results</span>
+		<div class="content">
+			<bread-crumbs></bread-crumbs>
+			<span class="total-label">Total: <count-up 
+					:start="0"
+					:end="totalResults"
+					:decimals="0"
+					:duration="3"
+					:options="countOptions"
+					:callback="afterCount"></count-up> results</span>
 
-		<result-items :items="items"></result-items>
+			<result-items :items="items"></result-items>
+		</div>
 	</div>
 </template>
 <script>
@@ -49,12 +51,27 @@ export default {
 		},
 	},
 	computed: {
-		...mapGetters({
-			items:'filteredItems'
-		}),
+		...mapState([
+			'itemsFilterString'
+		]),
+		...mapGetters([
+			'filteredItems'
+		]),
 		totalResults() {
 			return this.items.length
-		}
+		},
+		items() {
+            let filter = this.itemsFilterString;
+            if (!!filter) {
+                return _.filter(this.filteredItems, item => {
+				    let item_string = item.name+item.catNo.toLowerCase();
+				    return item_string.indexOf(filter)>-1;
+                })
+            }
+            else {
+                return this.filteredItems;
+            }
+        },
 	}
 }
 </script>
@@ -63,12 +80,19 @@ export default {
 @lost gutter 30px
 
 .results
-	min-height calc(100% - 127px)
-	background #061016
+	padding-top 49px
+	min-height calc(100% - 78px)
+	background #061016 url('assets/main-bg.jpg') repeat-x 0 bottom
 	color #fff
 	position relative
+	.content
+		margin-top 125px
+		position relative
+		transition margin-top 460ms ease-out-cubic
+	.active + .content
+		margin-top 625px
 	.total-label
-		position absolute 120px 45px false false
+		position absolute 0 2% false false
 		font-size 13px
 		color rgba(#fff, 0.4)
 	ul.breadcrumbs

@@ -127,40 +127,45 @@ const getters = {
 		})
 	},
 	// RETURN FILTERED ITEMS BY CATEGORY  &&  SEARCH IF EXISTS
-	filteredItems: (state, getters) => {	
-		let root_route = state.route.params.rootFilter,
-			child_route = state.route.params.childFilter,
-			gchild_route = state.route.params.grandchildFilter,
-			filter_ids = [];
-		// will filter out the root category and it's children
-		let rootCategory = _.find(state.categories, {name: root_route});
-		if (!!rootCategory) {
-			if (!!child_route) {
-				// will filter out SELECTED CHILDREN categories if exists
-				let childCategory = _.find(rootCategory.children, {name: child_route});
-				if (!!gchild_route) {
-				// will filter out SELECTED GRANDCHILDREN categories if exists
-					let gChildCategory = _.find(childCategory.children, {name: gchild_route});
-						filter_ids = [gChildCategory.id];
+	filteredItems: (state, getters) => {
+		let search_filter = state.route.params.searchFilter;
+		if (!!search_filter) {
+			let counter = 0;
+			return _.filter(state.items, function(item) {
+				let item_string = item.name+item.catNo.toLowerCase();
+				let filter = search_filter.toLowerCase();
+				return item_string.indexOf(filter)>-1;
+			})
+		}
+		else {
+			let root_route = state.route.params.rootFilter,
+				child_route = state.route.params.childFilter,
+				gchild_route = state.route.params.grandchildFilter,
+				filter_ids = [];
+			// will filter out the root category and it's children
+			let rootCategory = _.find(state.categories, {name: root_route});
+			if (!!rootCategory) {
+				if (!!child_route) {
+					// will filter out SELECTED CHILDREN categories if exists
+					let childCategory = _.find(rootCategory.children, {name: child_route});
+					if (!!gchild_route) {
+					// will filter out SELECTED GRANDCHILDREN categories if exists
+						let gChildCategory = _.find(childCategory.children, {name: gchild_route});
+							filter_ids = [gChildCategory.id];
+					}
+					else {
+						filter_ids = _.concat(_.map(childCategory.children, 'id'), childCategory.id);
+					}
 				}
 				else {
-					filter_ids = _.concat(_.map(childCategory.children, 'id'), childCategory.id);
+					let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.id});
+					filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.id);
 				}
+				return _.filter(state.items, function(item) {
+					// check to see if any item ids match the filter ids
+					return !!_.intersection(filter_ids, item.catId).length;
+				})
 			}
-			else {
-				let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.id});
-				filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.id);
-			}
-			return _.filter(state.items, function(item) {
-				// Filter through search string if exists
-				if (!!state.itemsFilterString) {
-					let item_string = item.name+item.catNo.toLowerCase();
-					let filter = state.itemsFilterString.toLowerCase();
-					return !!_.intersection(filter_ids, item.catId).length && item_string.indexOf(filter)>-1;
-				}
-				// check to see if any item ids match the filter ids
-				return !!_.intersection(filter_ids, item.catId).length;
-			})
 		}
 		return [];
 	},

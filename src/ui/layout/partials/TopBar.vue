@@ -24,7 +24,8 @@
 	line-height 1
 	
 .topbar
-	position relative
+	position fixed
+	top 0
 	height 49px
 	background url('./assets/texture.jpg') repeat-x 0 0
 	width 100%

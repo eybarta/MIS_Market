@@ -57,11 +57,12 @@ export default {
 <style lang="stylus">
 @import '~settings'
 .menu-bar
+	position fixed
+	width 100%
 	@extend $inline-mid
 	padding-left round(percentage(40/1880))
 	height 80px
 	background #fff
-	position relative
 	z-index 10
 	h4.title
 		color #2f2f2f
@@ -86,11 +87,7 @@ export default {
 		position relative
 		cursor pointer
 		border-radius 0px
-		transition width 100ms ease-out, border-radius 100ms ease-out, margin-right 100ms ease-out
-		&.active
-			border-radius 100% 0 0 100%
-			width 27px
-			margin-right 3px
+		transition width 100ms ease-out, border-radius 100ms ease-out, margin-right 100ms ease-out, color 100ms ease, border-color 100ms ease
 		&:after
 			content ''
 			width 100%
@@ -100,7 +97,14 @@ export default {
 			transform translate(0,-50%)
 			height 2px
 			background #2e2e2e
-			transition width 200ms ease-out
-		&.active::after
-			width 120%
+			transition width 200ms ease-out, background-color 200ms ease
+		&.active
+			color blue
+			border-color blue
+			border-radius 100% 0 0 100%
+			width 27px
+			margin-right 3px
+			&:after
+				width 120%
+				background-color blue
 </style>

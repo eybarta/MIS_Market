@@ -78,10 +78,13 @@ export default {
 </script>
 <style lang="stylus">
 @import '~settings';
+@import '~rupture';
 .result-items
     padding 60px 0 0
     min-height 30vh
     clear both
+    .paginate-langs
+        padding 0 55px
     .pager
         @extend $inline-mid
         height 136px
@@ -90,6 +93,7 @@ export default {
         list-style none
         color #fff
         text-align center
+        margin-top 75px
         ul
             @extend $inline-mid
             @extend $zero
@@ -124,29 +128,30 @@ export default {
         lost-utility clearfix
         transform translate3d(0,0,0)
         backface-visibility hidden
-		& > .item
-			lost-column 1/4 4
-			position relative
-			list-style none
-			text-align center
-			margin-bottom 30px
-			transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
-			@media (max-width:breaks.small)
-				lost-column 1/3 3
+		.item
+            lost-column 1/4 4
+            position relative
+            list-style none
+            text-align center
+            margin-bottom 45px
+            transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
+            +below(1600px)
+                lost-column 1/3 3
+            +below(1200px)
+                lost-column 1/2 2
+            +below(950px)
+                lost-column 1/1 1
 			&.blur
 				-webkit-filter blur(5px)
 				filter url('assets/blur.svg#blur')
 				filter blur(5px)
-	&.single-line
-        position absolute
-        bottom 0
-        width 100%
-        height 80%
-        .pager
+        &.single-line
             position absolute
-            width 100%
             bottom 0
-
-    
-
+            width 100%
+            height 80%
+            .pager
+                position absolute
+                width 100%
+                bottom 0
 </style>

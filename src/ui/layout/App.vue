@@ -37,4 +37,5 @@ footer
 	span
 		font-size 12px
 		color #bcbcbd
+		opacity 0.5
 </style>

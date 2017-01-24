@@ -41,13 +41,13 @@ export default {
 </script>
 <style lang="stylus">
 .shelf-wrap
-    // position absolute 0 0 false 0
-    position: absolute;
-    z-index: 9;
-    height: 500px;
-    transform: translateY(-100%);
-    width: 100%;
+    position fixed
+    margin-top 80px
+    height 500px
+    transform translateY(-100%)
+    width 100%
     transition transform 400ms ease-out-back
+    z-index 9
     .shelf-body
         position absolute
         top 0
@@ -80,7 +80,7 @@ export default {
                 transform: translate(-50%, -30%) rotate(-495deg) !important;
     &.active
         transform translateY(0)
-        transition transform 600ms ease-out-back
+        transition transform 400ms ease-out-cubic
     &.no-anim
         transition none
 </style>

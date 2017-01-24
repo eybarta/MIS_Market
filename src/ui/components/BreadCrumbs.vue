@@ -20,7 +20,7 @@ export default {
 </script>
 <style lang="stylus">
 .breadcrumbs
-    padding 2% 0 0 2%
+    padding 0 0 0 2%
     margin 0
     list-style none
     opacity 0.7

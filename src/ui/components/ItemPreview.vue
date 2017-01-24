@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class='label'>
-        <span class="item-mct">{{item.catNo}}</span><br>
+        <span class="item-mct">{{item.catNo}}</span>
         <span class="item-name">{{item.name}}</span>
     </div>
     </div>
@@ -83,6 +83,7 @@ export default {
 </script>
 <style lang="stylus">
 @import '~settings';
+@import '~rupture';
 .item-preview
     .label
         width 50%
@@ -92,8 +93,11 @@ export default {
         color rgba(#fff, 0.7)
         padding-top 20px
         white-space normal
-    .item-small + .label
-            font-size 12px    
+        span:first-child
+            display block
+            margin-bottom 5px
+    /.item-small + .label
+            font-size 12px
     .item-preview-image
         position relative
         background-position 50% 50%
@@ -101,11 +105,27 @@ export default {
         background-repeat no-repeat
         border-radius 50%
         overflow hidden
-        width 80%
         margin 0 auto
-        padding-top 80%
         box-shadow: inset 2px 2px 8px rgba(0,0,0,0.2)
         background-color: #2e2e2e;
+        &.item-big
+            width 394px
+            height @width
+            +below(1700px)
+                width 354px
+                height @width
+            +below(1600px)
+                width 394px
+                height @width
+            +below(1400px)
+                width 354px
+                height @width
+            +below(1200px)
+                width 394px
+                height @width
+        &.item-small
+            width 198px
+            height @width
         .item-info
             opacity 0
             transition opacity 0.5s ease-out-circ
@@ -155,7 +175,7 @@ export default {
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase
-                    fontsizer(9px, 11px)
+                    font-size 13px
                     white-space nowrap
                     transition opacity 0.5s ease-out-circ
                     backface-visibility hidden
@@ -171,5 +191,4 @@ export default {
         &:hover .item-actions
         &:hover .item-info
             opacity 1
-    
 </style>

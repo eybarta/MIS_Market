@@ -105,17 +105,21 @@ export default {
                 grabCursor: true,
                 preventClicks: false,
                 breakpoints: {
-					1600: {
+                    1800: {
 						slidesPerView: 5.5,
 					},
-					1400: {
+
+					1700: {
 						slidesPerView: 4.5,
 					},
-					1272: {
+					1500: {
 						slidesPerView: 3.5,
 					},
-					1040: {
+					1300: {
 						slidesPerView: 2.5,
+					},
+					1040: {
+						slidesPerView: 1.5,
 					}                    
 				}
             },
@@ -239,7 +243,7 @@ export default {
     opacity 1
 
 .wider
-    width calc(92% - 500px)
+    width calc(97% - 500px)
     @media (max-width:breaks.small)
         width calc(97% - 400px)
 .vue-typer
@@ -250,6 +254,7 @@ export default {
         color #fff !important
 .cart-wrap
     height 100%
+    min-width 768px
     @extend $inline-mid
     .back-link
         position absolute
