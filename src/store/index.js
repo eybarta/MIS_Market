@@ -89,6 +89,8 @@ const mutations = {
 		*/
 		let cart_item = _.find(state.cart.items, {id:item.id});
 		Vue.set(cart_item, 'amount', item.amount);
+		let _items = _.clone(state.cart.items)
+		state.cart.items = _items;
 	},
 	REMOVE_FROM_CART(state, item) {
 		/*
@@ -190,6 +192,7 @@ const getters = {
 			return "Results for: " + filtername;
 	},
 	cartItems: state => {
+		let _items = state.cart.items;
 		return state.cart.items;
 	}
 }

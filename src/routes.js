@@ -3,20 +3,16 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
+// const Home = resolve => require(['./ui/layout/pages/Home.vue'], resolve);
+// const Results = resolve => require(['./ui/layout/pages/Results.vue'], resolve);
+
 import Home from './ui/layout/pages/Home.vue';
 import Results from './ui/layout/pages/Results.vue';
 
 const routes = [
-  
-	{ 
-		path: '/', 
-		component: Home,
-		name: 'home',
-	},
 	{ 
 		path: '/results',
 		component: Results,
-		name: 'results',
 		children: [
 			{
 				path:':rootFilter',
@@ -28,7 +24,7 @@ const routes = [
 						children: [
 							{
 								path:':grandchildFilter',
-								name: 'results-grandchild',
+								name: 'results-grandchild'
 							},
 							
 						]
@@ -42,10 +38,12 @@ const routes = [
 
 		]
 	},
+	{ path: '/', component:Home, name: 'home'},
+	
 ]
 
 
 export default new VueRouter({
-	mode: 'history',
+	root: 'marketcase/',
 	routes
 })

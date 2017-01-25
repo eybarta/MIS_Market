@@ -129,7 +129,7 @@ export const itemGenerator = (amount) => {
 		items.push( {
 			id: ++i,
 			catId: _.uniq(cats),
-			image: "/dist/img/items/item"+upTo5+".png",			
+			image: "./dist/img/items/item"+upTo5+".png",			
 			catNo: "FFF1212"+ i,
 			name: "Asian Girl Poster (Canvas/Foam)" + i,
 			attachments: [

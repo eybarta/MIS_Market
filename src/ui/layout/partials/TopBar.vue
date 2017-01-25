@@ -9,7 +9,7 @@
 <script>
 	export default {
 		created() {
-			console.log("Market App Created!");
+			console.log("Top Bar  Created!");
 		}
 	}
 </script>

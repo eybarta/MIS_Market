@@ -60,6 +60,7 @@ export const addToCart = async ({commit, dispatch}, item) => {
     // dispatch('showShelf');   
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
+    console.log("update item in cart>> ", item);
     commit('UPDATE_ITEM_IN_CART', item);
     setTimeout(() => {
         dispatch('showShelf')

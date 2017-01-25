@@ -76,9 +76,6 @@ import ItemPreview from './ItemPreview.vue';
 import CountUp from 'vue-countup-v2';
 import { countOptions } from 'utils';
 export default {
-    created() {
-            console.log(" :: >> ", this.cart);
-    },
     mounted() {
         this.$nextTick(() => {
             // WATCH AND UPDATE SLIDE PER VIEW FOR RESIZE EVENTS...
@@ -177,8 +174,7 @@ export default {
             'shelf'
         ]),
         ...mapGetters([
-            'cartItems',
-            'cartSubtotal'
+            'cartItems'
         ]),
         noItems() {
             if (!!this.cartItems) {
@@ -195,7 +191,8 @@ export default {
             }
         },
         subtotal() {
-            return _.sum(_.map(this.cart.items, item => { return _.multiply(parseInt(item.price), parseInt(item.amount))}))
+            let cart = this.cart;
+            return _.sum(_.map(cart.items, item => { return _.multiply(parseInt(item.price), parseInt(item.amount))}))
         },
         checkoutStatus() {
             let items = this.cart.items,
@@ -307,8 +304,11 @@ export default {
                     display inline-block
                     vertical-align top
                     transition:top 400ms ease-out-back
-                    /.checkout .icon-cart-items
-                        top 12px !important
+    &:hover
+        .icon-cart-items
+            animation: living 2s ease-out-back 2s infinite alternate;
+            /.checkout .icon-cart-items
+                top 12px !important
     .cart
         width 100%
         margin-top 10%
@@ -409,4 +409,13 @@ export default {
                     width 100%
                 li
                     display inline-block
+@keyframes living 
+    0%
+        top 30px
+    25%
+        top 15px
+    50%
+        top 13px
+    100%
+        top 30px          
 </style>

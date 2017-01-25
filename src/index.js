@@ -19,11 +19,11 @@ sync(store, router);
 import './styl/app.styl';
 import App from './ui/layout/App.vue';
 
-new Vue({
-    replace:false,
-    render: h => h(App),
+const app = new Vue({
+    // replace:false,
     router, 
     store,
+    render: h => h(App),
     mounted() {
     	console.log("VUE ROOT MOUNTED");
     }

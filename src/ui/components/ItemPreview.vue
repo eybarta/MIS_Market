@@ -1,27 +1,63 @@
 <template>
     <div class="item-preview">
-    <div class="item-preview-image" :class="['item-'+size]" :style="previewImageStyle">
-        <div class="item-actions" v-if="showActions">
-            <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+        <div class="item-preview-image" :class="['item-'+size, quantfocus ? 'active' : '']" :style="previewImageStyle">
+            <div class="item-actions" v-if="showActions">
+                <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+            </div>
+            <div class="item-info" v-if="!!info" @click="infoClickHandler">
+                <div class="info" v-text="'$'+item.price+' per unit'"></div>
+                <div class="info">Quantity:  <div ref="quant" contenteditable="true"
+                    @focus="quantfocus=true"
+                    @input="quantChange($event,item)"
+                    @keyup.esc="updateItem($event, item)"
+                    @keyup.tab="updateItem($event, item)"
+                    @keyup.enter="updateItem($event, item)"
+                    @blur="updateItem($event, item)"
+                >{{ item.amount }}</div></div>
+            </div>
         </div>
-        <div class="item-info" v-if="!!info">
-            <div class="info" v-for="i in info">{{ i }}</div>
+        <div class='label'>
+            <span class="item-mct">{{item.catNo}}</span>
+            <span class="item-name">{{item.name}}</span>
         </div>
-    </div>
-    <div class='label'>
-        <span class="item-mct">{{item.catNo}}</span>
-        <span class="item-name">{{item.name}}</span>
-    </div>
     </div>
 </template>
 <script>
+import { selectText } from 'utils' 
 import { mapActions } from 'vuex';
 export default {
     props: ['type', 'info', 'item', 'size', 'actions'],
     created() {
 
     },
+    data() {
+        return {
+            quantfocus:false
+        }
+    },
     methods: {
+        quantChange(e, item) {
+            this.$refs.quant.innerText =  this.$refs.quant.innerText.trim().replace(/\n /g, "")
+        },
+        updateItem(e, item) {
+            console.log(e, " :: ", e.key)
+            if (/esc/gi.test(e.key)) {
+                console.log('esc was pressed');
+                this.$refs.quant.innerText = item.amount;
+                this.$refs.quant.blur();
+            }
+            else if (item.amount != this.$refs.quant.innerText) {
+                let _item = _.clone(item);
+                _item.amount = parseInt(this.$refs.quant.innerText);
+                this.updateItemInCart(_item);
+                this.quantfocus = false;
+                e.target.blur();
+            }
+        },
+        infoClickHandler() {
+            this.$refs.quant.focus()
+            selectText(this.$refs.quant);
+        },
         labelFor(action) {
             switch(action) {
                 case 'open':
@@ -40,18 +76,14 @@ export default {
         actionHandler(action) {
             switch(action) {
                 case 'open':
-                    console.log('open item > ', this.item);
                     this.openItem(this.item);
                     break;
                 case 'view':
-                    console.log('update cart item > ', this.item);
                     let item = _.clone(this.item);
                     item.editmode = true;
                     this.openItem(item);
                     break;
                 case 'plus':
-                    console.log('Add to Cart');
-                    // this.$set(this, 'item.amount', 1);
                     this.addToCart(this.item);
                     break;
                 case 'images':
@@ -67,7 +99,8 @@ export default {
         ...mapActions([
             'addToCart',
             'openItem',
-            'removeFromCart'
+            'removeFromCart',
+            'updateItemInCart'
         ])
     },
     computed: {
@@ -84,6 +117,9 @@ export default {
 <style lang="stylus">
 @import '~settings';
 @import '~rupture';
+ ::selection
+    background rgba(gray, 0.2)
+    color darken(gray, 30)
 .item-preview
     .label
         width 50%
@@ -138,6 +174,14 @@ export default {
                 color rgba(#fff, 0.55)
                 fontsizer(11px, 13px)
                 font-weight 300
+                div
+                    display inline-block
+                    padding 2px 0
+                    &[contenteditable="true"]:focus
+                        padding 0 4px
+                        outline 1px dashed rgba(blue, 0.5)
+                        background rgba(#fff, 0.8)
+                        color darken(gray, 30)
                 &:first-child
                     margin-bottom 3px
         .item-actions
@@ -188,7 +232,7 @@ export default {
                         color #03c6f3
                     span
                         opacity 1 
-        &:hover .item-actions
-        &:hover .item-info
-            opacity 1
+        &:hover, &.active
+             .item-actions, .item-info
+                opacity 1
 </style>

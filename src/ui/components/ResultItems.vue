@@ -21,27 +21,74 @@
             </transition-group>
         </paginate>
         <div class="pager" v-if="items.length > itemsPerPage">
-	        <paginate-links for="items" :limit="4"></paginate-links>
+	        <paginate-links ref="pager" for="items" :limit="4" 
+            @change="onLangsPageChange"
+            :show-step-links="true"
+            :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
         </div>
     </div>
 </template>
 <script>
 import { mapGetters, mapState } from 'vuex';
-import $ from 'jquery';
 import velocity from 'velocity-animate';
+import $ from 'jquery';
+import $velocity from 'velocity-animate/velocity.js';
 import ItemPreview from './ItemPreview.vue';
 export default {
     props: ['items'],
     data() {
         return {
             paginate: ['items'],
-            itemsPerPage: 32
+            itemsPerPage: 32,
         }
     },
 	components: {
 		ItemPreview
 	},
+    mounted() {
+        this.$nextTick(() => {
+            this.bindFirstLastToPager();
+           
+        })
+    },
     methods: {
+        onLangsPageChange(toPage, fromPage) {
+            $('html,body').animate({
+                scrollTop:0
+            }, 800)
+           
+
+            let $pager = $(this.$refs.pager.$el);
+            $pager.find('.first-page, .last-page').removeClass('disabled');
+            if (toPage===1) {
+                $pager.find('.first-page').addClass('disabled');
+            }
+            else if (toPage===this.$refs.pager.numberOfPages) {
+                $pager.find('.last-page').addClass('disabled');
+            }
+
+        },
+        bindFirstLastToPager() {
+            console.log(this.$refs.pager.numberOfPages);
+            let $pager = $(this.$refs.pager.$el),
+                $first = $("<li class='first-page disabled'><a>First</a></li>"),
+                $last = $("<li class='last-page'><a>Last</a></li>");
+
+            $first.on('click', () => {
+                console.log("1 >> ", this.$refs.pager.currentPage);
+                // $pager.find('.number').eq(0).find('a').trigger('click');
+                // $pager.find('.number').get(0).click();
+                this.$set(this.$refs.pager, 'currentPage', 1);
+                this.$refs.pager.currentPage = 1;
+                console.log("2 >> ",this.$refs.pager.currentPage);
+                
+            })
+            $last.on('click', () => {
+                console.log('goto last page');
+            })
+            $pager.prepend($first)
+            $pager.append($last);
+        },
 		beforeEnter: function (el) {
 			$(el).css({
 				opacity:0,
@@ -120,6 +167,14 @@ export default {
                     line-height 30px
                     margin 0
                     opacity 1
+                &.left-arrow
+                    margin-right 36px
+                &.right-arrow
+                    margin-left 36px
+                &.disabled
+                    pointer-events none
+                    cursor pointer
+                    opacity 0.2
                 &:hover
                     opacity 1
     .item-list

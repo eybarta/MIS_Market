@@ -24,21 +24,18 @@ export default {
 			swiperOption: {
 				pagination: '.swiper-pagination',
 				slidesPerView: 6,
-				spaceBetween: 30,
+				spaceBetween: 15,
 				freeMode: true,
 				preventClicks: false,
 				breakpoints: {
 					1600: {
 						slidesPerView: 5,
-						spaceBetween: 40,
 					},
 					1400: {
 						slidesPerView: 4,
-						spaceBetween: 20
 					},
 					1272: {
 						slidesPerView: 3,
-						spaceBetween: 20
 					},
 					1040: {
 						slidesPerView: 2,
@@ -64,13 +61,19 @@ export default {
 	vertical-align middle
 	white-space nowrap
 	width calc(100% - 364px)
-	max-width 1520px
-	height 278px
+	height 300px
 	position relative
+	border-right 2px solid rgba(#6f6f6f, 0.9)
+	overflow hidden
 	.swiper-container
 		top 50%
 		transform translateY(-50%)
-		height 278px
+		height 100%
+		width 95%
+		overflow visible
+		.swiper-wrapper
+			margin auto
+			top 10%
 		.swiper-pagination
 			bottom 0 !important
 			left 50% 

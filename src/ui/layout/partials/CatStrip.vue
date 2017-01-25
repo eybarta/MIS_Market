@@ -38,7 +38,6 @@ export default {
 		width 360px
 		height 278px
 		padding 0 70px 0 48px
-		border-left 2px solid rgba(#6f6f6f, 0.9)
 		text-align left
 		&::before
 			content ''

@@ -1,17 +1,17 @@
 export const categories = [
 		{
 			id: 1,
-			src: "/dist/img/categories/new.png",
+			src: "./dist/img/categories/new.png",
 			name: "New!"
 		},
 		{
 			id:2,
-			src: "/dist/img/categories/simple.png",
+			src: "./dist/img/categories/simple.png",
 			name: "Simple Campaign"
 		},
 		{
 			id:3,
-			src: "/dist/img/categories/print.png",
+			src: "./dist/img/categories/print.png",
 			name: "Printed Materials",
 			children: [
 				{
@@ -56,17 +56,17 @@ export const categories = [
 		},
 		{
 			id:4,
-			src: "/dist/img/categories/scientific.png",
+			src: "./dist/img/categories/scientific.png",
 			name: "Scientific Research"
 		},
 		{
 			id:9,
-			src: "/dist/img/categories/accessories.png",
+			src: "./dist/img/categories/accessories.png",
 			name: "Accessories"
 		},
 		{
 			id:6,
-			src: "/dist/img/categories/courses.png",
+			src: "./dist/img/categories/courses.png",
 			name: "Courses"
 		},
 	]
