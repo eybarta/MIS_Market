@@ -1,6 +1,6 @@
 <template>
     <div class="item-preview">
-        <div class="item-preview-image" :class="['item-'+size, quantfocus ? 'active' : '']" :style="previewImageStyle">
+        <div class="item-preview-image" :class="['item-'+size, quantfocus ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd">
             <div class="item-actions" v-if="showActions">
                 <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
@@ -23,10 +23,11 @@
     </div>
 </template>
 <script>
+import $ from 'jquery'
 import { selectText } from 'utils' 
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
-    props: ['type', 'info', 'item', 'size', 'actions'],
+    props: ['type', 'info', 'item', 'size', 'actions', 'draggable'],
     created() {
 
     },
@@ -96,20 +97,35 @@ export default {
                     return '';
             }
         },
+        dragStart(e) {
+            console.log('drag start >> ', this.item)
+            this.updateItemInLimbo(this.item);
+        },
+        dragEnd(e) {
+            this.updateItemInLimbo(null);
+        },
         ...mapActions([
             'addToCart',
             'openItem',
             'removeFromCart',
-            'updateItemInCart'
+            'updateItemInCart',
+            'showShelf',
+            'updateItemInLimbo'
         ])
     },
     computed: {
+        ...mapState([
+            'itemInLimbo'
+        ]),
         previewImageStyle() {
             // IF item is in CART, remove image-preview from RESULTS item
             return this.type!='cart' && this.item.inCart ? '' : 'background-image:url('+this.item.image+');';
         },
         showActions() {
-            return !!this.actions && (this.type=='cart' || !this.item.inCart)
+            return !this.isThisitemInLimbo && !!this.actions && (this.type=='cart' || !this.item.inCart)
+        },
+        isThisitemInLimbo() {
+            return !!this.itemInLimbo && this.itemInLimbo.id==this.item.id;
         }
     }
 }
@@ -117,6 +133,10 @@ export default {
 <style lang="stylus">
 @import '~settings';
 @import '~rupture';
+.flyin
+    box-shadow inset 0px 0px 20px rgba(255,255,255,0.9) !important
+    opacity 1 !important
+
  ::selection
     background rgba(gray, 0.2)
     color darken(gray, 30)

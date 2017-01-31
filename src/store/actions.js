@@ -43,7 +43,6 @@ export const hideShelf = async ({commit}, animate) => {
         resolve()
       }, 0)
     })
-    
 }
 
 export const searchFilterString = ({commit}, filter_string) => {
@@ -51,13 +50,21 @@ export const searchFilterString = ({commit}, filter_string) => {
 }
 
 
+// DRAG N DROP
+export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
+    if (!!item && !state.shelf.active) {
+        await dispatch('showShelf');
+    }
+    commit('UPDATE_ITEM_IN_LIMBO', item);
+}
+
 // CART ACTIONS
 export const addToCart = async ({commit, dispatch}, item) => {
     await dispatch('hideOverlay');
+    console.log("ADD TO CART >> ", item, " :: ");
     item.amount = (!!item.amount) ? item.amount : 1;
     commit('ADD_TO_CART', item);
     dispatch('showShelf');
-    // dispatch('showShelf');   
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);

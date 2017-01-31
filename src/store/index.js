@@ -20,6 +20,7 @@ const state = {
 	categories,
 	items,
 	itemsFilterString,
+	itemInLimbo: null,
 	cart:{
 		items:[],
 		subtotal:0
@@ -44,12 +45,16 @@ const mutations = {
 	SHOW_OVERLAY (state, type) {
 		state.overlay.active = true;
 		state.overlay.type = (!!type) ? type : null;
-	},
+	}, 
 	HIDE_OVERLAY (state) {
 		state.overlay.active = false;
 	},
 	SEARCH_FILTER_STRING (state, filter_string) {
 		state.itemsFilterString = filter_string;
+	},
+	// DRAG N DROP
+	UPDATE_ITEM_IN_LIMBO (state, item) {
+		state.itemInLimbo = item;
 	},
 	// CART Mutations
 	TOGGLE_SHELF (state, type) {

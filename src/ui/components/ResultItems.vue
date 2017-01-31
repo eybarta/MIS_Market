@@ -8,18 +8,17 @@
             tag="div"
             class="paginate-langs"
             >
-
-            <transition-group ref="list" name="list" tag="ul" appear
-                class="item-list"
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @leave="leave"
-                mode="out-in">
-                <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', overlay.active ? 'blur' : '']">
-					<item-preview type="result" :item="item" size="big" :actions="['open','plus','images']"></item-preview>
-                </li>
-            </transition-group>
-        </paginate>
+                <transition-group ref="list" name="list" tag="ul" appear
+                    class="item-list"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
+                    @leave="leave"
+                    mode="out-in">
+                    <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', overlay.active ? 'blur' : '']">
+                        <item-preview type="result" :item="item" size="big" :actions="['open','plus','images']" :draggable="true"></item-preview>
+                    </li>
+                </transition-group>
+            </paginate>
         <div class="pager" v-if="items.length > itemsPerPage">
 	        <paginate-links ref="pager" for="items" :limit="4" 
             @change="onLangsPageChange"
@@ -29,29 +28,36 @@
     </div>
 </template>
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import velocity from 'velocity-animate';
 import $ from 'jquery';
 import $velocity from 'velocity-animate/velocity.js';
 import ItemPreview from './ItemPreview.vue';
+
+import draggable from 'vuedraggable'
 export default {
     props: ['items'],
     data() {
         return {
             paginate: ['items'],
             itemsPerPage: 32,
+            cartzone: -1
         }
     },
 	components: {
-		ItemPreview
+		ItemPreview,
+        draggable
 	},
     mounted() {
         this.$nextTick(() => {
-            this.bindFirstLastToPager();
+           this.bindFirstLastToPager();
            
         })
     },
     methods: {
+        dragEnd(e) {
+            console.log('drag leave from results >> ', this.item)
+        },
         onLangsPageChange(toPage, fromPage) {
             $('html,body').animate({
                 scrollTop:0
@@ -111,7 +117,10 @@ export default {
 				transform: 'translateY(120%)'
 			})
 			done();
-		}
+		},
+        ...mapActions([
+            'showShelf'
+        ])
     },
     computed: {
         ...mapState([

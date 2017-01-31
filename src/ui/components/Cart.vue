@@ -1,12 +1,12 @@
 <template>
-    <div class="cart-wrap" :class="[cartItems.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
+    <div class="cart-wrap" :class="[cartItems.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']" draggable="true" @dragleave="itemDropped">
         <div v-show="cartItems.length>0" class="cart">
             <transition name="slide-fade" mode="out-in" appear>
                 <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[cartItems.length > slidesPerView ? 'many-items' : '']">
                     <swiper ref="swiper" :options="swiperOptions">
                         <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
                             <transition name="slide-fade" mode="out-in" appear> 
-                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="['$'+item.price+' per unit', 'Quantity: ' + item.amount]"></item-preview>
+                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="['$'+item.price+' per unit', 'Quantity: ' + item.amount]" :draggable="false"></item-preview>
                             </transition>
                         </swiper-slide>
                     </swiper>
@@ -75,6 +75,8 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper';
 import ItemPreview from './ItemPreview.vue';
 import CountUp from 'vue-countup-v2';
 import { countOptions } from 'utils';
+import draggable from 'vuedraggable'
+
 export default {
     mounted() {
         this.$nextTick(() => {
@@ -137,13 +139,23 @@ export default {
         swiper,
 		swiperSlide,
         CountUp,
-        VueTyper
+        VueTyper,
+        draggable
     },
     methods: {
         ...mapActions([
             'toggleShelf',
-            'changeShelfType'
+            'changeShelfType',
+            'updateItemInLimbo',
+            'addToCart'
         ]),
+        itemDropped(e) {
+            console.log('item dropped', e);
+            if (e.x == 0 && e.y == 0) {
+                // ADD TO CART
+                this.addToCart(this.itemInLimbo);
+            }
+        },
         	beforeEnter: function (el) {
 			$(el).css({
 				opacity:0,
@@ -171,7 +183,8 @@ export default {
     computed: {
         ...mapState([
             'cart',
-            'shelf'
+            'shelf',
+            'itemInLimbo'
         ]),
         ...mapGetters([
             'cartItems'

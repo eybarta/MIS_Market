@@ -1,6 +1,6 @@
 @import '~normalize'
 @import './fonts.styl'
-@import './settings.styl'
+@import '~settings'
 @import './transitions.styl'
 body
 	font-family "helveticaLT", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
@@ -37,7 +37,6 @@ a,button
 	white-space nowrap
 	@media (max-width:breaks.small)
 		padding 0 15px
-
 .no-items h4, h4.no-items
 	display inline-block
 	vertical-align middle
@@ -54,12 +53,6 @@ a,button
 	margin 0 auto
 	box-shadow 2px 2px 8px rgba(0,0,0,0.2)
 	background-color #2e2e2e
-.item-big
-	// width 394px
-	// height 394px
-	// @media (max-width:1700px)
-	// 	width 354px
-	// 	height 354px
 .item-small
 	width 198px
 	height 198px

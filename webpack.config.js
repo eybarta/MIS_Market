@@ -21,18 +21,18 @@ const buildPath = path.join(__dirname, './dist');
 
 
 const plugins = [
-	new webpack.LoaderOptionsPlugin(
-			{
-			test: /\.styl$/,
-			options: {
-					stylus: {
-						use: [poststylus([ 'lost', 'rucksack-css' ])],
+	// new webpack.LoaderOptionsPlugin(
+	// 		{
+	// 		test: /\.styl$/,
+	// 		options: {
+	// 				stylus: {
+	// 					use: [poststylus([ 'lost', 'rucksack-css' ])],
 
-					}
-				},
-			  preferPathResolver: 'webpack',
-			}
-			),		
+	// 				}
+	// 			},
+	// 		  preferPathResolver: 'webpack',
+	// 		}
+	// 		),		
 	
 		new ExtractTextPlugin("css/style.css")
 
@@ -40,7 +40,7 @@ const plugins = [
 
 // COMMON RULES
 const rules = [
-{
+		{
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				options: {
@@ -49,11 +49,11 @@ const rules = [
 						css: ExtractTextPlugin.extract({
 							  loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
 							  fallbackLoader: 'style-loader',
-								resolve: {
-									alias: {
-										'assets': path.resolve(__dirname,'dist'),
-									}
-								}
+								// resolve: {
+								// 	alias: {
+								// 		'assets': path.resolve(__dirname,'dist'),
+								// 	}
+								// }
 								
 								
 						}),
@@ -62,18 +62,15 @@ const rules = [
 			},
 			{
 				test: /\.styl$/,
-				exclude: /node_modules/,
-				use: [
-		          	'style-loader',
-		          	{ loader: ExtractTextPlugin.extract({
-							  loader: 'css-loader!stylus-loader',
-							  preferPathResolver: 'webpack',
-							  exclude: /fonts/
+				// exclude: [/node_modules/],
+				// loader: 'stylus-loader',
+				use: ExtractTextPlugin.extract({
+								loader: 'css-loader!stylus-loader',
+								fallbackLoader:'style-loader'
 							})
-					}
-		        ]
-
-			  },
+				
+			
+			},
 			{
 				test: /\.js$/,
 				loader: 'babel-loader',
@@ -87,7 +84,7 @@ const rules = [
 						name: '../fonts/[name].[ext]?[hash]'
 					}
 			},
-				{ test: /\.css$/, loader: "style-loader!css-loader" },
+			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{
 				test: /\.(png|jpg|gif|svg)$/,
 				loader: 'url-loader?limit=5000&name=img/img-[hash:6].[ext]',
@@ -130,8 +127,7 @@ if (isProduction) {
       output: {
         comments: false,
       },
-    }),
-    new ExtractTextPlugin('style.css')
+    })
   );
 }
 else {
