@@ -12,8 +12,8 @@
                     @keyup.esc="updateItem($event, item)"
                     @keyup.tab="updateItem($event, item)"
                     @keyup.enter="updateItem($event, item)"
-                    @blur="updateItem($event, item)"
-                >{{ item.amount }}</div></div>
+                    v-text="item.amount"></div>
+                </div>
             </div>
         </div>
         <div class='label'>
@@ -38,12 +38,10 @@ export default {
     },
     methods: {
         quantChange(e, item) {
-            this.$refs.quant.innerText =  this.$refs.quant.innerText.trim().replace(/\n /g, "")
+            item.amount =  this.$refs.quant.innerText.trim().replace(/\n /g, "")
         },
         updateItem(e, item) {
-            console.log(e, " :: ", e.key)
-            if (/esc/gi.test(e.key)) {
-                console.log('esc was pressed');
+            if (!!e.key && /esc/gi.test(e.key)) {
                 this.$refs.quant.innerText = item.amount;
                 this.$refs.quant.blur();
             }
@@ -52,6 +50,7 @@ export default {
                 _item.amount = parseInt(this.$refs.quant.innerText);
                 this.updateItemInCart(_item);
                 this.quantfocus = false;
+                this.$refs.quant.innerText = _.trim(this.$refs.quant.innerText)
                 e.target.blur();
             }
         },
@@ -102,6 +101,12 @@ export default {
             this.updateItemInLimbo(this.item);
         },
         dragEnd(e) {
+            console.log("DRAG END>>>>", e);
+            console.log("bounding > ", document.querySelector(".cart-wrap").getBoundingClientRect().bottom);
+            console.log('mouse p ', e.pageY)
+            if (e.pageY<document.querySelector(".cart-wrap").getBoundingClientRect().bottom) {
+                this.addToCart(this.item);    
+            }
             this.updateItemInLimbo(null);
         },
         ...mapActions([
@@ -235,7 +240,7 @@ export default {
                     @extend $sharpen
                     opacity 0
                     position absolute
-                    bottom -20px
+                    bottom -25px
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase

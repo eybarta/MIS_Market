@@ -92,10 +92,9 @@ const mutations = {
 		/*
 			Find item in cart, update the amount.
 		*/
-		let cart_item = _.find(state.cart.items, {id:item.id});
-		Vue.set(cart_item, 'amount', item.amount);
-		let _items = _.clone(state.cart.items)
-		state.cart.items = _items;
+		state.cart.items = _.map(state.cart.items, obj => {
+			return (obj.id===item.id) ? _.merge(obj, { amount:item.amount}) : obj
+		});
 	},
 	REMOVE_FROM_CART(state, item) {
 		/*

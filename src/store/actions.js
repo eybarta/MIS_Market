@@ -29,6 +29,7 @@ export const changeShelfType =  ({commit}, type) => {
     commit('CHANGE_SHELF_TYPE', type);
 }
 export const showShelf = async ({commit, dispatch}) => {
+    console.log("SHOW SHELF");
     commit('SHOW_SHELF', await dispatch('hideOverlay'));
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -69,7 +70,7 @@ export const addToCart = async ({commit, dispatch}, item) => {
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);
     commit('UPDATE_ITEM_IN_CART', item);
-    setTimeout(() => {
+    setTimeout(function() {
         dispatch('showShelf')
     },100)
 }

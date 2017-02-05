@@ -1,8 +1,8 @@
 <template>
-    <div class="cart-wrap" :class="[cartItems.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']" draggable="true" @dragleave="itemDropped">
-        <div v-show="cartItems.length>0" class="cart">
+    <div class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
+        <div v-show="items.length>0" class="cart">
             <transition name="slide-fade" mode="out-in" appear>
-                <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[cartItems.length > slidesPerView ? 'many-items' : '']">
+                <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">
                     <swiper ref="swiper" :options="swiperOptions">
                         <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
                             <transition name="slide-fade" mode="out-in" appear> 
@@ -40,10 +40,10 @@
                 </div>
             </div>
         </div>
-        <h4 v-show="cartItems.length<1" class="not-me">There's no items in your cart.</h4>
+        <h4 v-show="items.length<1" class="not-me">There's no items in your cart.</h4>
         <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
 
-        <h3 v-if="cartItems.length>0" class="not-me">
+        <h3 v-if="items.length>0" class="not-me">
             <i class="icon-cart">
                 <span class="icon-wrap">
                     <i class="icon-cart-items"></i>
@@ -150,8 +150,9 @@ export default {
             'addToCart'
         ]),
         itemDropped(e) {
-            console.log('item dropped', e);
-            if (e.x == 0 && e.y == 0) {
+                console.log('item dropped', e);
+            
+            if ($(e.toElement).hasClass('cart-wrap')) {
                 // ADD TO CART
                 this.addToCart(this.itemInLimbo);
             }
@@ -186,12 +187,12 @@ export default {
             'shelf',
             'itemInLimbo'
         ]),
-        ...mapGetters([
-            'cartItems'
-        ]),
+        ...mapGetters({
+            items:'cartItems'
+        }),
         noItems() {
-            if (!!this.cartItems) {
-                return this.cartItems.length<1
+            if (!!this.items) {
+                return this.items.length<1
             }
             return true
         },

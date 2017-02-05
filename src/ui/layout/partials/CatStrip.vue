@@ -51,5 +51,5 @@ export default {
 			width auto
 			color #bcbcbd
 			font-size responsive 14px 18px
-			white-space initial
+			white-space normal
 </style>

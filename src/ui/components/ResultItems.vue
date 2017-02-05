@@ -206,7 +206,7 @@ export default {
             +below(950px)
                 lost-column 1/1 1
 			&.blur
-				-webkit-filter blur(5px)
+				-webkit-filter blur(5px) !important
 				filter url('assets/blur.svg#blur')
 				filter blur(5px)
         &.single-line
