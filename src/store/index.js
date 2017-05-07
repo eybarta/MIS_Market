@@ -3,13 +3,16 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import * as actions from './actions';
 
-import { categories} from './test-categories';
-import { itemGenerator } from './test-items';
-
-
 Vue.use(Vuex);
 
+import { categories} from './test-categories';
+import { itemGenerator } from './test-items';
+// import * as api from './api';
+
+// let categories = api.getCategories();
 let items = itemGenerator(1200);
+
+console.log("CATEGORIES >> ", categories);
 
 const itemsFilterString = '';
 const cart = {
@@ -17,7 +20,7 @@ const cart = {
 	subtotal:0
 };
 const state = {
-	categories,
+	categories: categories,
 	items,
 	itemsFilterString,
 	itemInLimbo: null,

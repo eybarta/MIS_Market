@@ -48,28 +48,17 @@ const rules = [
 					loaders: {
 						css: ExtractTextPlugin.extract({
 							  loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
-							  fallbackLoader: 'style-loader',
-								// resolve: {
-								// 	alias: {
-								// 		'assets': path.resolve(__dirname,'dist'),
-								// 	}
-								// }
-								
-								
+							  fallbackLoader: 'style-loader',								
 						}),
 					},
 				}
 			},
 			{
 				test: /\.styl$/,
-				// exclude: [/node_modules/],
-				// loader: 'stylus-loader',
 				use: ExtractTextPlugin.extract({
-								loader: 'css-loader!stylus-loader',
-								fallbackLoader:'style-loader'
-							})
-				
-			
+					loader: 'css-loader!stylus-loader',
+					fallbackLoader:'style-loader'
+				})
 			},
 			{
 				test: /\.js$/,
@@ -122,10 +111,10 @@ if (isProduction) {
         evaluate: true,
         if_return: true,
         join_vars: true,
-				drop_console: true
+				drop_console: false
       },
       output: {
-        comments: false,
+        comments: true,
       },
     })
   );

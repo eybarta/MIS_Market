@@ -75,22 +75,17 @@ export default {
 
         },
         bindFirstLastToPager() {
-            console.log(this.$refs.pager.numberOfPages);
+            let vm = this;
             let $pager = $(this.$refs.pager.$el),
                 $first = $("<li class='first-page disabled'><a>First</a></li>"),
                 $last = $("<li class='last-page'><a>Last</a></li>");
 
+            // FIRST / LAST (zero based)
             $first.on('click', () => {
-                console.log("1 >> ", this.$refs.pager.currentPage);
-                // $pager.find('.number').eq(0).find('a').trigger('click');
-                // $pager.find('.number').get(0).click();
-                this.$set(this.$refs.pager, 'currentPage', 1);
-                this.$refs.pager.currentPage = 1;
-                console.log("2 >> ",this.$refs.pager.currentPage);
-                
+                vm.paginate['items'].page = 0;
             })
             $last.on('click', () => {
-                console.log('goto last page');
+                vm.paginate['items'].page = vm.$refs.pager.numberOfPages-1;
             })
             $pager.prepend($first)
             $pager.append($last);
