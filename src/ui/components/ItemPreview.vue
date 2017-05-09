@@ -237,14 +237,14 @@ export default {
                     width 28%
                     padding-top 25%
                 span
-                    @extend $sharpen
+                    // @extend $sharpen
                     opacity 0
                     position absolute
                     bottom -25px
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase
-                    font-size 13px
+                    font-size 14px
                     white-space nowrap
                     transition opacity 0.5s ease-out-circ
                     backface-visibility hidden

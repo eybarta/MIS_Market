@@ -68,7 +68,7 @@ const rules = [
 			  {
 					test: /\.(eot|ttf|woff|svg)$/,
 					loader: 'ignore-file-loader',
-
+	        include: [/fonts/],
 					options: {						
 						name: '../fonts/[name].[ext]?[hash]'
 					}
@@ -76,8 +76,7 @@ const rules = [
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{
 				test: /\.(png|jpg|gif|svg)$/,
-				loader: 'url-loader?limit=5000&name=img/img-[hash:6].[ext]',
-				
+				loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/',
 			},
 ]
 if (isProduction) {

@@ -112,6 +112,9 @@ export default {
     @media (max-width:breaks.small)
         padding-right 5%
         padding-left 5%
+    @media (min-width:1024px), (max-height:769px)
+        padding-right 18%
+        padding-left 18%
     .title
         h4
             @extend $zero
@@ -153,9 +156,12 @@ export default {
                     a
                         @extend $inline-mid
                         fontsizer(16px, 20px)
+                        transition color 200ms ease
                         i
                             fontsizer(30px, 40px)
                             margin-right 10px
+                        &:hover
+                            color #01cefd
                             
         & > .actions
                 width 24.5%
@@ -184,6 +190,10 @@ export default {
                     display block
                 button
                     margin-top 40%
-                    width 100%                
+                    width 100%   
+                    transition color 300ms ease, background 300ms ease
+                    &:hover
+                        color #01cefd
+                        background rgba(#01cefd, 0.01)             
 
 </style>

@@ -23,13 +23,11 @@ export default {
     padding 0 0 0 2%
     margin 0
     list-style none
-    opacity 0.7
-    transition opacity 200ms ease
-    &:hover
-        opacity 1
     li
+        opacity 0.7
         display inline-block
         margin-right 3px
+        transition opacity 200ms ease
         a
             height 100%
             display inline-block
@@ -52,4 +50,7 @@ export default {
                 color #646d71
                 cursor default
                 pointer-events none
+    &:hover
+        li:not(:last-child)
+            opacity 1
 </style>

@@ -1,8 +1,6 @@
 <template>
 	<div class="topbar">
 		<router-link class="logo" to="/">
-			<i class="icon-logo"></i>
-			<span>MARKETCASE</span>
 		</router-link>
 	</div>
 </template>
@@ -22,7 +20,6 @@
 	display inline-block
 	vertical-align middle
 	line-height 1
-	
 .topbar
 	position fixed
 	top 0
@@ -35,6 +32,9 @@
 		color #fff
 		float left
 		line-height 47px
+		height 100%
+		width 240px
+		background url('./assets/logo.svg') no-repeat 0 50%
 		i
 			@extend .inmid
 			@extend .gradient1

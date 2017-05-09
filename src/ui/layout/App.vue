@@ -1,5 +1,5 @@
 <template>
-	<div class="app-wrap">
+	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '']">
 		<top-bar></top-bar>
 		<router-view></router-view>
 		<footer>
@@ -8,6 +8,7 @@
 	</div>
 </template>
 <script>
+import {mapState} from 'vuex';
 import TopBar from './partials/TopBar.vue';
 export default {
 	created() {
@@ -15,6 +16,11 @@ export default {
 	},
 	components: {
 		TopBar,
+	},
+	computed: {
+		...mapState([
+			'overlay'
+		])
 	}
 }
 </script>
@@ -22,6 +28,9 @@ export default {
 .app-wrap
 	height 100%
 	min-width 768px
+	&.overlayed
+		height 100vh
+		overflow hidden
 	&:after
 		content ''
 		display table

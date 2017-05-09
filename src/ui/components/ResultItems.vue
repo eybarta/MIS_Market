@@ -15,7 +15,7 @@
                     @leave="leave"
                     mode="out-in">
                     <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', overlay.active ? 'blur' : '']">
-                        <item-preview type="result" :item="item" size="big" :actions="['open','plus','images']" :draggable="true"></item-preview>
+                        <item-preview type="result" :item="item" size="big" :actions="['open','plus']" :draggable="true"></item-preview>
                     </li>
                 </transition-group>
             </paginate>
