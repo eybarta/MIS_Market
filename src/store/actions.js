@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import * as types from './mutation-types';
 
 var shelfTimer = 0;
@@ -18,9 +19,10 @@ export const hideOverlay = async ({commit}) => {
     commit('HIDE_OVERLAY');
 }
 
-export const toggleShelf = async ({commit}, type) => {
+export const toggleShelf = async ({commit, dispatch}, type) => {
+    console.log("TOGGLE SHELF");
+    dispatch('bindCartMouseMove');
     clearTimeout(shelfTimer);
-    
     type = (!!type && typeof type==='string') ? type : 'cart';
     commit('TOGGLE_SHELF', type);
      return new Promise((resolve, reject) => {
@@ -35,9 +37,11 @@ export const changeShelfType =  ({commit}, type) => {
 }
 export const showShelf = async ({commit, dispatch}) => {
     console.log("SHOW SHELF");
+    dispatch('bindCartMouseMove');
     commit('SHOW_SHELF', await dispatch('hideOverlay'));
     return new Promise((resolve, reject) => {
         setTimeout(() => {
+            
             resolve()
         }, 400)
     })
@@ -72,10 +76,6 @@ export const addToCart = async ({commit, dispatch}, item) => {
     item.amount = (!!item.amount) ? item.amount : 1;
     commit('ADD_TO_CART', item);
     dispatch('showShelf');
-    clearTimeout(shelfTimer);
-    shelfTimer = setTimeout(function() {
-        dispatch('hideShelf')
-    },3000)
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);
@@ -94,4 +94,23 @@ export const openItem = async({commit, dispatch}, item) => {
 
 export const updateItemSize = ({commit}, size) => {
     commit('UPDATE_ITEM_SIZE', size);
+}
+
+export const bindCartMouseMove = ({commit, dispatch}) => {
+    console.log("BIND CART MOVE");
+    clearTimeout(shelfTimer);
+    $('#cartWrap').off();
+    setTimeout(function() {
+        $('#cartWrap').on('mouseenter mouseleave', function(e) {
+            console.log("event > ", e.type);
+            if (e.type==='mouseleave') {
+                shelfTimer = setTimeout(function() {
+                    dispatch('hideShelf');
+                }, 3500)
+            }
+            else {
+                clearTimeout(shelfTimer);
+            }
+        })
+    }, 500)
 }

@@ -89,9 +89,8 @@ export default {
                 case 'plus':
                     this.addToCart(this.item);
                     break;
-                case 'images':
-                    return 'Go to Images';
-                    break;
+                // case 'images':
+                //     return 'Go to Images';
                 case 'remove':
                     this.removeFromCart(this.item);
                     break;

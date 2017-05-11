@@ -1,5 +1,5 @@
 <template>
-    <div class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
+    <div id="cartWrap" class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
         <div v-show="items.length>0" class="cart">
             <transition name="slide-fade-down" mode="out-in" appear>
                 <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">

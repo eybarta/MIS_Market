@@ -33,7 +33,7 @@ const plugins = [
 	// 		  preferPathResolver: 'webpack',
 	// 		}
 	// 		),		
-	
+		
 		new ExtractTextPlugin("css/style.css")
 
 ]
