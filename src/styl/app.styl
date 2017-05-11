@@ -13,7 +13,7 @@ body
 // COMMON STYLES
 a,button
 	&:focus, &:active
-		outline 0
+		outline 0 !important
 	&:visited, &:link, &:-webkit-any-link
 		color #fff
 .backdrop
@@ -38,6 +38,10 @@ a,button
 	cursor pointer
 	white-space nowrap
 	letter-spacing 1px
+	transition color 300ms ease, background 300ms ease
+	&:hover
+		color #01cefd
+		background rgba(#01cefd, 0.01)             
 	@media (max-width:breaks.small)
 		padding 0 15px
 .no-items h4, h4.no-items

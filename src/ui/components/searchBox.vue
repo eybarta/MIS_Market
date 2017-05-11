@@ -1,12 +1,12 @@
 <template>
 	<div class="search-box">
-		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @input="$emit('input', searchval)">
+		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @input="$emit('input', searchval)" @keyup.enter="search">
 		<i class="icon-search" @click="search"></i>
 	</div>
 </template>
 <script>
 	export default {
-		props: ['placeholder', 'value'],
+		props: ['placeholder', 'value', 'type'],
 		data() {
 			return {
 				searchval:''
@@ -14,7 +14,12 @@
 		},
 		methods: {
 			search() {
-				this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})
+				if (this.type==='intro') {
+					this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})
+				}
+				else {
+					this.$emit('input', this.searchval)
+				}
 			}
 		}
 	}

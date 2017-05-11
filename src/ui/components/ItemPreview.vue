@@ -5,6 +5,7 @@
                 <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
             <div class="item-info" v-if="!!info" @click="infoClickHandler">
+                <!--
                 <div class="info" v-text="'$'+item.price+' per unit'"></div>
                 <div class="info">Quantity:  <div ref="quant" contenteditable="true"
                     @focus="quantfocus=true"
@@ -14,6 +15,8 @@
                     @keyup.enter="updateItem($event, item)"
                     v-text="item.amount"></div>
                 </div>
+                -->
+                <div class="info" v-text="item.amount + (item.amount<2 ? ' item' : ' items')"></div>
             </div>
         </div>
         <div class='label'>
@@ -120,7 +123,7 @@ export default {
     },
     computed: {
         ...mapState([
-            'itemInLimbo'
+            'itemInLimbo',
         ]),
         previewImageStyle() {
             // IF item is in CART, remove image-preview from RESULTS item
@@ -147,7 +150,7 @@ export default {
     color darken(gray, 30)
 .item-preview
     .label
-        width 50%
+        width 45%
         text-align left
         margin 0 auto
         font-size 16px
@@ -157,6 +160,8 @@ export default {
         span:first-child
             display block
             margin-bottom 5px
+            &.item-mct
+                font-size 16px
     /.item-small + .label
             font-size 12px
     .item-preview-image
@@ -165,28 +170,32 @@ export default {
         background-size 105%
         background-repeat no-repeat
         border-radius 50%
-        overflow hidden
         margin 0 auto
         box-shadow: inset 2px 2px 8px rgba(0,0,0,0.2)
         background-color: #2e2e2e;
-        &.item-big
-            width 394px
-            height @width
-            +below(1700px)
-                width 354px
+        &.item
+            &-big
+                width 274px
                 height @width
-            +below(1600px)
+            &-huge
                 width 394px
                 height @width
-            +below(1400px)
-                width 354px
-                height @width
-            +below(1200px)
-                width 394px
-                height @width
-        &.item-small
-            width 198px
-            height @width
+                +below(1700px)
+                    width 354px
+                    height @width
+                +below(1600px)
+                    width 394px
+                    height @width
+                +below(1400px)
+                    width 354px
+                    height @width
+                +below(1200px)
+                    width 394px
+                    height @width
+            &-small
+                width 197px
+                height 198px
+                background-size 102%
         .item-info
             opacity 0
             transition opacity 0.5s ease-out-circ
@@ -230,6 +239,10 @@ export default {
                 cursor pointer
                 /.item-big .action
                     fontsizer(18px, 28px)
+                    width 22%
+                    padding-top 20%
+                /.item-huge .action
+                    fontsizer(18px, 28px)
                     width 21%
                     padding-top 20%
                 /.item-small .action
@@ -244,10 +257,9 @@ export default {
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase
-                    font-size 14px
+                    font-size 13px
                     white-space nowrap
-                    transition opacity 0.5s ease-out-circ
-                    backface-visibility hidden
+                    // transition opacity .3s ease-out
                 &::first-child
                     margin-left 0
                 &::last-child

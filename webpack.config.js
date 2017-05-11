@@ -76,7 +76,7 @@ const rules = [
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{
 				test: /\.(png|jpg|gif|svg)$/,
-				loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/',
+				loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/&outputPath=img/',
 			},
 ]
 if (isProduction) {

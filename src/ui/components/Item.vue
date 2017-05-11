@@ -191,9 +191,5 @@ export default {
                 button
                     margin-top 40%
                     width 100%   
-                    transition color 300ms ease, background 300ms ease
-                    &:hover
-                        color #01cefd
-                        background rgba(#01cefd, 0.01)             
 
 </style>

@@ -26,7 +26,7 @@ export default {
 </script>
 <style lang="stylus">
 .app-wrap
-	height 100%
+	height calc(100% - 36px)
 	min-width 768px
 	&.overlayed
 		height 100vh
@@ -47,4 +47,7 @@ footer
 		font-size 12px
 		color #bcbcbd
 		opacity 0.5
+.home + footer
+	background darken(#4b4b4b, 5)
+	height 36px
 </style>

@@ -1,6 +1,6 @@
 <template>
 	<div class="intro">
-		<search-box placeholder="FIND THE FORCE"></search-box>
+		<search-box placeholder="FIND THE FORCE" type="intro"></search-box>
 		
 		<bg-slider :imglist="images"></bg-slider>
 	</div>
@@ -27,6 +27,6 @@ export default {
 .intro
 	lost-align center
 	width 100%
-	height calc(100% - 372px)
+	height calc(100% - 260px)
 	background-color #002d56
 </style>

@@ -21,6 +21,7 @@ const cart = {
 };
 const state = {
 	categories: categories,
+	itemsize: 'big',
 	items,
 	itemsFilterString,
 	itemInLimbo: null,
@@ -83,6 +84,9 @@ const mutations = {
 		*/
 		state.overlay.data = item;
 	},
+	UPDATE_ITEM_SIZE(state, size) {
+		state.itemsize = size;
+	},
 	ADD_TO_CART(state, item) {
 		/*
 			Find source of item, add it to cart.
@@ -137,11 +141,12 @@ const getters = {
 	},
 	// RETURN FILTERED ITEMS BY CATEGORY  &&  SEARCH IF EXISTS
 	filteredItems: (state, getters) => {
-		let search_filter = state.route.params.searchFilter;
+		let search_filter = state.route.params.searchFilter;// || state.route.params.rootFilter;
+		console.log("SEARCHFILTER >> ", search_filter);
 		if (!!search_filter) {
 			let counter = 0;
 			return _.filter(state.items, function(item) {
-				let item_string = item.name+item.catNo.toLowerCase();
+				let item_string = (item.name+item.catNo).toLowerCase();
 				let filter = search_filter.toLowerCase();
 				return item_string.indexOf(filter)>-1;
 			})

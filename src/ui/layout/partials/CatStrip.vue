@@ -22,7 +22,7 @@ export default {
 <style lang="stylus">
 .cat-strip
 	width 100%
-	height 372px
+	height 260px
 	background #4b4b4b
 	white-space nowrap
 	& > div
@@ -36,7 +36,7 @@ export default {
 		display inline-block
 		vertical-align middle
 		width 360px
-		height 278px
+		height 198px
 		padding 0 70px 0 48px
 		text-align left
 		&::before

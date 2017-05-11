@@ -14,13 +14,13 @@
                     @enter="enter"
                     @leave="leave"
                     mode="out-in">
-                    <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', overlay.active ? 'blur' : '']">
-                        <item-preview type="result" :item="item" size="big" :actions="['open','plus']" :draggable="true"></item-preview>
+                    <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
+                        <item-preview type="result" :item="item" :size="itemsize" :actions="['open','plus']" :draggable="true"></item-preview>
                     </li>
                 </transition-group>
             </paginate>
         <div class="pager" v-if="items.length > itemsPerPage">
-	        <paginate-links ref="pager" for="items" :limit="4" 
+	        <paginate-links id="pager" ref="pager" for="items" :limit="4" 
             @change="onLangsPageChange"
             :show-step-links="true"
             :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
@@ -40,7 +40,7 @@ export default {
     data() {
         return {
             paginate: ['items'],
-            itemsPerPage: 32,
+            itemsPerPage: 24,
             cartzone: -1
         }
     },
@@ -64,22 +64,28 @@ export default {
             }, 800)
            
 
-            let $pager = $(this.$refs.pager.$el);
+            let $pager = $("#pager");
             $pager.find('.first-page, .last-page').removeClass('disabled');
             if (toPage===1) {
                 $pager.find('.first-page').addClass('disabled');
             }
             else if (toPage===this.$refs.pager.numberOfPages) {
                 $pager.find('.last-page').addClass('disabled');
+                this.$nextTick(function() {
+                    $pager.find('.last-page').insertAfter(".right-arrow")
+                })
+                
             }
 
         },
         bindFirstLastToPager() {
             let vm = this;
-            let $pager = $(this.$refs.pager.$el),
+            let $pager = $("#pager"),
                 $first = $("<li class='first-page disabled'><a>First</a></li>"),
                 $last = $("<li class='last-page'><a>Last</a></li>");
 
+            console.log("pager > ", $pager);
+            
             // FIRST / LAST (zero based)
             $first.on('click', () => {
                 vm.paginate['items'].page = 0;
@@ -89,6 +95,7 @@ export default {
             })
             $pager.prepend($first)
             $pager.append($last);
+            
         },
 		beforeEnter: function (el) {
 			$(el).css({
@@ -119,7 +126,8 @@ export default {
     },
     computed: {
         ...mapState([
-			'overlay'
+			'overlay',
+            'itemsize'
 		]),
         singleLine() {
             return this.paginated('items').length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
@@ -188,18 +196,33 @@ export default {
         transform translate3d(0,0,0)
         backface-visibility hidden
 		.item
-            lost-column 1/4 4
+            lost-column 1/6 6
             position relative
             list-style none
             text-align center
             margin-bottom 45px
             transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
+            +below(1800px)
+                lost-column 1/5 5
             +below(1600px)
-                lost-column 1/3 3
+                lost-column 1/4 4
             +below(1200px)
-                lost-column 1/2 2
+                lost-column 1/3 3
             +below(950px)
-                lost-column 1/1 1
+                lost-column 1/2 2
+            &.huge-item
+                lost-column 1/4 4
+                position relative
+                list-style none
+                text-align center
+                margin-bottom 45px
+                transition transform 600ms ease-out-circ, filter 200ms ease, -webkit-filter 200ms ease
+                +below(1600px)
+                    lost-column 1/3 3
+                +below(1200px)
+                    lost-column 1/2 2
+                +below(950px)
+                    lost-column 1/1 1
 			&.blur
 				-webkit-filter blur(5px) !important
 				filter url('assets/blur.svg#blur')

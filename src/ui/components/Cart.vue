@@ -1,12 +1,12 @@
 <template>
     <div class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
         <div v-show="items.length>0" class="cart">
-            <transition name="slide-fade" mode="out-in" appear>
+            <transition name="slide-fade-down" mode="out-in" appear>
                 <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">
                     <swiper ref="swiper" :options="swiperOptions">
                         <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
                             <transition name="slide-fade" mode="out-in" appear> 
-                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="['$'+item.price+' per unit', 'Quantity: ' + item.amount]" :draggable="false"></item-preview>
+                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="[item.amount + ' items']" :draggable="false"></item-preview>
                             </transition>
                         </swiper-slide>
                     </swiper>
@@ -239,9 +239,9 @@ export default {
 @import '~settings';
 
 .slide-fade-enter-active
-    transition all .6s ease-out-back
+    transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
 .slide-fade-leave-active
-    transition all .2s ease-in-back
+    transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
 .slide-fade-enter
     transform translateX(-120%)
     opacity 0
@@ -252,6 +252,22 @@ export default {
 .slide-fade-enter-to, .slide-fade-leave
     transform translateX(0)
     opacity 1
+
+.slide-fade-down-enter-active
+    transition transform 500ms cubic-bezier(0.125, 0.585, 0.22, 1.1), opacity 200ms ease-out
+.slide-fade-down-leave-active
+    transition transform 300ms cubic-bezier(0.125, 0.585, 0.22, 1.1), opacity 200ms ease-out
+.slide-fade-down-enter
+    transform translate(-80%,0)
+    opacity 0
+.slide-fade-down-leave-to
+    transform translate(-80%, 0)
+    opacity 0
+    
+.slide-fade-down-enter-to, .slide-fade-down-leave
+    transform translate(0,0)
+    opacity 1
+
 
 .wider
     width calc(97% - 500px)
@@ -266,6 +282,7 @@ export default {
 .cart-wrap
     height 100%
     min-width 768px
+    overflow hidden
     @extend $inline-mid
     .back-link
         position absolute

@@ -62,9 +62,10 @@ export default {
 		},
 		items() {
             let filter = this.itemsFilterString;
+			console.log(" >> ", filter);
             if (!!filter) {
                 return _.filter(this.filteredItems, item => {
-				    let item_string = item.name+item.catNo.toLowerCase();
+				    let item_string = (item.name+item.catNo).toLowerCase();
 				    return item_string.indexOf(filter)>-1;
                 })
             }

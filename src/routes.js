@@ -11,7 +11,7 @@ import Results from './ui/layout/pages/Results.vue';
 
 const routes = [
 	{ 
-		path: '/results',
+		path: '/categories',
 		component: Results,
 		children: [
 			{
@@ -31,12 +31,14 @@ const routes = [
 					}
 				]
 			},
-			{
-				path: ':searchFilter',
-				name: 'results-search'
-			}
+			
 
 		]
+	},
+	{
+		path: '/results/:searchFilter',
+		name: 'results-search',
+		component: Results
 	},
 	{ path: '/', component:Home, name: 'home'},
 	

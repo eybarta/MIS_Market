@@ -22,23 +22,23 @@ export default {
 	data() {
 		return {
 			swiperOption: {
-				pagination: '.swiper-pagination',
+				// pagination: '.swiper-pagination',
 				slidesPerView: 6,
-				spaceBetween: 15,
+				spaceBetween: 45,
 				freeMode: true,
 				preventClicks: false,
 				breakpoints: {
 					1600: {
-						slidesPerView: 5,
+						slidesPerView: 5.5,
 					},
 					1400: {
-						slidesPerView: 4,
+						slidesPerView: 4.5,
 					},
 					1272: {
-						slidesPerView: 3,
+						slidesPerView: 3.5,
 					},
 					1040: {
-						slidesPerView: 2,
+						slidesPerView: 2.5,
 						spaceBetween: 10
 					}
 				}
@@ -61,14 +61,13 @@ export default {
 	vertical-align middle
 	white-space nowrap
 	width calc(100% - 364px)
-	height 300px
+	height 240px
 	position relative
 	border-right 2px solid rgba(#6f6f6f, 0.9)
 	overflow hidden
 	.swiper-container
 		top 50%
 		transform translateY(-50%)
-		height 100%
 		width 95%
 		overflow visible
 		.swiper-wrapper
@@ -86,6 +85,8 @@ export default {
 		display inline-block
 		margin-right 12px
 		text-align center
+		img
+			width 100%
 		span
 			display block
 			color #bcbcbd

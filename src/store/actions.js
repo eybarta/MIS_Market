@@ -1,5 +1,7 @@
 import * as types from './mutation-types';
 
+var shelfTimer = 0;
+
 export const toggleOverlay = async ({commit, dispatch}, type) => {
      commit('TOGGLE_OVERLAY', type, await dispatch('hideShelf'));
      return new Promise((resolve, reject) => {
@@ -17,6 +19,8 @@ export const hideOverlay = async ({commit}) => {
 }
 
 export const toggleShelf = async ({commit}, type) => {
+    clearTimeout(shelfTimer);
+    
     type = (!!type && typeof type==='string') ? type : 'cart';
     commit('TOGGLE_SHELF', type);
      return new Promise((resolve, reject) => {
@@ -26,6 +30,7 @@ export const toggleShelf = async ({commit}, type) => {
      })
 }
 export const changeShelfType =  ({commit}, type) => {
+    clearTimeout(shelfTimer);
     commit('CHANGE_SHELF_TYPE', type);
 }
 export const showShelf = async ({commit, dispatch}) => {
@@ -47,6 +52,7 @@ export const hideShelf = async ({commit}, animate) => {
 }
 
 export const searchFilterString = ({commit}, filter_string) => {
+    console.log("action update>> searchFilterString >> ", filter_string)
     commit('SEARCH_FILTER_STRING', filter_string);
 }
 
@@ -66,6 +72,10 @@ export const addToCart = async ({commit, dispatch}, item) => {
     item.amount = (!!item.amount) ? item.amount : 1;
     commit('ADD_TO_CART', item);
     dispatch('showShelf');
+    clearTimeout(shelfTimer);
+    shelfTimer = setTimeout(function() {
+        dispatch('hideShelf')
+    },3000)
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);
@@ -82,3 +92,6 @@ export const openItem = async({commit, dispatch}, item) => {
     dispatch('showOverlay', 'item');
 }
 
+export const updateItemSize = ({commit}, size) => {
+    commit('UPDATE_ITEM_SIZE', size);
+}
