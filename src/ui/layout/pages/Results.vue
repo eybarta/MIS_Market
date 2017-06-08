@@ -4,14 +4,25 @@
 		<shelf></shelf>
 		<div class="content">
 			<bread-crumbs></bread-crumbs>
-			<span class="total-label">Total: <count-up 
-					:start="0"
-					:end="totalResults"
-					:decimals="0"
-					:duration="3"
-					:options="countOptions"
-					:callback="afterCount"></count-up> results</span>
-
+			<div class="results-options">
+				<span class="item-size">Item size:
+					<button :class="[itemsize==='big' ? 'active' : '']" @click="updateItemSize('big')">
+						<span class="circles small"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+						<span>Small</span>
+					</button>
+					<button :class="[itemsize==='huge' ? 'active' : '']" @click="updateItemSize('huge')">
+						<span class="circles big"><i></i><i></i><i></i><i></i></span>
+						<span>Big</span>
+					</button>
+				</span>
+				<span class="total-label">Total: <count-up 
+						:start="0"
+						:end="totalResults"
+						:decimals="0"
+						:duration="3"
+						:options="countOptions"
+						:callback="afterCount"></count-up> results</span>
+			</div>
 			<result-items :items="items"></result-items>
 		</div>
 	</div>
@@ -44,7 +55,8 @@ export default {
 	},
 	methods:{
 		...mapActions([
-			'hideOverlay'
+			'hideOverlay',
+			'updateItemSize'
 		]),
 		afterCount() {
 			console.log("counter callback called");
@@ -52,7 +64,8 @@ export default {
 	},
 	computed: {
 		...mapState([
-			'itemsFilterString'
+			'itemsFilterString',
+			'itemsize'
 		]),
 		...mapGetters([
 			'filteredItems'
@@ -82,7 +95,7 @@ export default {
 
 .results
 	padding-top 49px
-	min-height calc(100% - 78px)
+	min-height calc(100% - 42px)
 	background #061016 url('assets/main-bg.jpg') repeat-x 0 bottom
 	color #fff
 	position relative
@@ -92,8 +105,47 @@ export default {
 		transition margin-top 460ms ease-out-cubic
 	.active + .content
 		margin-top 625px
-	.total-label
+	.results-options
 		position absolute 0 2% false false
+		.item-size
+			display inline-block
+			color rgba(#fff, 0.4)
+			border-right 1px solid rgba(#fff, 0.4)
+			margin-right 10px
+			button
+				display inline-block
+				opacity 0.4
+				color #fff
+				font-size 13px
+				vertical-align bottom
+				text-align left
+				padding-right 14px
+				&:first-child
+					padding-left 10px
+				&.active
+					opacity 1
+				span
+					font-size 12px
+					i
+						background #fff
+						display inline-block
+					&.small i				
+						width 6px
+						height @width
+						border-radius unit(@width/2, 'px')
+						margin-right unit(@width/3, 'px')
+					&.big i
+						width 9px
+						height @width
+						border-radius unit(@width/2, 'px')
+						margin-right unit(@width/3, 'px')
+					& + span
+						display block
+						padding-top 6px
+							
+
+
+	.total-label
 		font-size 13px
 		color rgba(#fff, 0.4)
 	ul.breadcrumbs

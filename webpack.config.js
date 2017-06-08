@@ -21,6 +21,13 @@ const buildPath = path.join(__dirname, './dist');
 
 
 const plugins = [
+	new webpack.LoaderOptionsPlugin({
+    options: {
+      stylus: {
+        use: [poststylus([ 'autoprefixer', 'rucksack-css' ])]
+      }
+    }
+  }),
 	// new webpack.LoaderOptionsPlugin(
 	// 		{
 	// 		test: /\.styl$/,
@@ -64,14 +71,14 @@ const rules = [
 				test: /\.js$/,
 				loader: 'babel-loader',
 				exclude: /node_modules/
-			  },
-			  {
+			},
+			{
 					test: /\.(eot|ttf|woff|svg)$/,
-					loader: 'ignore-file-loader',
+					loader: 'file-loader?name=font-[hash:6].[ext]&publicPath=../../dist/fonts/&outputPath=fonts/',
 	        include: [/fonts/],
-					options: {						
-						name: '../fonts/[name].[ext]?[hash]'
-					}
+					// options: {						
+					// 	name: '../fonts/[name].[ext]?[hash]'
+					// }
 			},
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{
@@ -110,10 +117,10 @@ if (isProduction) {
         evaluate: true,
         if_return: true,
         join_vars: true,
-				drop_console: false
+				drop_console: true
       },
       output: {
-        comments: true,
+        comments: false,
       },
     })
   );

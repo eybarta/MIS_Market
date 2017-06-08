@@ -1,70 +1,75 @@
 <template>
-    <div id="cartWrap" class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
-        <div v-show="items.length>0" class="cart">
-            <transition name="slide-fade-down" mode="out-in" appear>
-                <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">
-                    <swiper ref="swiper" :options="swiperOptions">
-                        <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
-                            <transition name="slide-fade" mode="out-in" appear> 
-                                <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="[item.amount + ' items']" :draggable="false"></item-preview>
-                            </transition>
-                        </swiper-slide>
-                    </swiper>
+    <div class="h100">
+        <div v-if="shelf.type==='confirm'">
+            <h5 class="thanku"><img src="./assets/thankyou.svg"></h5>
+        </div>
+        <div v-else id="cartWrap" class="cart-wrap" :class="[items.length<1 ? 'no-items' : 'has-items', shelf.type=='checkout' ? 'checkout' : '']">
+            <div v-show="items.length>0" class="cart">
+                <transition name="slide-fade-down" mode="out-in" appear>
+                    <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">
+                        <swiper ref="swiper" :options="swiperOptions">
+                            <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
+                                <transition name="slide-fade" mode="out-in" appear> 
+                                    <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="[item.amount + ' items']" :draggable="false"></item-preview>
+                                </transition>
+                            </swiper-slide>
+                        </swiper>
+                    </div>
+                    <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
+                    <ul>
+                        <li v-for="status in checkoutStatus">
+                        <div class="circle-item">
+                                <count-up 
+                                    :start="0"
+                                    :end="status.amount"
+                                    :decimals="0"
+                                    :duration="4"
+                                    :options="countOptions"></count-up>
+                        </div> 
+                        <span class="label">{{status.label}}</span>
+                        </li>
+                    </ul>
                 </div>
-                <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
-                <ul>
-                    <li v-for="status in checkoutStatus">
-                       <div class="circle-item">
-                            <count-up 
-                                :start="0"
-                                :end="status.amount"
-                                :decimals="0"
-                                :duration="4"
-                                :options="countOptions"></count-up>
-                       </div> 
-                       <span class="label">{{status.label}}</span>
-                    </li>
-                </ul>
-            </div>
-            </transition>
-            <div class="cart-info">
-                <div class="subtotal">
-                    <div>
-                        <h5>SUBTOTAL</h5>
-                        <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="0" :duration="1" :options="countOptions"></count-up></div>
+                </transition>
+                <div class="cart-info">
+                    <div class="subtotal">
+                        <div>
+                            <h5>SUBTOTAL</h5>
+                            <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="0" :duration="1" :options="countOptions"></count-up></div>
+                        </div>
+                    </div>
+                    <div class="cart-actions">
+                        <button class="btn" @click="buttonClickHandler">{{shelf.type==='cart' ? 'CHECKOUT' : 'PROCEED TO CONFIRMATION'}}</button>
+                        <a href="#p" v-if="shelf.type=='checkout'" class="continue" @click.prevent="toggleShelf">CONTINUE SHOPPING</a>
                     </div>
                 </div>
-                <div class="cart-actions">
-                    <button class="btn" @click="changeShelfType('checkout')">{{shelf.type==='cart' ? 'CHECKOUT' : 'PROCEED TO CONFIRMATION'}}</button>
-                    <a href="#p" v-if="shelf.type=='checkout'" class="continue" @click.prevent="toggleShelf">CONTINUE SHOPPING</a>
-                </div>
             </div>
+            <h4 v-show="items.length<1" class="not-me">There's no items in your cart.</h4>
+            <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
+
+            <h3 v-if="items.length>0" class="not-me">
+                <i class="icon-cart">
+                    <span class="icon-wrap">
+                        <i class="icon-cart-items"></i>
+                    </span>
+                </i>
+                <vue-typer
+                    :text='[cartLabel]'
+                    :repeat='0'
+                    :shuffle='false'
+                    :initial-action='typeAction'
+                    :pre-type-delay='420'
+                    :type-delay='30'
+                    :pre-erase-delay='100'
+                    :erase-delay='250'
+                    erase-style='select-back'
+                    :erase-on-complete='false'
+                    caret-animation='blink'
+                ></vue-typer>
+            </h3>
         </div>
-        <h4 v-show="items.length<1" class="not-me">There's no items in your cart.</h4>
-        <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
 
-        <h3 v-if="items.length>0" class="not-me">
-            <i class="icon-cart">
-                <span class="icon-wrap">
-                    <i class="icon-cart-items"></i>
-                </span>
-            </i>
-            <vue-typer
-                :text='[cartLabel]'
-                :repeat='0'
-                :shuffle='false'
-                :initial-action='typeAction'
-                :pre-type-delay='420'
-                :type-delay='30'
-                :pre-erase-delay='100'
-                :erase-delay='250'
-                erase-style='select-back'
-                :erase-on-complete='false'
-                caret-animation='blink'
-            ></vue-typer>
-        </h3>
     </div>
-
 </template>
 <script>
 import $ from 'jquery'
@@ -118,7 +123,7 @@ export default {
 						slidesPerView: 2.5,
 					},
 					1040: {
-						slidesPerView: 1.5,
+						slidesPerView: 2.5,
 					}                    
 				}
             },
@@ -149,6 +154,19 @@ export default {
             'updateItemInLimbo',
             'addToCart'
         ]),
+        buttonClickHandler() {
+            if (this.shelf.type==='checkout') {
+                this.confirm();
+            }
+            else {
+                this.changeShelfType('checkout')
+            }
+            
+        },
+        confirm() {
+            console.log("CONFIRM ORDER AND SHOW THANKYOU");
+            this.changeShelfType('confirm')
+        },
         itemDropped(e) {
                 console.log('item dropped', e);
             
@@ -279,6 +297,13 @@ export default {
     opacity 0.7
     .typed
         color #fff !important
+
+.thanku
+    width 50%
+    position absolute
+    top 50%
+    left 50%
+    transform translate(-50%,-50%)
 .cart-wrap
     height 100%
     min-width 768px
@@ -310,13 +335,18 @@ export default {
         color rgba(#fff, 0.7);
         text-align center
         position absolute
-        top 15%
+        top 10%
         left 5%
+        @media (max-width:breaks.small)
+            left 10%
+            font-size 26px
         & > i
             position relative
             font-size 70px
             color lightgray
             vertical-align sub
+            @media (max-width:breaks.small)
+                font-size 54px
             .icon-wrap
                 position: absolute;
                 left: 50%;
@@ -337,20 +367,19 @@ export default {
                     transition:top 400ms ease-out-back
     &:hover
         .icon-cart-items
-            animation: living 2s ease-out-back 2s infinite alternate;
+            animation: living 2s ease-out-back 2s 3 alternate;
             /.checkout .icon-cart-items
                 top 12px !important
     .cart
         width 100%
-        margin-top 10%
+        margin-top 7%
         @extend $inline-mid
         .cart-info
             @extend $inline-mid
             width 500px
             height 150px
-            @media (max-width:breaks.small) {
+            @media (max-width:breaks.small)
                 width 400px
-            }
             .subtotal
                 @extend $absolute-mid
                 height 100%

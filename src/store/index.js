@@ -1,18 +1,22 @@
 import _ from 'lodash';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueResource from 'vue-resource';
 import * as actions from './actions';
-
+// Vue.http.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:8080'
 Vue.use(Vuex);
+Vue.use(VueResource);
 
-import { categories} from './test-categories';
+// import { categories} from './test-categories';
 import { itemGenerator } from './test-items';
 // import * as api from './api';
 
-// let categories = api.getCategories();
+// let categories = async function() {
+// 	return await api.getCategories();
+// }
 let items = itemGenerator(1200);
 
-console.log("CATEGORIES >> ", categories);
+// console.log("CATEGORIES >> ", categories());
 
 const itemsFilterString = '';
 const cart = {
@@ -20,7 +24,7 @@ const cart = {
 	subtotal:0
 };
 const state = {
-	categories: categories,
+	categories: null,
 	itemsize: 'big',
 	items,
 	itemsFilterString,
@@ -42,6 +46,12 @@ const state = {
 }
 
 const mutations = {
+	// API
+	INIT_CATEGORIES (state, categories) {
+		console.log("INIT_CATEGORIES >> ", categories);
+		state.categories = categories;
+	},
+	// UI
 	TOGGLE_OVERLAY (state, type) {
 		state.overlay.active = !state.overlay.active;
 		state.overlay.type = (!!type) ? type : null;
@@ -126,10 +136,10 @@ const getters = {
 			let childrenMapIds = [];
 			let grandchildren = null;
 			if (!!obj.children) {
-				childrenMapIds = _.map(obj.children, 'id');
+				childrenMapIds = _.map(obj.children, 'Id');
 				grandchildren = _.filter(obj.children, 'children');
 				if (!!grandchildren.length) {
-					let grandIds = _.map(_.find(grandchildren, 'children').children, 'id');
+					let grandIds = _.map(_.find(grandchildren, 'children').children, 'Id');
 					childrenMapIds = _.union(childrenMapIds, grandIds);
 				}
 			}
@@ -168,7 +178,7 @@ const getters = {
 							filter_ids = [gChildCategory.id];
 					}
 					else {
-						filter_ids = _.concat(_.map(childCategory.children, 'id'), childCategory.id);
+						filter_ids = _.concat(_.map(childCategory.children, 'Id'), childCategory.id);
 					}
 				}
 				else {

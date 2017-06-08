@@ -106,15 +106,17 @@ export default {
 </script>
 <style lang="stylus">
 @import '~settings';
+@import '~rupture';
+
 .item-overview
     padding-right 15%
     padding-left 15%
-    @media (max-width:breaks.small)
-        padding-right 5%
-        padding-left 5%
     @media (min-width:1024px), (max-height:769px)
         padding-right 18%
         padding-left 18%
+    @media (max-width:breaks.small)
+        padding-right 5%
+        padding-left 5%
     .title
         h4
             @extend $zero
@@ -135,12 +137,17 @@ export default {
             vertical-align top
             min-height 54vh
             white-space normal
+            +below(1024px)
+                min-height 48vh
         & > :first-child
                 width 50%
                 .circle-item
                     margin 0
                     width 80%
-                    padding-top 80%
+                    padding-top @width
+                    +below(1024px)
+                        width 70%
+                        padding-top @width
         & > .extras
                 @extend $sharpen
                 fontsizer(14px, 18px)

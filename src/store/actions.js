@@ -1,8 +1,31 @@
 import $ from 'jquery'
-import * as types from './mutation-types';
+import Vue from 'vue'
+import * as types from './mutation-types'
+const GET_CATEGORIES = "./wsMain.asmx/GetCategories"
+const GET_ITEMS = "./wsMain.asmx?op=GetItems"
+
+
+
+
+// API ACTIONS
+export const initCategories = async ({commit, dispatch}, categories) => {
+    Vue.http.post(GET_CATEGORIES).then(response => {
+        if (!!response.body && !!response.body.d) {
+            let cats = JSON.parse(response.body.d);
+            _.each(cats, cat => cat.src='./dist/img/categories/'+cat.name.split(' ')[0].toLowerCase()+'.png');
+            commit('INIT_CATEGORIES', cats);
+        }
+        return response;
+    }, response => {
+        console.log('err > ', response);
+        return { 'err': response}
+    }, {headers: {'Access-Control-Allow-Origin': '*'}})
+    
+}
+
 
 var shelfTimer = 0;
-
+// UI ACTIONS
 export const toggleOverlay = async ({commit, dispatch}, type) => {
      commit('TOGGLE_OVERLAY', type, await dispatch('hideShelf'));
      return new Promise((resolve, reject) => {
@@ -98,19 +121,23 @@ export const updateItemSize = ({commit}, size) => {
 
 export const bindCartMouseMove = ({commit, dispatch}) => {
     console.log("BIND CART MOVE");
-    clearTimeout(shelfTimer);
-    $('#cartWrap').off();
-    setTimeout(function() {
-        $('#cartWrap').on('mouseenter mouseleave', function(e) {
-            console.log("event > ", e.type);
-            if (e.type==='mouseleave') {
-                shelfTimer = setTimeout(function() {
-                    dispatch('hideShelf');
-                }, 3500)
-            }
-            else {
-                clearTimeout(shelfTimer);
-            }
-        })
-    }, 500)
+    // clearTimeout(shelfTimer);
+    // $('#cartWrap').off();
+    // timedShelfClose(dispatch, 5500);
+    // setTimeout(function() {
+    //     $('#cartWrap').on('mouseenter mouseleave', function(e) {
+    //         console.log("event > ", e.type);
+    //         if (e.type==='mouseleave') {
+    //             timedShelfClose(dispatch, 3500);
+    //         }
+    //         else {
+    //             clearTimeout(shelfTimer);
+    //         }
+    //     })
+    // }, 500)
+    // function timedShelfClose(dispatch, time) {
+    //     shelfTimer = setTimeout(function() {
+    //         dispatch('hideShelf');
+    //     }, time)
+    // }
 }

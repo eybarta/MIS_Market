@@ -43,7 +43,8 @@ export default {
 .shelf-wrap
     position fixed
     margin-top 80px
-    height 500px
+    height 60vh
+    max-height 500px
     transform translateY(-100%)
     width 100%
     transition transform 400ms ease-out-back
@@ -52,7 +53,8 @@ export default {
         position absolute
         top 0
         width 100%
-        height 500px
+        height 60vh
+        max-height 500px
         background #2f2f2f
     .shelf-toggle
         cursor pointer

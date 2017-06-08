@@ -97,7 +97,11 @@ export default {
 			transform translate(0,-50%)
 			height 2px
 			background #2e2e2e
-			transition width 200ms ease-out, background-color 200ms ease
+			transition width 400ms ease-out-back, background-color 400ms ease
+		&:hover
+			border-color darken(blue, 10)
+			&:after
+				background darken(blue, 10)
 		&.active
 			color blue
 			border-color blue
@@ -107,4 +111,11 @@ export default {
 			&:after
 				width 120%
 				background-color blue
+			&:hover
+				border-color lighten(blue, 15)
+				&:after
+					transition width 400ms ease-out-back, background-color 400ms ease
+					background lighten(blue, 15)
+					width 135%
+			
 </style>

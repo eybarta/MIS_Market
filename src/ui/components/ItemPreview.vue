@@ -1,8 +1,8 @@
 <template>
     <div class="item-preview">
-        <div class="item-preview-image" :class="['item-'+size, quantfocus ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd">
-            <div class="item-actions" v-if="showActions">
-                <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+        <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart="toggleActionsForDevices($event)">
+            <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
+                <button v-for="action in actions" class="action" @click.stop="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
             <div class="item-info" v-if="!!info" @click="infoClickHandler">
                 <!--
@@ -17,7 +17,7 @@
                 </div>
                 -->
                 <div class="info" v-text="item.amount + (item.amount<2 ? ' item' : ' items')"></div>
-            </div>
+            </div> 
         </div>
         <div class='label'>
             <span class="item-mct">{{item.catNo}}</span>
@@ -36,12 +36,24 @@ export default {
     },
     data() {
         return {
-            quantfocus:false
+            quantfocus:false,
+            showActionsOnDevices: false
         }
     },
     methods: {
         quantChange(e, item) {
             item.amount =  this.$refs.quant.innerText.trim().replace(/\n /g, "")
+        },
+        toggleActionsForDevices(e) {
+            let vm = this;
+            console.log("toggle actions");
+            let t = e.target;
+            let isAction = !!$(t).parent("button.action").length || $(t).hasClass('action');
+            if (!!this.isTouchDevice) {
+                setTimeout(function() {
+                    vm.showActionsOnDevices = !vm.showActionsOnDevices;
+                },100)
+            }
         },
         updateItem(e, item) {
             if (!!e.key && /esc/gi.test(e.key)) {
@@ -62,21 +74,21 @@ export default {
             selectText(this.$refs.quant);
         },
         labelFor(action) {
+            let vm = this;
             switch(action) {
                 case 'open':
-                    return 'Show Details';
-                    break;
+                case 'view':
+                    return vm.isTouchDevice ? 'Details' : 'Show Details';
                 case 'plus':
                     return 'Add to Cart';
-                    break;
                 case 'images':
                     return 'Go to Images';
-                    break;
                 default: 
                     return '';
             }
         },
         actionHandler(action) {
+            console.log("handle action>> ", action);
             switch(action) {
                 case 'open':
                     this.openItem(this.item);
@@ -129,11 +141,18 @@ export default {
             return this.type!='cart' && this.item.inCart ? '' : 'background-image:url('+this.item.image+');';
         },
         showActions() {
-            return !this.isThisitemInLimbo && !!this.actions && (this.type=='cart' || !this.item.inCart)
+            return  (!this.isThisitemInLimbo && !!this.actions && (this.type=='cart' || !this.item.inCart))
+        },
+        activeActions() {
+            return !!this.isTouchDevice && !!this.showActionsOnDevices
         },
         isThisitemInLimbo() {
             return !!this.itemInLimbo && this.itemInLimbo.id==this.item.id;
-        }
+        },
+        isTouchDevice() {
+            return true //navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|BB10|Windows Phone|Tizen|Bada)/);
+        },
+        isIOSDevice() { return /iPad|iPhone|iPod/.test(navigator.platform)}
     }
 }
 </script>
@@ -161,6 +180,8 @@ export default {
             margin-bottom 5px
             &.item-mct
                 font-size 16px
+        .item-name
+            color lighten(#577892, 2)
     /.item-small + .label
             font-size 12px
     .item-preview-image
@@ -237,7 +258,7 @@ export default {
                 color #fff
                 cursor pointer
                 /.item-big .action
-                    fontsizer(18px, 28px)
+                    fontsizer(18px, 22px)
                     width 22%
                     padding-top 20%
                 /.item-huge .action
@@ -256,8 +277,10 @@ export default {
                     left 50%
                     transform translateX(-50%)
                     text-transform uppercase
-                    font-size 13px
+                    font-size 12px
                     white-space nowrap
+                /.active span
+                    opacity 1 !important
                     // transition opacity .3s ease-out
                 &::first-child
                     margin-left 0
@@ -268,7 +291,11 @@ export default {
                         color #03c6f3
                     span
                         opacity 1 
-        &:hover, &.active
-             .item-actions, .item-info
+        &.active
+            .item-actions, .item-info
                 opacity 1
+        +above(1025px)
+            &:hover
+                .item-actions, .item-info
+                    opacity 1
 </style>

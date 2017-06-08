@@ -13,7 +13,7 @@
 </script>
 <style lang="stylus">
 .gradient1
-	background linear-gradient(top, #fff, #c8c7c7)
+	background linear-gradient(to bottom, #fff, #c8c7c7)
 	-webkit-background-clip text
 	-webkit-text-fill-color transparent
 .inmid

@@ -15,7 +15,7 @@ export const items = [
 	},
 	{
 		id: 1382,
-		catId: [3],
+		catId: [26],
 		image: "dist/img/items/item3.png",
 		catNo: "CCC",
 		name: "Asian Girl Poster (Canvas/Foam)"
@@ -36,7 +36,7 @@ export const items = [
 	},
 	{
 		id: 1385678,
-		catId: [6],
+		catId: [85],
 		image: "dist/img/items/item6.png",
 		catNo: "FFF",
 		name: "Asian Girl Poster (Canvas/Foam)"
@@ -57,7 +57,7 @@ export const items = [
 	},
 	{
 		id: 135579,
-		catId: [3],
+		catId: [26],
 		image: "dist/img/items/item3.png",
 		catNo: "CCC1212",
 		name: "Asian Girl Poster (Canvas/Foam)"
@@ -78,7 +78,7 @@ export const items = [
 	},
 	{
 		id: 1387682,
-		catId: [6,2],
+		catId: [85,2],
 		image: "dist/img/items/item4.png",
 		catNo: "FFF1212",
 		name: "Asian Girl Poster (Canvas/Foam)"
@@ -114,7 +114,7 @@ export const items = [
 ]
 
 
-const catIds = [1,2,3,4,5,6,11,37,38,84,33,65,81,79,9];
+const catIds =  [26, 27, 3, 76, 85, 5, 65, 81, 84, 4, 79, 38, 88, 78, 90, 91, 92, 80];
 export const itemGenerator = (amount) => {
 	let items = [];
 	for (var i =0; i<amount; i++) {

@@ -1,3 +1,7 @@
+// API
+export const INIT_CATEGORIES = 'INIT_CATEGORIES';
+
+// UI
 export const TOGGLE_OVERLAY = 'TOGGLE_OVERLAY';
 export const HIDE_OVERLAY = 'HIDE_OVERLAY';
 export const SHOW_OVERLAY = 'SHOW_OVERLAY';
