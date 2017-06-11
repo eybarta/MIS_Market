@@ -1,6 +1,6 @@
 // API
 export const INIT_CATEGORIES = 'INIT_CATEGORIES';
-
+export const INIT_ITEMS = 'INIT_ITEMS';
 // UI
 export const TOGGLE_OVERLAY = 'TOGGLE_OVERLAY';
 export const HIDE_OVERLAY = 'HIDE_OVERLAY';

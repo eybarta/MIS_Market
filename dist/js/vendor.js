@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "78a16f9fc6d069960221"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "48dbf29a952d7c7d87ac"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(525)(__webpack_require__.s = 525);
+/******/ 	return hotCreateRequire(526)(__webpack_require__.s = 526);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -732,10 +732,10 @@ eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!\n * jQ
 
 /***/ }),
 
-/***/ 525:
+/***/ 526:
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(42);\n__webpack_require__(97);\nmodule.exports = __webpack_require__(65);\n\n\n//////////////////\n// WEBPACK FOOTER\n// multi jquery lodash velocity-animate\n// module id = 525\n// module chunks = 2\n\n//# sourceURL=webpack:///multi_jquery_lodash_velocity-animate?");
+eval("__webpack_require__(42);\n__webpack_require__(97);\nmodule.exports = __webpack_require__(65);\n\n\n//////////////////\n// WEBPACK FOOTER\n// multi jquery lodash velocity-animate\n// module id = 526\n// module chunks = 2\n\n//# sourceURL=webpack:///multi_jquery_lodash_velocity-animate?");
 
 /***/ }),
 

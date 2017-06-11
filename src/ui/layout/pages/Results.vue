@@ -4,7 +4,7 @@
 		<shelf></shelf>
 		<div class="content">
 			<bread-crumbs></bread-crumbs>
-			<div class="results-options">
+			<div class="results-options" v-if="totalResults>4">
 				<span class="item-size">Item size:
 					<button :class="[itemsize==='big' ? 'active' : '']" @click="updateItemSize('big')">
 						<span class="circles small"><i></i><i></i><i></i><i></i><i></i><i></i></span>

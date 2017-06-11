@@ -14,6 +14,7 @@ export default {
 	created() {
 		console.log("Market App Created!");
 		this.initCategories();
+		this.initItems();
 	},
 	components: {
 		TopBar,
@@ -25,7 +26,8 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'initCategories'
+			'initCategories',
+			'initItems'
 		])
 	}
 }

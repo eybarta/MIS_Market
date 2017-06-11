@@ -2,7 +2,7 @@ import $ from 'jquery'
 import Vue from 'vue'
 import * as types from './mutation-types'
 const GET_CATEGORIES = "./wsMain.asmx/GetCategories"
-const GET_ITEMS = "./wsMain.asmx?op=GetItems"
+const GET_ITEMS = "./wsMain.asmx/GetItems"
 
 
 
@@ -20,7 +20,20 @@ export const initCategories = async ({commit, dispatch}, categories) => {
         console.log('err > ', response);
         return { 'err': response}
     }, {headers: {'Access-Control-Allow-Origin': '*'}})
-    
+}
+export const initItems = async ({commit, dispatch}, items) => {
+    Vue.http.post(GET_ITEMS).then(response => {
+        if (!!response.body && !!response.body.d) {
+            console.log("RESPONSE >> ", response);
+            // let cats = JSON.parse(response.body.d);
+            // _.each(cats, cat => cat.src='./dist/img/categories/'+cat.name.split(' ')[0].toLowerCase()+'.png');
+            // commit('INIT_ITEMS', cats);
+        }
+        return response;
+    }, response => {
+        console.log('err > ', response);
+        return { 'err': response}
+    }, {headers: {'Access-Control-Allow-Origin': '*'}})
 }
 
 

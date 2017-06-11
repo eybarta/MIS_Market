@@ -51,6 +51,10 @@ const mutations = {
 		console.log("INIT_CATEGORIES >> ", categories);
 		state.categories = categories;
 	},
+	INIT_ITEMS (state, items) {
+		console.log("INIT_ITEMS >> ", items);
+		state.items = items;
+	},
 	// UI
 	TOGGLE_OVERLAY (state, type) {
 		state.overlay.active = !state.overlay.active;

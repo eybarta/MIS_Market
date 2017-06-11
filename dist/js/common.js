@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "78a16f9fc6d069960221"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "48dbf29a952d7c7d87ac"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(526)(__webpack_require__.s = 526);
+/******/ 	return hotCreateRequire(527)(__webpack_require__.s = 527);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -789,10 +789,10 @@ eval("/* WEBPACK VAR INJECTION */(function(process, global) {/*!\n * Vue.js v2.1
 
 /***/ }),
 
-/***/ 526:
+/***/ 527:
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(5);\n__webpack_require__(16);\n__webpack_require__(66);\n__webpack_require__(78);\n__webpack_require__(76);\nmodule.exports = __webpack_require__(77);\n\n\n//////////////////\n// WEBPACK FOOTER\n// multi vue vuex vue-router vuex-router-sync vue-awesome-swiper vue-paginate\n// module id = 526\n// module chunks = 1\n\n//# sourceURL=webpack:///multi_vue_vuex_vue-router_vuex-router-sync_vue-awesome-swiper_vue-paginate?");
+eval("__webpack_require__(5);\n__webpack_require__(16);\n__webpack_require__(66);\n__webpack_require__(78);\n__webpack_require__(76);\nmodule.exports = __webpack_require__(77);\n\n\n//////////////////\n// WEBPACK FOOTER\n// multi vue vuex vue-router vuex-router-sync vue-awesome-swiper vue-paginate\n// module id = 527\n// module chunks = 1\n\n//# sourceURL=webpack:///multi_vue_vuex_vue-router_vuex-router-sync_vue-awesome-swiper_vue-paginate?");
 
 /***/ }),
 
