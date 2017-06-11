@@ -14,7 +14,9 @@ import { itemGenerator } from './test-items';
 // let categories = async function() {
 // 	return await api.getCategories();
 // }
-let items = itemGenerator(1200);
+
+
+// let items = itemGenerator(1200);
 
 // console.log("CATEGORIES >> ", categories());
 
@@ -24,9 +26,10 @@ const cart = {
 	subtotal:0
 };
 const state = {
+	user: null,
 	categories: null,
 	itemsize: 'big',
-	items,
+	items: 'loading',
 	itemsFilterString,
 	itemInLimbo: null,
 	cart:{
@@ -54,6 +57,10 @@ const mutations = {
 	INIT_ITEMS (state, items) {
 		console.log("INIT_ITEMS >> ", items);
 		state.items = items;
+	},
+	INIT_USER (state, user) {
+		console.log("INIT USER MUTATION >> ", user);
+		state.user = user;
 	},
 	// UI
 	TOGGLE_OVERLAY (state, type) {
@@ -157,6 +164,10 @@ const getters = {
 	filteredItems: (state, getters) => {
 		let search_filter = state.route.params.searchFilter;// || state.route.params.rootFilter;
 		console.log("SEARCHFILTER >> ", search_filter);
+		let items = state.items;
+		if (items==='loading') {
+			return 'loading';
+		}
 		if (!!search_filter) {
 			let counter = 0;
 			return _.filter(state.items, function(item) {

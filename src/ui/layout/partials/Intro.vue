@@ -1,13 +1,16 @@
 <template>
 	<div class="intro">
-		<search-box placeholder="FIND THE FORCE" type="intro"></search-box>
+		<sign-in v-if="!user"></sign-in>
+		<search-box v-else placeholder="FIND THE FORCE" type="intro"></search-box>
 		
 		<bg-slider :imglist="images"></bg-slider>
 	</div>
 </template>
 <script>
+import { mapState } from 'vuex';
 import searchBox from '../../components/searchBox.vue';
 import bgSlider from '../../components/bgSlider.vue';
+import SignIn from '../../components/SignIn.vue';
 export default {
 	created() {
 		console.log("Intro search partial created!");
@@ -19,7 +22,13 @@ export default {
 	},
 	components: {
 		searchBox,
-		bgSlider
+		bgSlider,
+		SignIn
+	},
+	computed: {
+		...mapState([
+			'user'
+		])
 	}
 }
 </script>

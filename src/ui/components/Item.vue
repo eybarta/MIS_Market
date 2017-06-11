@@ -95,7 +95,7 @@ export default {
         },
         priceTotal() {
             let item = this.item.data;
-            return (!!item) ? (item.price*this.quantity).toFixed(2) : 0;
+            return (!!item) ? (item.price*this.quantity % 1 != 0 ? (item.price*this.quantity).toFixed(2) : item.price*this.quantity) : 0;
         },
         editMode() {
             let item = this.item.data;

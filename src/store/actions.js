@@ -3,12 +3,14 @@ import Vue from 'vue'
 import * as types from './mutation-types'
 const GET_CATEGORIES = "./wsMain.asmx/GetCategories"
 const GET_ITEMS = "./wsMain.asmx/GetItems"
+const GET_MEMBER = "./wsMain.asmx/GetMember"
 
 
 
 
 // API ACTIONS
 export const initCategories = async ({commit, dispatch}, categories) => {
+    console.log("INIT CATEGORIES !!!");
     Vue.http.post(GET_CATEGORIES).then(response => {
         if (!!response.body && !!response.body.d) {
             let cats = JSON.parse(response.body.d);
@@ -22,18 +24,50 @@ export const initCategories = async ({commit, dispatch}, categories) => {
     }, {headers: {'Access-Control-Allow-Origin': '*'}})
 }
 export const initItems = async ({commit, dispatch}, items) => {
+    console.log("INIT ITEMS !!!");
     Vue.http.post(GET_ITEMS).then(response => {
         if (!!response.body && !!response.body.d) {
-            console.log("RESPONSE >> ", response);
-            // let cats = JSON.parse(response.body.d);
-            // _.each(cats, cat => cat.src='./dist/img/categories/'+cat.name.split(' ')[0].toLowerCase()+'.png');
-            // commit('INIT_ITEMS', cats);
+            let items = mapItems(JSON.parse(response.body.d));
+            commit('INIT_ITEMS', items);
         }
         return response;
     }, response => {
         console.log('err > ', response);
         return { 'err': response}
     }, {headers: {'Access-Control-Allow-Origin': '*'}})
+}
+export const signInUser = async ({commit, dispatch}, user) => {
+    console.log("SIGN IN USER ACTION > > ", user);
+    return Vue.http.post(GET_MEMBER, user).then(response => {
+        console.log("GET USER RESPONSE >> ", response);
+        if (!!response.body && !!response.body.d) {
+            let res = JSON.parse(response.body.d);
+            console.log("RES > ", res);
+            if (_.has(res, 'Err')) {
+                console.log("HAS ERROR >> ", res);
+                return "Login failed, please try again.";
+            } else {
+                commitUser(res);
+                
+                
+            }
+        }        
+    }, response => {
+        console.log('err > ', response);
+        return { 'err': response}
+    }, {headers: {'Access-Control-Allow-Origin': '*'}})
+
+    async function commitUser(res) {
+        if (!!res.country) {
+            console.log('commit with flag...');
+            let _user = await getUserWithFlag(res);
+            commit('INIT_USER', _user);
+        }
+        else {
+            console.log('commit with no flag...');
+            commit('INIT_USER', res);
+        }
+    }
 }
 
 
@@ -57,7 +91,6 @@ export const hideOverlay = async ({commit}) => {
 
 export const toggleShelf = async ({commit, dispatch}, type) => {
     console.log("TOGGLE SHELF");
-    dispatch('bindCartMouseMove');
     clearTimeout(shelfTimer);
     type = (!!type && typeof type==='string') ? type : 'cart';
     commit('TOGGLE_SHELF', type);
@@ -72,8 +105,6 @@ export const changeShelfType =  ({commit}, type) => {
     commit('CHANGE_SHELF_TYPE', type);
 }
 export const showShelf = async ({commit, dispatch}) => {
-    console.log("SHOW SHELF");
-    dispatch('bindCartMouseMove');
     commit('SHOW_SHELF', await dispatch('hideOverlay'));
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -132,25 +163,57 @@ export const updateItemSize = ({commit}, size) => {
     commit('UPDATE_ITEM_SIZE', size);
 }
 
-export const bindCartMouseMove = ({commit, dispatch}) => {
-    console.log("BIND CART MOVE");
-    // clearTimeout(shelfTimer);
-    // $('#cartWrap').off();
-    // timedShelfClose(dispatch, 5500);
-    // setTimeout(function() {
-    //     $('#cartWrap').on('mouseenter mouseleave', function(e) {
-    //         console.log("event > ", e.type);
-    //         if (e.type==='mouseleave') {
-    //             timedShelfClose(dispatch, 3500);
-    //         }
-    //         else {
-    //             clearTimeout(shelfTimer);
-    //         }
-    //     })
-    // }, 500)
-    // function timedShelfClose(dispatch, time) {
-    //     shelfTimer = setTimeout(function() {
-    //         dispatch('hideShelf');
-    //     }, time)
-    // }
+function mapItems(items) {
+    return _.map(items, item => {
+        let attachments = [];
+        if (!!item.PrintCatalog) {
+            attachments.push({
+                type:"pdf",
+                label: "PDF File",
+                link: item.PrintCatalog
+            })
+        }
+        if (!!item.NewsLetter) {
+            attachments.push({
+                type:"newsletter",
+                label: "Newsletter",
+                link: item.NewsLetter
+            })
+        }
+        if (!!item.Presentation) {
+            attachments.push({
+                type:"presentation",
+                label: "Presentation",
+                link: item.Presentation
+            })
+        }
+        return {
+            id: item.Id,
+			catId: [item.CategoryId],
+			image: "./dist/img/items/"+item.CatalogNo+ ".png",
+			catNo: item.CatalogNo,
+			name: item.Name,
+			price:item.Price || 0,
+			attachments
+        }
+    })
+}
+
+async function getUserWithFlag(user) {
+    console.log("get USER WITH FLAG >> ", user.country);
+    return new Promise((resolve, reject) => {
+        let api = "https://restcountries.eu/rest/v2/name/"+user.country;
+        Vue.http.get(api).then(response => {
+            console.log("response from countryfinder > ", response);
+            if (!!response.data) {
+                user.flag = response.data[0].flag
+            }
+            resolve(user);
+            // return user;
+        }), response => {
+            console.log("from restcountries err >> ", response);
+            resolve(user);
+            // return user;
+        }
+    })
 }

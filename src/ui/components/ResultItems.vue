@@ -1,40 +1,45 @@
 <template>
     <div class="result-items" :class="[singleLine ? 'single-line' : '']">
-        <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
-        <paginate
-            name="items"
-            :list="items"
-            :per="itemsPerPage"
-            tag="div"
-            class="paginate-langs"
-            >
-                <transition-group ref="list" name="list" tag="ul" appear
-                    class="item-list"
-                    @before-enter="beforeEnter"
-                    @enter="enter"
-                    @leave="leave"
-                    mode="out-in">
-                    <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
-                        <item-preview type="result" :item="item" :size="itemsize" :actions="['view','plus']" :draggable="true"></item-preview>
-                    </li>
-                </transition-group>
-            </paginate>
-        <div class="pager" v-if="items.length > itemsPerPage">
-	        <paginate-links id="pager" ref="pager" for="items" :limit="4" 
-            @change="onLangsPageChange"
-            :show-step-links="true"
-            :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
+        <div v-if="items!='loading'">
+            <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
+            <paginate
+                name="items"
+                :list="items"
+                :per="itemsPerPage"
+                tag="div"
+                class="paginate-langs"
+                >
+                    <transition-group ref="list" name="list" tag="ul" appear
+                        class="item-list"
+                        @before-enter="beforeEnter"
+                        @enter="enter"
+                        @leave="leave"
+                        mode="out-in">
+                        <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
+                            <item-preview type="result" :item="item" :size="itemsize" :actions="['view','plus']" :draggable="true"></item-preview>
+                        </li>
+                    </transition-group>
+                </paginate>
+            <div class="pager" v-if="items.length > itemsPerPage">
+                <paginate-links id="pager" ref="pager" for="items" :limit="4" 
+                @change="onLangsPageChange"
+                :show-step-links="true"
+                :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
+            </div>
         </div>
+        <preloader key="loading" v-else :pretitle="'Items loading...'"></preloader>
     </div>
+    
 </template>
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex';
+import Preloader from './Preloader.vue'
+
 import velocity from 'velocity-animate';
 import $ from 'jquery';
 import $velocity from 'velocity-animate/velocity.js';
 import ItemPreview from './ItemPreview.vue';
 
-import draggable from 'vuedraggable'
 export default {
     props: ['items'],
     data() {
@@ -46,7 +51,7 @@ export default {
     },
 	components: {
 		ItemPreview,
-        draggable
+        Preloader
 	},
     mounted() {
         this.$nextTick(() => {
@@ -140,7 +145,7 @@ export default {
 @import '~rupture';
 .result-items
     padding 60px 0 0
-    min-height 30vh
+    min-height 70vh
     clear both
     .paginate-langs
         padding 0 55px

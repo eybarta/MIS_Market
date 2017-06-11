@@ -74,11 +74,10 @@ export default {
             selectText(this.$refs.quant);
         },
         labelFor(action) {
-            let vm = this;
             switch(action) {
                 case 'open':
                 case 'view':
-                    return vm.isTouchDevice ? 'Details' : 'Show Details';
+                    return this.type==='cart' ? '' : (this.isTouchDevice ? 'Details' : 'Show Details');
                 case 'plus':
                     return 'Add to Cart';
                 case 'images':
@@ -91,18 +90,14 @@ export default {
             console.log("handle action>> ", action);
             switch(action) {
                 case 'open':
-                    this.openItem(this.item);
-                    break;
                 case 'view':
                     let item = _.clone(this.item);
-                    item.editmode = true;
+                    item.editmode = this.type==='cart';
                     this.openItem(item);
                     break;
                 case 'plus':
                     this.addToCart(this.item);
                     break;
-                // case 'images':
-                //     return 'Go to Images';
                 case 'remove':
                     this.removeFromCart(this.item);
                     break;

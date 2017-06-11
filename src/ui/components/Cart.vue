@@ -35,7 +35,7 @@
                     <div class="subtotal">
                         <div>
                             <h5>SUBTOTAL</h5>
-                            <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="0" :duration="1" :options="countOptions"></count-up></div>
+                            <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="subtotal % 1 != 0 ? 2 : 0" :duration="1" :options="countOptions"></count-up></div>
                         </div>
                     </div>
                     <div class="cart-actions">
@@ -224,7 +224,7 @@ export default {
         },
         subtotal() {
             let cart = this.cart;
-            return _.sum(_.map(cart.items, item => { return _.multiply(parseInt(item.price), parseInt(item.amount))}))
+            return _.sum(_.map(cart.items, item => { return _.multiply(parseFloat(item.price), parseInt(item.amount))}))
         },
         checkoutStatus() {
             let items = this.cart.items,
