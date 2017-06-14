@@ -25,6 +25,10 @@ export default {
 			images:['dist/img/backgrounds/background-1.jpg']
 		}
 	},
+	destroyed() {
+		console.log("MENU BAR DESTROYED");
+		this.searchFilterString('');
+	},
 	methods: {
 		...mapActions([
 			'toggleOverlay',

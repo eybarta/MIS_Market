@@ -137,6 +137,12 @@ export default {
                 this.typeAction = "erasing";
             }, this), 2000);
             this.cartLabel = (this.shelf.type==='checkout') ? 'CHECKOUT OVERVIEW' : 'MY CART';
+        },
+        'cart.items': {
+            handler() {
+                console.log("cart item schanged");
+            },
+            deep: true
         }
     },
     components: {
@@ -152,7 +158,9 @@ export default {
             'toggleShelf',
             'changeShelfType',
             'updateItemInLimbo',
-            'addToCart'
+            'addToCart',
+            'saveCart'
+
         ]),
         buttonClickHandler() {
             if (this.shelf.type==='checkout') {
@@ -165,7 +173,9 @@ export default {
         },
         confirm() {
             console.log("CONFIRM ORDER AND SHOW THANKYOU");
-            this.changeShelfType('confirm')
+
+            this.saveCart(this.subtotal);
+
         },
         itemDropped(e) {
                 console.log('item dropped', e);

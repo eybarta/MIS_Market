@@ -59,7 +59,8 @@ export default {
 }
 </script>
 <style lang="stylus">
-.fade-top-enter-active, .fade-top-leave-active
+.fade-top-enter-active,
+.fade-top-leave-active
 	transition opacity 700ms ease, transform 700ms ease
 	position relative
 .fade-top-enter
@@ -67,7 +68,6 @@ export default {
 	transform translate(0, -100%) !important
 .fade-top-leave-to
 	opacity 0
-	transform translate(0, 200%) !important
 .fade-top-enter-to, .fade-top-leave
 	// opacity 1
 	// transform translateY(0)

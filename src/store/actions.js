@@ -4,16 +4,31 @@ import * as types from './mutation-types'
 const GET_CATEGORIES = "./wsMain.asmx/GetCategories"
 const GET_ITEMS = "./wsMain.asmx/GetItems"
 const GET_MEMBER = "./wsMain.asmx/GetMember"
+const SAVE_CART = "./wsMain.asmx/SaveCart"
 
 
 
 
 // API ACTIONS
+export const initUser = ({commit}) => {
+    let _user = localStorage.getItem("_marketuser");
+    if (!!_user) {
+
+        commit('INIT_USER', JSON.parse(_user));
+    }
+}
 export const initCategories = async ({commit, dispatch}, categories) => {
     console.log("INIT CATEGORIES !!!");
     Vue.http.post(GET_CATEGORIES).then(response => {
         if (!!response.body && !!response.body.d) {
             let cats = JSON.parse(response.body.d);
+            cats.unshift({
+                Id: 111100,
+                name: 'New',
+                sort: 0, 
+                parent: -1,
+                children: []
+            })
             _.each(cats, cat => cat.src='./dist/img/categories/'+cat.name.split(' ')[0].toLowerCase()+'.png');
             commit('INIT_CATEGORIES', cats);
         }
@@ -25,9 +40,9 @@ export const initCategories = async ({commit, dispatch}, categories) => {
 }
 export const initItems = async ({commit, dispatch}, items) => {
     console.log("INIT ITEMS !!!");
-    Vue.http.post(GET_ITEMS).then(response => {
+    Vue.http.post(GET_ITEMS).then( async response => {
         if (!!response.body && !!response.body.d) {
-            let items = mapItems(JSON.parse(response.body.d));
+            let items = await mapItems(JSON.parse(response.body.d));
             commit('INIT_ITEMS', items);
         }
         return response;
@@ -58,18 +73,32 @@ export const signInUser = async ({commit, dispatch}, user) => {
     }, {headers: {'Access-Control-Allow-Origin': '*'}})
 
     async function commitUser(res) {
+        let _user = {
+            first_name: res.first_name,
+            last_name: res.last_name,
+            country: res.country,
+            member_id: res.member_id,
+            email: res.email,
+            flag: null,
+            timestamp: new Date()
+        }
         if (!!res.country) {
             console.log('commit with flag...');
-            let _user = await getUserWithFlag(res);
+            _user = await getUserWithFlag(_user);
+            localStorage.setItem("_marketuser", JSON.stringify(_user));
             commit('INIT_USER', _user);
         }
         else {
             console.log('commit with no flag...');
-            commit('INIT_USER', res);
+            localStorage.setItem("_marketuser", JSON.stringify(_user));
+            commit('INIT_USER', _user);
         }
     }
 }
-
+export const userSignout = ({commit, dispatch}) => {
+    localStorage.removeItem("_marketuser");
+    commit('INIT_USER', null);
+}
 
 var shelfTimer = 0;
 // UI ACTIONS
@@ -122,8 +151,13 @@ export const hideShelf = async ({commit}, animate) => {
     })
 }
 
-export const searchFilterString = ({commit}, filter_string) => {
-    console.log("action update>> searchFilterString >> ", filter_string)
+export const searchFilterString = ({commit, dispatch, state}, filter_string) => {
+    if (!!state.shelf.active) {
+        dispatch('hideShelf');
+    }
+    if (!!state.overlay.active) {
+        dispatch('hideOverlay');
+    }
     commit('SEARCH_FILTER_STRING', filter_string);
 }
 
@@ -137,12 +171,15 @@ export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
 }
 
 // CART ACTIONS
-export const addToCart = async ({commit, dispatch}, item) => {
+export const addToCart = async ({commit, dispatch, state}, item) => {
+    await dispatch('showShelf')
     await dispatch('hideOverlay');
     console.log("ADD TO CART >> ", item, " :: ");
-    item.amount = (!!item.amount) ? item.amount : 1;
-    commit('ADD_TO_CART', item);
-    dispatch('showShelf');
+    let _item = _.find(state.items, {id:item.id});
+    Vue.set(_item, 'inCart', true);
+    _item.amount = (!!_item.amount) ? _item.amount : 1;
+    commit('ADD_TO_CART', _item);
+    
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);
@@ -151,8 +188,9 @@ export const updateItemInCart = async ({commit, dispatch}, item) => {
         dispatch('showShelf')
     },100)
 }
-export const removeFromCart = ({commit}, item) => {
+export const removeFromCart = ({commit, dispatch}, item) => {
     commit('REMOVE_FROM_CART', item);
+    // dispatch('forceUpdateCartUI')
 }
 export const openItem = async({commit, dispatch}, item) => {
     commit('OPEN_ITEM', item);
@@ -163,57 +201,109 @@ export const updateItemSize = ({commit}, size) => {
     commit('UPDATE_ITEM_SIZE', size);
 }
 
-function mapItems(items) {
-    return _.map(items, item => {
-        let attachments = [];
-        if (!!item.PrintCatalog) {
-            attachments.push({
-                type:"pdf",
-                label: "PDF File",
-                link: item.PrintCatalog
-            })
-        }
-        if (!!item.NewsLetter) {
-            attachments.push({
-                type:"newsletter",
-                label: "Newsletter",
-                link: item.NewsLetter
-            })
-        }
-        if (!!item.Presentation) {
-            attachments.push({
-                type:"presentation",
-                label: "Presentation",
-                link: item.Presentation
-            })
-        }
+export const saveCart = ({commit, dispatch, state}, subtotal) => {
+    let items = _.map(state.cart.items, item => {
         return {
-            id: item.Id,
-			catId: [item.CategoryId],
-			image: "./dist/img/items/"+item.CatalogNo+ ".png",
-			catNo: item.CatalogNo,
-			name: item.Name,
-			price:item.Price || 0,
-			attachments
+            Id: item.id,
+            CatalogNo: item.catNo,
+            amount: item.amount
         }
+    });
+    let mId = state.user.member_id;
+    let token = 12345;
+    let cartData = { items, subtotal};
+    let data = {cartData: items, mId, token}
+    console.log("data > ", data);
+    Vue.http.post(SAVE_CART,btoa(data)).then(response => {
+        console.log("SAVE_CART, RESPONSE >> ", response);
+        dispatch('changeShelfType', 'confirm');
+    }, response => {
+        console.log('save cart error >> ', response);
     })
 }
 
+
+
+
+// HELPER FUNCTIONS
+async function mapItems(items) {
+        let countryCodes = _.compact(_.uniq(_.map(items, 'LangCC'))).join(';');
+        let item_country_flags = await retrieveFlagsForItems(countryCodes);
+
+        console.log("rAW ITEMS  > ", items);
+        let mappedItems = _.map(items, item => {
+            let attachments = [];
+            if (!!item.PrintCatalog) {
+                attachments.push({
+                    type:"pdf",
+                    label: "PDF File",
+                    link: item.PrintCatalog
+                })
+            }
+            if (!!item.NewsLetter) {
+                attachments.push({
+                    type:"newsletter",
+                    label: "Newsletter",
+                    link: item.NewsLetter
+                })
+            }
+            if (!!item.Presentation) {
+                attachments.push({
+                    type:"presentation",
+                    label: "Presentation",
+                    link: item.Presentation
+                })
+            }
+
+            let catId = [item.CategoryId]; 
+            if (!!item.TopSeller) {
+                catId.push(111100);
+            }
+
+            
+            return {
+                id: item.Id,
+                catId,
+                image: "./dist/img/items/"+item.CatalogNo.replace(/\s/g, '_') + ".png",
+                catNo: item.CatalogNo,
+                name: item.Name,
+                price:item.Price || 0,
+                flag: !!item_country_flags ? item_country_flags[item.LangCC] || null : null,
+                attachments,
+                
+            }
+        })
+        return mappedItems;
+}
+
+
+async function retrieveFlagsForItems(countryCodes) {
+    let api = "https://restcountries.eu/rest/v2/alpha?codes=" + countryCodes;
+    return new Promise((resolve, reject) => {
+        Vue.http.get(api).then(response => {
+            let flagCollection = {};
+            if (!!response.body) {
+                for (var i = 0; i < response.body.length; i++) {
+                    let c = response.body[i];
+                    flagCollection[c.alpha2Code] = c.flag
+                }
+            }
+            resolve(flagCollection);
+        }), response => {
+            resolve(null);
+        }
+    });
+}
 async function getUserWithFlag(user) {
-    console.log("get USER WITH FLAG >> ", user.country);
     return new Promise((resolve, reject) => {
         let api = "https://restcountries.eu/rest/v2/name/"+user.country;
         Vue.http.get(api).then(response => {
-            console.log("response from countryfinder > ", response);
             if (!!response.data) {
                 user.flag = response.data[0].flag
             }
             resolve(user);
-            // return user;
         }), response => {
-            console.log("from restcountries err >> ", response);
             resolve(user);
-            // return user;
         }
     })
 }

@@ -4,7 +4,7 @@
 		<shelf></shelf>
 		<div class="content">
 			<bread-crumbs></bread-crumbs>
-			<div class="results-options" v-if="totalResults>4">
+			<div class="results-options" v-if="totalResults>4 && typeof items!= 'string'">
 				<span class="item-size">Item size:
 					<button :class="[itemsize==='big' ? 'active' : '']" @click="updateItemSize('big')">
 						<span class="circles small"><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -15,13 +15,13 @@
 						<span>Big</span>
 					</button>
 				</span>
-				<span class="total-label">Total: <count-up 
+				<span class="total-label">Total: <span class="results-amount"><count-up 
 						:start="0"
 						:end="totalResults"
 						:decimals="0"
 						:duration="3"
 						:options="countOptions"
-						:callback="afterCount"></count-up> results</span>
+						:callback="afterCount"></count-up> results</span></span>
 			</div>
 			<result-items :items="items"></result-items>
 		</div>
@@ -110,7 +110,7 @@ export default {
 		.item-size
 			display inline-block
 			color rgba(#fff, 0.4)
-			border-right 1px solid rgba(#fff, 0.4)
+			border-right 1px solid rgba(#61829c, 0.3)
 			margin-right 10px
 			button
 				display inline-block
@@ -148,6 +148,8 @@ export default {
 	.total-label
 		font-size 13px
 		color rgba(#fff, 0.4)
+		span
+			color #fff
 	ul.breadcrumbs
 		float left
 		li

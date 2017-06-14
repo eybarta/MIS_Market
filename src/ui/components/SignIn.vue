@@ -17,7 +17,7 @@
 					<span v-if="!!error" class="err" v-text="error"></span>
 				</div>
 
-				<button :class="['btn', !user||!password ? 'disabled' : '']" @click="signin">LOGIN</button>
+				<button :class="['round-btn', !user||!password ? 'disabled' : '']" @click="signin">Login</button>
 			</div>
 		</div>
 	</div>
@@ -70,7 +70,7 @@ export default {
 @import '~settings';
 
 	.backdrop
-		position fixed 0 0 0 0
+		position fixed 49px 0 0 0
 		transform none
 		opacity 0.98
 		background-color darkblue
@@ -89,15 +89,25 @@ export default {
 		h4
 			text-align center
 			padding 15% 0 5%
-			font-size 24px
-		.btn
+			font-size 36px
+			color darken(#9e9f9f, 10)
+		.round-btn
 			position absolute false false 10% 50%
+			width 68px
+			height @width
+			text-align center
+			border-radius 100%
+			color #ffffff
+			background #00acec
+			text-decoration none
+			cursor pointer
+			box-shadow inset 0px 0px 4px rgba(255,255,255,0)
+			transition background 200ms ease
 			transform translateX(-50%)
-			color blue
 			&:hover
-				background lighten(blue, 20)
-				border-color lighten(blue, 20)
+				background #38c1f3
 				color #fff
+				outline none
 			&.disabled
 				opacity 0.3
 .form

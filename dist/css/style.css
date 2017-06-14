@@ -422,3 +422,7 @@ h4.no-items {
   -webkit-transform: rotate(-45deg);
           transform: rotate(-45deg);
 }
+.arw.up {
+  -webkit-transform: rotate(135deg);
+          transform: rotate(135deg);
+}

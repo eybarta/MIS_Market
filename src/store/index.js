@@ -8,7 +8,7 @@ Vue.use(Vuex);
 Vue.use(VueResource);
 
 // import { categories} from './test-categories';
-import { itemGenerator } from './test-items';
+// import { itemGenerator } from './test-items';
 // import * as api from './api';
 
 // let categories = async function() {
@@ -112,8 +112,7 @@ const mutations = {
 		/*
 			Find source of item, add it to cart.
 		*/
-		let itemsrc = _.find(state.items, {id:item.id});
-		Vue.set(itemsrc, 'inCart', true);
+		
 		state.cart.items.push(item);
 	},
 	UPDATE_ITEM_IN_CART(state, item) {
@@ -131,7 +130,9 @@ const mutations = {
 		let itemsrc = _.find(state.items, {id:item.id});
 		Vue.set(itemsrc, 'inCart', false);
 		Vue.delete(itemsrc, 'amount');
-		_.remove(state.cart.items, item);
+		let _cart = state.cart;
+		_.remove(_cart.items, item);
+		state.cart = _cart;
 	}
 }
 
@@ -143,7 +144,7 @@ const getters = {
 			with all children categories id's for 
 			optimizing query performance
 		*/
-		return _.map(categories, function(obj) {
+		let mappedChildren =  _.map(categories, function(obj) {
 			let childrenMapIds = [];
 			let grandchildren = null;
 			if (!!obj.children) {
@@ -155,15 +156,15 @@ const getters = {
 				}
 			}
 			return {
-				id: obj.id,
+				id: obj.Id,
 				childrenIds: childrenMapIds
 			}
 		})
+		return mappedChildren;
 	},
 	// RETURN FILTERED ITEMS BY CATEGORY  &&  SEARCH IF EXISTS
 	filteredItems: (state, getters) => {
 		let search_filter = state.route.params.searchFilter;// || state.route.params.rootFilter;
-		console.log("SEARCHFILTER >> ", search_filter);
 		let items = state.items;
 		if (items==='loading') {
 			return 'loading';
@@ -190,15 +191,15 @@ const getters = {
 					if (!!gchild_route) {
 					// will filter out SELECTED GRANDCHILDREN categories if exists
 						let gChildCategory = _.find(childCategory.children, {name: gchild_route});
-							filter_ids = [gChildCategory.id];
+							filter_ids = [gChildCategory.Id];
 					}
 					else {
-						filter_ids = _.concat(_.map(childCategory.children, 'Id'), childCategory.id);
+						filter_ids = _.concat(_.map(childCategory.children, 'Id'), childCategory.Id);
 					}
 				}
 				else {
-					let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.id});
-					filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.id);
+					let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.Id});
+					filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.Id);
 				}
 				return _.filter(state.items, function(item) {
 					// check to see if any item ids match the filter ids

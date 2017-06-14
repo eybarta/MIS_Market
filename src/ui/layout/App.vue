@@ -13,6 +13,7 @@ import TopBar from './partials/TopBar.vue';
 export default {
 	created() {
 		console.log("Market App Created!");
+		this.initUser();
 		this.initCategories();
 		this.initItems();
 	},
@@ -26,6 +27,7 @@ export default {
 	},
 	methods: {
 		...mapActions([
+			'initUser',
 			'initCategories',
 			'initItems'
 		])

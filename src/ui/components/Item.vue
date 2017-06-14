@@ -24,7 +24,7 @@
                 <div>
                     <div>
                         <label for="quantity">Order Quantity:</label>
-                        <input v-model="quantity" type="text">
+                        <input v-model="quantity" type="text" @keypress="onlyNumbers($event)">
                     </div>
                     <div>
                         <label>Price:</label>
@@ -56,23 +56,36 @@ export default {
             'addToCart',
             'updateItemInCart'
         ]),
+        onlyNumbers(e) {
+            if (/enter/i.test(e.key)) {
+                this.add();
+            }
+            if (_.isNaN(parseInt(e.key))) {
+                e.preventDefault();
+                return false;
+            }
+        },
         add() {
-            let $d = this.item.data,
-                item = _.clone($d);
+            // let $d = this.item.data,
+            //     item = _.clone($d);
 
-            item.amount = parseInt(this.quantity);
+            let _item = _.find(this.items, { id: this.item.data.id})
+
+
+            _item.amount = parseInt(this.quantity);
             // item.price = this.priceTotal;
             if (this.editMode) {
-                this.updateItemInCart(item);
+                this.updateItemInCart(_item);
             } else {
-                this.addToCart(item);
+                this.addToCart(_item);
             }
             
         }
     },
     computed: {
         ...mapState({
-            item: 'overlay'
+            item: 'overlay',
+            items: 'items'
         }),
          imageStyle() {
             let item = this.item.data;

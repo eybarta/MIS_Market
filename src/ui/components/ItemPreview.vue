@@ -1,9 +1,13 @@
 <template>
     <div class="item-preview">
+        <div v-if="!!item.flag" class="item-flag">
+            <img :src="item.flag" alt="" />
+        </div>
         <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart="toggleActionsForDevices($event)">
             <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
                 <button v-for="action in actions" class="action" @click.stop="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
+
             <div class="item-info" v-if="!!info" @click="infoClickHandler">
                 <!--
                 <div class="info" v-text="'$'+item.price+' per unit'"></div>
@@ -161,7 +165,25 @@ export default {
  ::selection
     background rgba(gray, 0.2)
     color darken(gray, 30)
+.item-flag
+    position absolute 5% false false 1%
+    overflow hidden
+    z-index 9
+    box-shadow 3px 3px 7px rgba(#000, 0.2)
+    img
+        self-center()
+        width 185%
+    /.huge-item &
+        width 98px
+        height @width
+        border-radius 49px
+    /.big-item &
+        width 60px
+        height @width
+        border-radius unit(@width/2, 'px')
+
 .item-preview
+    
     .label
         width 45%
         text-align left

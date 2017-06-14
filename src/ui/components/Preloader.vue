@@ -75,6 +75,7 @@ $delay: 75ms;
   left: 50%;
   transform: translate(-50%,-50%) !important;
   text-align:center;
+  transition: opacity 0.7s ease !important;
   img {
     opacity:0.2;
     position:relative;
