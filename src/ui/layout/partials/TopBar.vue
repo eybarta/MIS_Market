@@ -12,7 +12,7 @@
 				<button :class="['arw', !showdrop ? 'down' : 'up']"></button>
 			</div>
 			<div :class="['user-drop', showdrop ? 'active' : '']">
-				<button @click="userSignout">Sign Out</button>
+				<button @click="signout">Sign Out</button>
 			</div>
 		</div>
 	</div>
@@ -29,9 +29,10 @@ export default {
 		console.log("Top Bar  Created!");
 	},
 	methods: {
-		...mapActions([
-			'userSignout'
-		])
+		signout() {
+			this.$set(this, 'showdrop', false);
+			this.userSignout();
+		}
 	},
 	computed: {
 		...mapState([
@@ -108,6 +109,8 @@ export default {
 			opacity 0
 			transform translate(0, -100%)
 			z-index 9
+			/.app-results &
+				background rgba(darkblue, 0.85)
 			&.active
 				opacity 1
 				transform translate(0, 0)

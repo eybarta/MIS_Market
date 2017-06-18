@@ -1,5 +1,5 @@
 <template>
-	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '']">
+	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', $route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
 		<top-bar></top-bar>
 		<router-view></router-view>
 		<footer>
@@ -12,10 +12,10 @@ import { mapState, mapActions } from 'vuex';
 import TopBar from './partials/TopBar.vue';
 export default {
 	created() {
-		console.log("Market App Created!");
 		this.initUser();
 		this.initCategories();
 		this.initItems();
+
 	},
 	components: {
 		TopBar,

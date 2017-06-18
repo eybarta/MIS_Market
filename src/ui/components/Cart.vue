@@ -9,8 +9,8 @@
                     <div key="cart" v-if="shelf.type=='cart'" class="cart-item-slider" :class="[items.length > slidesPerView ? 'many-items' : '']">
                         <swiper ref="swiper" :options="swiperOptions">
                             <swiper-slide v-for="(item, index) in cart.items" :key="item.id" :data-index="index">
-                                <transition name="slide-fade" mode="out-in" appear> 
-                                    <item-preview type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="[item.amount + ' items']" :draggable="false"></item-preview>
+                                <transition name="slide-fade" appear>
+                                    <item-preview v-if="cart.items.indexOf(item)>-1" type="cart" :item="item" size="small" :actions="['view', 'remove']" :info="[item.amount + ' items']" :draggable="false"></item-preview>
                                 </transition>
                             </swiper-slide>
                         </swiper>

@@ -5,7 +5,7 @@
         </div>
         <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart="toggleActionsForDevices($event)">
             <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
-                <button v-for="action in actions" class="action" @click.stop="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+                <button v-for="action in actions" class="action" @click.once="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
 
             <div class="item-info" v-if="!!info" @click="infoClickHandler">
@@ -91,7 +91,6 @@ export default {
             }
         },
         actionHandler(action) {
-            console.log("handle action>> ", action);
             switch(action) {
                 case 'open':
                 case 'view':

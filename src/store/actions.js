@@ -23,6 +23,13 @@ export const initCategories = async ({commit, dispatch}, categories) => {
         if (!!response.body && !!response.body.d) {
             let cats = JSON.parse(response.body.d);
             cats.unshift({
+                Id: 111101,
+                name: 'Simple Campaign',
+                sort: 0, 
+                parent: -1,
+                children: []
+            })
+            cats.unshift({
                 Id: 111100,
                 name: 'New',
                 sort: 0, 
@@ -42,6 +49,7 @@ export const initItems = async ({commit, dispatch}, items) => {
     console.log("INIT ITEMS !!!");
     Vue.http.post(GET_ITEMS).then( async response => {
         if (!!response.body && !!response.body.d) {
+            console.log("ITEMS HAVE RETURNED ... ");
             let items = await mapItems(JSON.parse(response.body.d));
             commit('INIT_ITEMS', items);
         }
@@ -63,8 +71,6 @@ export const signInUser = async ({commit, dispatch}, user) => {
                 return "Login failed, please try again.";
             } else {
                 commitUser(res);
-                
-                
             }
         }        
     }, response => {
@@ -97,6 +103,7 @@ export const signInUser = async ({commit, dispatch}, user) => {
 }
 export const userSignout = ({commit, dispatch}) => {
     localStorage.removeItem("_marketuser");
+
     commit('INIT_USER', null);
 }
 
@@ -205,16 +212,15 @@ export const saveCart = ({commit, dispatch, state}, subtotal) => {
     let items = _.map(state.cart.items, item => {
         return {
             Id: item.id,
-            CatalogNo: item.catNo,
-            amount: item.amount
+            Quintity: item.amount
         }
     });
     let mId = state.user.member_id;
     let token = 12345;
     let cartData = { items, subtotal};
     let data = {cartData: items, mId, token}
-    console.log("data > ", data);
-    Vue.http.post(SAVE_CART,btoa(data)).then(response => {
+    console.log("data > ", btoa(JSON.stringify(data)));
+    Vue.http.post(SAVE_CART,btoa(JSON.stringify(data))).then(response => {
         console.log("SAVE_CART, RESPONSE >> ", response);
         dispatch('changeShelfType', 'confirm');
     }, response => {
@@ -227,7 +233,9 @@ export const saveCart = ({commit, dispatch, state}, subtotal) => {
 
 // HELPER FUNCTIONS
 async function mapItems(items) {
-        let countryCodes = _.compact(_.uniq(_.map(items, 'LangCC'))).join(';');
+        // console.log('MAP ITEMS');
+        let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'Description'))), r => { return _.trim(r)!=''}).join(';');
+        console.log('2 countryCodes > ', countryCodes);
         let item_country_flags = await retrieveFlagsForItems(countryCodes);
 
         console.log("rAW ITEMS  > ", items);
@@ -259,7 +267,9 @@ async function mapItems(items) {
             if (!!item.TopSeller) {
                 catId.push(111100);
             }
-
+            if (!!/simple/i.test(item.Name)) {
+                catId.push(111101);
+            }
             
             return {
                 id: item.Id,
@@ -270,10 +280,11 @@ async function mapItems(items) {
                 price:item.Price || 0,
                 flag: !!item_country_flags ? item_country_flags[item.LangCC] || null : null,
                 attachments,
+                sort: item.Sort
                 
             }
         })
-        return mappedItems;
+        return _.sortBy(mappedItems, 'sort');
 }
 
 
@@ -285,7 +296,11 @@ async function retrieveFlagsForItems(countryCodes) {
             if (!!response.body) {
                 for (var i = 0; i < response.body.length; i++) {
                     let c = response.body[i];
-                    flagCollection[c.alpha2Code] = c.flag
+                    console.log("C >> ",c);
+                    if (!!c) {
+                        flagCollection[c.alpha2Code] = c.flag
+                    }
+                    
                 }
             }
             resolve(flagCollection);
