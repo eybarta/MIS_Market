@@ -1,13 +1,26 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-
-Vue.use(VueRouter);
-
-// const Home = resolve => require(['./ui/layout/pages/Home.vue'], resolve);
-// const Results = resolve => require(['./ui/layout/pages/Results.vue'], resolve);
-
+import store from './store/index';
 import Home from './ui/layout/pages/Home.vue';
 import Results from './ui/layout/pages/Results.vue';
+
+
+async function requireAuth(to,from,next) {
+	let isAuthenticated = await store.dispatch('initUser');
+	if (!isAuthenticated) { 
+    	next({ name: 'login'})
+  	} else {
+		let categories = store.state.categories;
+		let items = store.state.items;
+		if (!categories) {
+			store.dispatch('initCategories');
+		}
+		if (!items || items==='loading') {
+			store.dispatch('initItems');
+		}
+		console.log('categories > ', categories);
+		console.log('items  > ', items);
+    	next()
+  	}
+}
 
 const routes = [
 	{ 
@@ -31,21 +44,22 @@ const routes = [
 					}
 				]
 			},
-			
-
-		]
+		],
+		beforeEnter: requireAuth
 	},
 	{
 		path: '/results/:searchFilter',
 		name: 'results-search',
-		component: Results
+		component: Results,
+		beforeEnter: requireAuth
 	},
-	{ path: '/', component:Home, name: 'home'},
+	{ path: '/', component:Home, name: 'home', beforeEnter: requireAuth},
+	{ path: '/login', component:Home, name: 'login'}
 	
 ]
 
 
-export default new VueRouter({
+export default {
 	root: 'marketcase/',
 	routes
-})
+}

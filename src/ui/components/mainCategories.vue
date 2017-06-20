@@ -88,9 +88,10 @@ export default {
 		right 0
 		transform translateY(-50%)
 		height 80%
-		width 2px
-		background rgba(#6f6f6f, 0.9)
-		
+		width 20px
+		border-right 2px solid rgba(#6f6f6f, 0.9)
+		background url('assets/side-shadow.png') no-repeat 100% 50% / 100% auto
+		z-index 999
 	.swiper-container
 		top 50%
 		transform translateY(-50%)
@@ -111,6 +112,11 @@ export default {
 		display inline-block
 		margin-right 12px
 		text-align center
+		position relative
+		transition opacity 300ms ease, filter 300ms ease
+		filter grayscale(0)
+		&:hover
+			filter grayscale(100%)
 		img
 			width 100%
 		span

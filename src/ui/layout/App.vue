@@ -1,7 +1,7 @@
 <template>
-	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', $route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
+	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!$route && !!$route.name && $route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
 		<top-bar></top-bar>
-		<router-view></router-view>
+			<router-view></router-view>
 		<footer>
 			 <span>Copyright © 2017 MIS Implants Technologies Ltd.</span>
 		</footer>
@@ -12,17 +12,19 @@ import { mapState, mapActions } from 'vuex';
 import TopBar from './partials/TopBar.vue';
 export default {
 	created() {
-		this.initUser();
-		this.initCategories();
-		this.initItems();
-
+		// this.initUser();
+		// if (!!this.user) {
+		// this.initCategories();
+		// this.initItems();
+		// }
 	},
 	components: {
 		TopBar,
 	},
 	computed: {
 		...mapState([
-			'overlay'
+			'overlay',
+			'user'
 		])
 	},
 	methods: {

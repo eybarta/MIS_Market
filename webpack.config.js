@@ -22,126 +22,112 @@ const buildPath = path.join(__dirname, './dist');
 
 const plugins = [
 	new webpack.LoaderOptionsPlugin({
-    options: {
-      stylus: {
-        use: [poststylus([ 'autoprefixer', 'rucksack-css' ])]
-      }
-    }
-  }),
-	// new webpack.LoaderOptionsPlugin(
-	// 		{
-	// 		test: /\.styl$/,
-	// 		options: {
-	// 				stylus: {
-	// 					use: [poststylus([ 'lost', 'rucksack-css' ])],
-
-	// 				}
-	// 			},
-	// 		  preferPathResolver: 'webpack',
-	// 		}
-	// 		),		
-		
-		new ExtractTextPlugin("css/style.css")
-
+		options: {
+			stylus: {
+				use: [poststylus(['autoprefixer', 'rucksack-css'])]
+			}
+		}
+	}),
+	new ExtractTextPlugin("css/style.css")
 ]
 
 // COMMON RULES
 const rules = [
-		{
-				test: /\.vue$/,
-				loader: 'vue-loader',
-				options: {
-					postcss: [require('lost')(), require('autoprefixer')(), require('rucksack-css')()],
-					loaders: {
-						css: ExtractTextPlugin.extract({
-							  loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
-							  fallbackLoader: 'style-loader',								
-						}),
-					},
-				}
+	{
+		test: /\.vue$/,
+		loader: 'vue-loader',
+		options: {
+			postcss: [require('lost')(), require('autoprefixer')(), require('rucksack-css')()],
+			loaders: {
+				css: ExtractTextPlugin.extract({
+					loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
+					fallbackLoader: 'style-loader',
+				}),
 			},
-			{
-				test: /\.styl$/,
-				use: ExtractTextPlugin.extract({
-					loader: 'css-loader!stylus-loader',
-					fallbackLoader:'style-loader'
-				})
-			},
-			{
-				test: /\.js$/,
-				loader: 'babel-loader',
-				exclude: /node_modules/
-			},
-			{
-					test: /\.(eot|ttf|woff|svg)$/,
-					loader: 'file-loader?name=font-[hash:6].[ext]&publicPath=../../dist/fonts/&outputPath=fonts/',
-	        include: [/fonts/],
-					// options: {						
-					// 	name: '../fonts/[name].[ext]?[hash]'
-					// }
-			},
-			{ test: /\.css$/, loader: "style-loader!css-loader" },
-			{
-				test: /\.(png|jpg|gif|svg)$/,
-				loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/&outputPath=img/',
-			},
+		}
+	},
+	{
+		test: /\.styl$/,
+		use: ExtractTextPlugin.extract({
+			loader: 'css-loader!stylus-loader',
+			fallbackLoader: 'style-loader'
+		})
+	},
+	{
+		test: /\.js$/,
+		loader: 'babel-loader',
+		exclude: /node_modules/
+	},
+	{
+		test: /\.(eot|ttf|woff|svg)$/,
+		loader: 'file-loader?name=font-[hash:6].[ext]&publicPath=../../dist/fonts/&outputPath=fonts/',
+		include: [/fonts/],
+		// options: {						
+		// 	name: '../fonts/[name].[ext]?[hash]'
+		// }
+	},
+	{ test: /\.css$/, loader: "style-loader!css-loader" },
+	{
+		test: /\.(png|jpg|gif|svg)$/,
+		loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/&outputPath=img/',
+	},
 ]
 if (isProduction) {
-  // Production plugins
-  plugins.push(
+	// Production plugins
+	plugins.push(
 		// new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.optimize.CommonsChunkPlugin({
-		names: ['common', 'vendor'],
-		minChunks: Infinity,
-		filename: 'js/[name].js'
-  }),
-	 new webpack.DefinePlugin({
+			names: ['common', 'vendor'],
+			minChunks: Infinity,
+			filename: 'js/[name].js'
+		}),
+		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: JSON.stringify(nodeEnv),
 			},
-  }),
-	new webpack.NamedModulesPlugin(),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: false,
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-        screw_ie8: true,
-        conditionals: true,
-        unused: true,
-        comparisons: true,
-        sequences: true,
-        dead_code: true,
-        evaluate: true,
-        if_return: true,
-        join_vars: true,
+		}),
+		new webpack.NamedModulesPlugin(),
+		new webpack.LoaderOptionsPlugin({
+			minimize: true,
+			debug: false,
+		}),
+		new webpack.optimize.UglifyJsPlugin({
+			compress: {
+				warnings: false,
+				screw_ie8: true,
+				conditionals: true,
+				unused: true,
+				comparisons: true,
+				sequences: true,
+				dead_code: true,
+				evaluate: true,
+				if_return: true,
+				join_vars: true,
 				drop_console: true
-      },
-      output: {
-        comments: false,
-      },
-    })
-  );
+			},
+			output: {
+				comments: false,
+			},
+		})
+	);
 }
 else {
-  // Development plugins
-  plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-    new DashboardPlugin()
-  );
+	// Development plugins
+	plugins.push(
+		new webpack.HotModuleReplacementPlugin(),
+		new DashboardPlugin()
+	);
 }
 module.exports = {
-  devtool: isProduction ? 'cheap-module-source-map' : 'eval',
+	devtool: isProduction ? 'cheap-module-source-map' : 'eval',
 	context: jsSourcePath,
 	// entry point of our application
 	entry: {
 		script: './index.js',
 		common: [
-      'vue',
+			'vue',
 			'vuex',
-      'vue-router',
+			'vue-router',
 			'vuex-router-sync',
 			'vue-awesome-swiper',
 			'vue-paginate'
@@ -150,7 +136,7 @@ module.exports = {
 			'jquery',
 			'lodash',
 			'velocity-animate'
-    ],
+		],
 	},
 	// where to place the compiled bundle
 	output: {
@@ -158,15 +144,15 @@ module.exports = {
 		publicPath: "/",
 		filename: 'js/[name].js'
 	},
-	
-	module: { 
+
+	module: {
 		rules
-		
+
 	},
 	resolve: {
 		alias: {
 			'vue$': 'vue/dist/vue.common.js',
-			'assets': path.resolve(__dirname,'dist'),
+			'assets': path.resolve(__dirname, 'dist'),
 			settings,
 			utils,
 			normalize,
@@ -175,8 +161,7 @@ module.exports = {
 	},
 	plugins,
 	devServer: {
-    historyApiFallback: true,
+		historyApiFallback: true,
 		noInfo: true
-    
-  },
+	},
 }

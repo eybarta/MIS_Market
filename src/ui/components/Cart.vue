@@ -159,7 +159,9 @@ export default {
             'changeShelfType',
             'updateItemInLimbo',
             'addToCart',
-            'saveCart'
+            'saveCart',
+            'calculateOldItemsOrdered'
+            
 
         ]),
         buttonClickHandler() {
@@ -211,12 +213,13 @@ export default {
     },
     computed: {
         ...mapState([
+            'user',
             'cart',
             'shelf',
             'itemInLimbo'
         ]),
         ...mapGetters({
-            items:'cartItems'
+            items:'cartItems',
         }),
         noItems() {
             if (!!this.items) {
@@ -236,10 +239,16 @@ export default {
             let cart = this.cart;
             return _.sum(_.map(cart.items, item => { return _.multiply(parseFloat(item.price), parseInt(item.amount))}))
         },
+        itemIdsInCart() {
+            let items = this.items;
+            let checkedOutItemIds = _.map(items, 'id');
+            return checkedOutItemIds;
+        },
         checkoutStatus() {
+            console.log("checkout >> ", this.itemIdsInCart,this.user.itemsOrdered);
             let items = this.cart.items,
                 categories = _.uniq(_.flatMap(items, 'catId')),
-                orderedBefore = 0, // TODO:: Get 'ordered before' from User account
+                orderedBefore = _.intersection(this.itemIdsInCart,this.user.itemsOrdered).length,
                 orderedNew = items.length - orderedBefore;
             return [
                 {

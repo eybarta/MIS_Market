@@ -1,7 +1,9 @@
 <template>
     <div class="result-items" :class="[singleLine ? 'single-line' : '']">
         <div v-if="items!='loading'">
-            <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
+            <transition name="fade" appear>
+                <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
+            </transition>
             <paginate
                 name="items"
                 :list="items"

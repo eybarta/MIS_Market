@@ -1,8 +1,10 @@
 <template>
     <div class="item-preview">
+    <transition name="fadeLeft">
         <div v-if="!!item.flag" class="item-flag">
             <img :src="item.flag" alt="" />
         </div>
+    </transition>
         <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart="toggleActionsForDevices($event)">
             <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
                 <button v-for="action in actions" class="action" @click.once="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
@@ -165,7 +167,7 @@ export default {
     background rgba(gray, 0.2)
     color darken(gray, 30)
 .item-flag
-    position absolute 5% false false 1%
+    position absolute 0 false false 0
     overflow hidden
     z-index 9
     box-shadow 3px 3px 7px rgba(#000, 0.2)
@@ -173,11 +175,11 @@ export default {
         self-center()
         width 185%
     /.huge-item &
-        width 98px
+        width 120px
         height @width
-        border-radius 49px
+        border-radius unit(@width/2, 'px')
     /.big-item &
-        width 60px
+        width 80px
         height @width
         border-radius unit(@width/2, 'px')
 
@@ -198,6 +200,8 @@ export default {
                 font-size 16px
         .item-name
             color lighten(#577892, 2)
+            /.cart &
+                color darken(#fff, 50)
     /.item-small + .label
             font-size 12px
     .item-preview-image

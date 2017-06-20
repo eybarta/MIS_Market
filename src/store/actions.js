@@ -1,21 +1,32 @@
 import $ from 'jquery'
 import Vue from 'vue'
 import * as types from './mutation-types'
-const GET_CATEGORIES = "./wsMain.asmx/GetCategories"
-const GET_ITEMS = "./wsMain.asmx/GetItems"
-const GET_MEMBER = "./wsMain.asmx/GetMember"
-const SAVE_CART = "./wsMain.asmx/SaveCart"
+import {router} from '../index'
+const GET_CATEGORIES = "GetCategories"
+const GET_ITEMS = "GetItems"
+const GET_MEMBER = "GetMember"
+const SAVE_CART = "SaveCart"
+const GET_MEMBER_CARTS = "GetMemberCarts"
 
 
 
 
-// API ACTIONS
-export const initUser = ({commit}) => {
-    let _user = localStorage.getItem("_marketuser");
+/*
+ -------------
+    // API -- User, Categories, Items
+ -------------
+*/
+export const initUser = async ({commit}) => {
+    let _user = localStorage.getItem("_marketuser") || null;
     if (!!_user) {
-
-        commit('INIT_USER', JSON.parse(_user));
+        _user = JSON.parse(_user);
+        console.log('_user > ', _user);
+        if (!_.has(_user, 'itemsOrdered')) {
+            _user.itemsOrdered = await fetchItemsOrdered(_user.member_id);
+        }
     }
+    commit('INIT_USER', _user);
+    return _user;
 }
 export const initCategories = async ({commit, dispatch}, categories) => {
     console.log("INIT CATEGORIES !!!");
@@ -86,11 +97,13 @@ export const signInUser = async ({commit, dispatch}, user) => {
             member_id: res.member_id,
             email: res.email,
             flag: null,
+            itemsOrdered: [],
             timestamp: new Date()
         }
         if (!!res.country) {
             console.log('commit with flag...');
-            _user = await getUserWithFlag(_user);
+            _user.itemsOrdered = await fetchItemsOrdered(_user.member_id);
+            _user.flag = await fetchUserFlag(_user.country);
             localStorage.setItem("_marketuser", JSON.stringify(_user));
             commit('INIT_USER', _user);
         }
@@ -99,16 +112,20 @@ export const signInUser = async ({commit, dispatch}, user) => {
             localStorage.setItem("_marketuser", JSON.stringify(_user));
             commit('INIT_USER', _user);
         }
+        router.push({ name: 'home'})
     }
 }
 export const userSignout = ({commit, dispatch}) => {
     localStorage.removeItem("_marketuser");
-
     commit('INIT_USER', null);
+    router.push({ name: 'login'})
 }
 
-var shelfTimer = 0;
-// UI ACTIONS
+/*
+ -------------
+    // OVERLAY
+ -------------
+*/
 export const toggleOverlay = async ({commit, dispatch}, type) => {
      commit('TOGGLE_OVERLAY', type, await dispatch('hideShelf'));
      return new Promise((resolve, reject) => {
@@ -125,8 +142,15 @@ export const hideOverlay = async ({commit}) => {
     commit('HIDE_OVERLAY');
 }
 
+/*
+ -------------
+    // SHELF
+ -------------
+*/
+var shelfTimer = 0;
 export const toggleShelf = async ({commit, dispatch}, type) => {
     console.log("TOGGLE SHELF");
+    dispatch('bindCartMouseMove');
     clearTimeout(shelfTimer);
     type = (!!type && typeof type==='string') ? type : 'cart';
     commit('TOGGLE_SHELF', type);
@@ -141,6 +165,7 @@ export const changeShelfType =  ({commit}, type) => {
     commit('CHANGE_SHELF_TYPE', type);
 }
 export const showShelf = async ({commit, dispatch}) => {
+    dispatch('bindCartMouseMove');
     commit('SHOW_SHELF', await dispatch('hideOverlay'));
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -157,7 +182,36 @@ export const hideShelf = async ({commit}, animate) => {
       }, 0)
     })
 }
+export const bindCartMouseMove = ({commit, dispatch}) => {
+    console.log('bind mouse events to shelf');
+    clearTimeout(shelfTimer);
+    let time = 5500;
+    $('#cartWrap').off();
+    timedShelfClose(dispatch, time);
+    setTimeout(function() {
+        $('#cartWrap').on('mouseenter mouseleave', function(e) {
+            console.log("event > ", e.type);
+            if (e.type==='mouseleave') {
+                timedShelfClose(dispatch, time);
+            }
+            else {
+                clearTimeout(shelfTimer);
+            }
+        })
+    }, 500)
+    function timedShelfClose(dispatch, time) {
+        shelfTimer = setTimeout(function() {
+            dispatch('hideShelf');
+        }, time)
+    }
+}
 
+
+/*
+ -------------
+    // SEARCH FILTER
+ -------------
+*/
 export const searchFilterString = ({commit, dispatch, state}, filter_string) => {
     if (!!state.shelf.active) {
         dispatch('hideShelf');
@@ -169,7 +223,11 @@ export const searchFilterString = ({commit, dispatch, state}, filter_string) => 
 }
 
 
-// DRAG N DROP
+/*
+ -------------
+    // DRAG N DROP
+ -------------
+*/
 export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
     if (!!item && !state.shelf.active) {
         await dispatch('showShelf');
@@ -177,7 +235,12 @@ export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
     commit('UPDATE_ITEM_IN_LIMBO', item);
 }
 
-// CART ACTIONS
+
+/*
+ -------------
+    // CART ACTIONS
+ -------------
+*/
 export const addToCart = async ({commit, dispatch, state}, item) => {
     await dispatch('showShelf')
     await dispatch('hideOverlay');
@@ -197,21 +260,25 @@ export const updateItemInCart = async ({commit, dispatch}, item) => {
 }
 export const removeFromCart = ({commit, dispatch}, item) => {
     commit('REMOVE_FROM_CART', item);
-    // dispatch('forceUpdateCartUI')
+}
+export const emptyCart = async ({commit, dispatch, state}) => {
+    while (!!state.cart.items.length) {
+        dispatch('removeFromCart', state.cart.items[0]);
+    }
 }
 export const openItem = async({commit, dispatch}, item) => {
     commit('OPEN_ITEM', item);
     dispatch('showOverlay', 'item');
 }
-
 export const updateItemSize = ({commit}, size) => {
     commit('UPDATE_ITEM_SIZE', size);
 }
 
-export const saveCart = ({commit, dispatch, state}, subtotal) => {
+// SAVE CART TO USER
+export const saveCart = async ({commit, dispatch, state}, subtotal) => {
     let items = _.map(state.cart.items, item => {
         return {
-            Id: item.id,
+            ItemId: item.id,
             Quintity: item.amount
         }
     });
@@ -219,24 +286,32 @@ export const saveCart = ({commit, dispatch, state}, subtotal) => {
     let token = 12345;
     let cartData = { items, subtotal};
     let data = {cartData: items, mId, token}
-    console.log("data > ", btoa(JSON.stringify(data)));
-    Vue.http.post(SAVE_CART,btoa(JSON.stringify(data))).then(response => {
+    let _data = { 'cart': btoa(JSON.stringify(data)).toString()}
+
+    console.log("data > ", _data);
+    Vue.http.post(SAVE_CART,_data).then(async response => {
         console.log("SAVE_CART, RESPONSE >> ", response);
+
         dispatch('changeShelfType', 'confirm');
+        dispatch('bindCartMouseMove', await dispatch('emptyCart'));
     }, response => {
         console.log('save cart error >> ', response);
     })
 }
+export const calculateOldItemsOrdered = async ({commit, dispatch,state}) => {
 
+}
 
-
-
-// HELPER FUNCTIONS
+/*
+ -------------
+    // HELPER FUNCTIONS
+ -------------
+*/
 async function mapItems(items) {
         // console.log('MAP ITEMS');
         let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'Description'))), r => { return _.trim(r)!=''}).join(';');
         console.log('2 countryCodes > ', countryCodes);
-        let item_country_flags = await retrieveFlagsForItems(countryCodes);
+        let item_country_flags = await fetchFlagsForItems(countryCodes);
 
         console.log("rAW ITEMS  > ", items);
         let mappedItems = _.map(items, item => {
@@ -286,9 +361,7 @@ async function mapItems(items) {
         })
         return _.sortBy(mappedItems, 'sort');
 }
-
-
-async function retrieveFlagsForItems(countryCodes) {
+async function fetchFlagsForItems(countryCodes) {
     let api = "https://restcountries.eu/rest/v2/alpha?codes=" + countryCodes;
     return new Promise((resolve, reject) => {
         Vue.http.get(api).then(response => {
@@ -309,16 +382,35 @@ async function retrieveFlagsForItems(countryCodes) {
         }
     });
 }
-async function getUserWithFlag(user) {
+async function fetchUserFlag(country) {
     return new Promise((resolve, reject) => {
-        let api = "https://restcountries.eu/rest/v2/name/"+user.country;
+        let api = "https://restcountries.eu/rest/v2/name/"+country;
         Vue.http.get(api).then(response => {
-            if (!!response.data) {
-                user.flag = response.data[0].flag
+            if (!!response.data.length && !!response.data[0].flag) {
+                resolve(response.data[0].flag);
+            } else {
+                resolve(null);
             }
-            resolve(user);
         }), response => {
-            resolve(user);
+            resolve(null);
         }
+    })
+}
+
+async function fetchItemsOrdered(id) {
+    console.log("FETCH ITEMS >> ", id);
+    return Vue.http.post(GET_MEMBER_CARTS, {MemberID:id}).then(async response => {
+        console.log("GET_MEMBER_CARTS, RESPONSE >> ", response);
+        if (!!response && !!response.body.d) {
+            let res = JSON.parse(response.body.d);
+            console.log("RES >> ", res);
+            let itemIds = _.uniq(_.map(_.flatMap(res, 'OrderItems'), 'Id'));
+            console.log(" itemIds > ", itemIds)
+            // resolve(itemIds);
+            return itemIds;
+        }
+    }, response => {
+        console.log('GET_MEMBER_CARTS error >> ', response);
+        return [];
     })
 }

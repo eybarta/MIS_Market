@@ -1,25 +1,27 @@
 <template>	
 	<div class="backdrop">	
-		
-		<div :class="['signin', loading ? 'loading' : '']" @keyup.enter="signin">
-			<preloader v-if='!!loading' :pretitle="'Hold on...'"></preloader>
-			<div v-else>
-				<h4>SIGN IN</h4>
-				<div :class="['form', !!error ? 'error' : '']">
-					<div :class="['field', invalid ? 'invalid' : '']">
-						<input id="username" v-model="user" type="text" required>
-						<label for="username">Username</label>
+		<transition name="zoomUp" appear>
+			<div :class="['signin', loading ? 'loading' : '']" @keyup.enter="signin">
+				<preloader v-if='!!loading' :pretitle="'Logging you in...'"></preloader>
+				<div v-else>
+					<h4>SIGN IN</h4>
+					<div :class="['form', !!error ? 'error' : '']">
+						<div :class="['field', invalid ? 'invalid' : '']">
+							<input id="username" v-model="user" type="text" required>
+							<label for="username">Username</label>
+						</div>
+						<div :class="['field', invalid ? 'invalid' : '']">
+							<input id="password" v-model="password" type="password" required>
+							<label for="password">Password</label>
+						</div>
+						<span v-if="!!error" class="err" v-text="error"></span>
 					</div>
-					<div :class="['field', invalid ? 'invalid' : '']">
-						<input id="password" v-model="password" type="password" required>
-						<label for="password">Password</label>
-					</div>
-					<span v-if="!!error" class="err" v-text="error"></span>
-				</div>
 
-				<button :class="['round-btn', !user||!password ? 'disabled' : '']" @click="signin">Login</button>
+					<button :class="['round-btn', !user||!password ? 'disabled' : '']" @click="signin">Login</button>
+				</div>
 			</div>
-		</div>
+		</transition>
+
 	</div>
 </template>
 <script>
@@ -44,6 +46,7 @@ export default {
 			'signInUser'
 		]),
 		async signin() {
+			let vm = this;
 			this.$set(this, 'error', null);
 			this.$set(this, 'loading', true);
 			if (!this.user || !this.password) {
@@ -59,8 +62,26 @@ export default {
 					pass: this.password
 				}
 				this.error = await this.signInUser(data);
-				this.$set(this, 'loading', false);
+				// this.$set(this, 'loading', false);
 			}
+			// let data = {
+			// 		user: this.user,
+			// 		pass: this.password
+			// 	}
+			//  this.$auth.login({
+			// 	body: {user: vm.user, pass: vm.password},
+			// 	success: function (res) {
+			// 		console.log(
+			// 			"login success >> ", res, " :: ", this.$auth, " :: ", this, " :: ", this.context
+			// 		);
+			// 		this.$auth.options.parseUserData(JSON.parse(res.body.d))
+			// 	},
+			// 	error: function (res) { console.log('login err > ', res);},
+			// 	rememberMe: true,
+			// 	redirect: '/',
+			// 	fetchUser: false
+			// 	// etc...
+			// });
 		}
 	}
 }

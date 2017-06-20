@@ -128,9 +128,11 @@ export default {
                 position absolute
                 list-style none
                 top 36%
-                left 100%
+                left 70%
                 padding-right 5%
+                padding-left 20%
                 transition transform 150ms ease-out-quint, opacity 150ms ease-out-quint
+                z-index 999
                 li
                     margin-bottom 2vmin
                     span

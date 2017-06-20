@@ -1,12 +1,13 @@
 <template>
 	<div class="home">
 		<intro></intro>
-		<cat-strip></cat-strip>
+		<cat-strip v-if="!!user"></cat-strip>
 	</div>
 </template>
 <script>
 import Intro from '../partials/Intro.vue';
 import CatStrip from '../partials/CatStrip.vue';
+import { mapState } from 'vuex';
 export default {
 	created() {
 		console.log("Intro search partial created!");
@@ -15,6 +16,11 @@ export default {
 		return {
 			images:['dist/img/backgrounds/background-1.jpg']
 		}
+	},
+	computed: {
+		...mapState([
+			'user'
+		])
 	},
 	components: {
 		Intro,

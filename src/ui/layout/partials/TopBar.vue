@@ -29,6 +29,9 @@ export default {
 		console.log("Top Bar  Created!");
 	},
 	methods: {
+		...mapActions([
+			'userSignout'
+		]),
 		signout() {
 			this.$set(this, 'showdrop', false);
 			this.userSignout();

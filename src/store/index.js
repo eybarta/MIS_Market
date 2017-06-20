@@ -3,22 +3,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VueResource from 'vue-resource';
 import * as actions from './actions';
-// Vue.http.headers.common['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+
 Vue.use(Vuex);
 Vue.use(VueResource);
-
-// import { categories} from './test-categories';
-// import { itemGenerator } from './test-items';
-// import * as api from './api';
-
-// let categories = async function() {
-// 	return await api.getCategories();
-// }
-
-
-// let items = itemGenerator(1200);
-
-// console.log("CATEGORIES >> ", categories());
 
 const itemsFilterString = '';
 const cart = {
@@ -32,6 +19,7 @@ const state = {
 	items: 'loading',
 	itemsFilterString,
 	itemInLimbo: null,
+	loaded: false,
 	cart:{
 		items:[],
 		subtotal:0
@@ -59,8 +47,9 @@ const mutations = {
 		state.items = items;
 	},
 	INIT_USER (state, user) {
-		console.log("INIT USER MUTATION >> ", user);
+		console.log("INIT USER MUTATION >> ", user, state, " :: ", state.router);
 		state.user = user;
+		state.loaded = true;
 	},
 	// UI
 	TOGGLE_OVERLAY (state, type) {
