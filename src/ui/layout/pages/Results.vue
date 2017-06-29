@@ -1,5 +1,5 @@
 <template>
-	<div class='results'>
+	<div :class="['results', singleLine ? 'single-line' : '']">
 		<menu-bar></menu-bar>
 		<shelf></shelf>
 		<div class="content">
@@ -28,6 +28,7 @@
 	</div>
 </template>
 <script>
+import $ from 'jquery';
 import CountUp from 'vue-countup-v2';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import MenuBar from '../partials/menuBar.vue';
@@ -46,6 +47,15 @@ export default {
 			this.hideOverlay();
 		}
 	},
+	beforeRouteUpdate (to, from, next) {
+		console.log("before route update.. ", to, from);
+		if (to.name.indexOf('root')>-1) {
+			console.log("CLEAR SARCH FILTER");
+			this.searchFilterString('');
+			
+		} 
+		next();
+	},
 	components: {
 		MenuBar,
 		Shelf,
@@ -56,7 +66,8 @@ export default {
 	methods:{
 		...mapActions([
 			'hideOverlay',
-			'updateItemSize'
+			'updateItemSize',
+			'searchFilterString'
 		]),
 		afterCount() {
 			console.log("counter callback called");
@@ -86,6 +97,9 @@ export default {
                 return this.filteredItems;
             }
         },
+        singleLine() {
+            return this.items.length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
+        }
 	}
 }
 </script>
@@ -99,6 +113,8 @@ export default {
 	background #061016 url('assets/main-bg.jpg') repeat-x 0 bottom
 	color #fff
 	position relative
+	&.single-line
+		background-position 0 70%
 	.content
 		margin-top 125px
 		position relative

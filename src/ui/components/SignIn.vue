@@ -1,8 +1,8 @@
 <template>	
 	<div class="backdrop">	
-		<transition name="zoomUp" appear>
+		<transition name="fade" appear>
 			<div :class="['signin', loading ? 'loading' : '']" @keyup.enter="signin">
-				<preloader v-if='!!loading' :pretitle="'Logging you in...'"></preloader>
+				<preloader v-if='!!loading'></preloader>
 				<div v-else>
 					<h4>SIGN IN</h4>
 					<div :class="['form', !!error ? 'error' : '']">
@@ -94,7 +94,8 @@ export default {
 		position fixed 49px 0 0 0
 		transform none
 		opacity 0.98
-		background-color darkblue
+		z-index 999999
+		// background-color darkblue
 
 	.signin
 		self-center()

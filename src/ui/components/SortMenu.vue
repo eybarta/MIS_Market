@@ -9,12 +9,12 @@
                             <img :src="category.src" :alt="category.name">
                             <span v-text="category.name"></span>
                         </router-link>
-                        <ul class='subnav' v-if="hasChildren(category)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)" @touchstart="subnavHover($event)">
+                        <ul class='subnav' v-if="hasChildren(category)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)" @touchstart.passive="subnavHover($event)">
                             <li v-for="child in category.children">
                                 <router-link :to="{ name: 'results-child', params: { rootFilter: category.name, childFilter: child.name } }">
                                     <span>{{child.name}}</span>
                                 </router-link>
-                                <ul class='grandsubnav' v-if="hasChildren(child)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)"  @touchstart="subnavHover($event)">
+                                <ul class='grandsubnav' v-if="hasChildren(child)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)"  @touchstart.passive="subnavHover($event)">
                                     <li v-for="grandchild in child.children">
                                         <router-link :to="{ name: 'results-grandchild', params: { rootFilter: category.name, childFilter: child.name, grandchildFilter: grandchild.name } }">
                                             <span>{{grandchild.name}}</span>

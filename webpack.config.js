@@ -40,8 +40,8 @@ const rules = [
 			postcss: [require('lost')(), require('autoprefixer')(), require('rucksack-css')()],
 			loaders: {
 				css: ExtractTextPlugin.extract({
-					loader: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
-					fallbackLoader: 'style-loader',
+					use: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
+					fallback: 'style-loader',
 				}),
 			},
 		}
@@ -49,8 +49,8 @@ const rules = [
 	{
 		test: /\.styl$/,
 		use: ExtractTextPlugin.extract({
-			loader: 'css-loader!stylus-loader',
-			fallbackLoader: 'style-loader'
+			use: 'css-loader!stylus-loader',
+			fallback: 'style-loader'
 		})
 	},
 	{
@@ -60,7 +60,7 @@ const rules = [
 	},
 	{
 		test: /\.(eot|ttf|woff|svg)$/,
-		loader: 'file-loader?name=font-[hash:6].[ext]&publicPath=../../dist/fonts/&outputPath=fonts/',
+		loader: 'file-loader?name=font-[hash:6].[ext]',
 		include: [/fonts/],
 		// options: {						
 		// 	name: '../fonts/[name].[ext]?[hash]'
@@ -69,13 +69,14 @@ const rules = [
 	{ test: /\.css$/, loader: "style-loader!css-loader" },
 	{
 		test: /\.(png|jpg|gif|svg)$/,
-		loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/img/&outputPath=img/',
+		loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/&outputPath=img/',
 	},
 ]
 if (isProduction) {
 	// Production plugins
 	plugins.push(
 		// new webpack.optimize.OccurenceOrderPlugin(),
+		// new webpack.optimize.ModuleConcatenationPlugin(),
 		new webpack.optimize.CommonsChunkPlugin({
 			names: ['common', 'vendor'],
 			minChunks: Infinity,

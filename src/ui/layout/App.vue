@@ -1,5 +1,5 @@
 <template>
-	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!$route && !!$route.name && $route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
+	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
 		<top-bar></top-bar>
 			<router-view></router-view>
 		<footer>
@@ -8,30 +8,16 @@
 	</div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
 import TopBar from './partials/TopBar.vue';
 export default {
-	created() {
-		// this.initUser();
-		// if (!!this.user) {
-		// this.initCategories();
-		// this.initItems();
-		// }
-	},
 	components: {
 		TopBar,
 	},
 	computed: {
 		...mapState([
 			'overlay',
-			'user'
-		])
-	},
-	methods: {
-		...mapActions([
-			'initUser',
-			'initCategories',
-			'initItems'
+			'route'
 		])
 	}
 }
@@ -62,4 +48,6 @@ footer
 .home + footer
 	background #4b4b4b
 	height 36px
+.single-line + footer
+	border-top 0
 </style>

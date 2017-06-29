@@ -28,6 +28,27 @@ a,button
 	overflow hidden
 	@media (min-width:1024px), (max-height:769px)
 		padding-top 6vh
+.closebtn
+	position absolute
+	top 1vw
+	right 1vw
+	width 4vmin
+	height @width
+	&:after, &:before
+		content ''
+		position absolute
+		top 50%
+		left 50%
+		width 1px
+		height 100%
+		transform translate(-50%, -50%) rotate(-45deg)
+		background rgba(#fff, 0.5)
+		transition background 200ms ease-out
+	&:after
+		transform translate(-50%, -50%) rotate(45deg)
+	&:hover
+		&:after, &:before
+			background #fff
 .btn
 	font-size 18px
 	line-height 50px

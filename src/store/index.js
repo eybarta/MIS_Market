@@ -62,6 +62,8 @@ const mutations = {
 	}, 
 	HIDE_OVERLAY (state) {
 		state.overlay.active = false;
+		state.overlay.data = null;
+		state.overlay.item = null;
 	},
 	SEARCH_FILTER_STRING (state, filter_string) {
 		state.itemsFilterString = filter_string;
@@ -167,33 +169,41 @@ const getters = {
 			})
 		}
 		else {
-			let root_route = state.route.params.rootFilter,
-				child_route = state.route.params.childFilter,
-				gchild_route = state.route.params.grandchildFilter,
-				filter_ids = [];
-			// will filter out the root category and it's children
-			let rootCategory = _.find(state.categories, {name: root_route});
-			if (!!rootCategory) {
-				if (!!child_route) {
-					// will filter out SELECTED CHILDREN categories if exists
-					let childCategory = _.find(rootCategory.children, {name: child_route});
-					if (!!gchild_route) {
-					// will filter out SELECTED GRANDCHILDREN categories if exists
-						let gChildCategory = _.find(childCategory.children, {name: gchild_route});
-							filter_ids = [gChildCategory.Id];
+
+			if (state.route.name==='all') {
+				return state.items;
+			} else {
+				let root_route = state.route.params.rootFilter,
+					child_route = state.route.params.childFilter,
+					gchild_route = state.route.params.grandchildFilter,
+					filter_ids = [];
+				
+				
+				// will filter out the root category and it's children
+				let rootCategory = _.find(state.categories, {name: root_route});
+				
+				if (!!rootCategory) {
+					if (!!child_route) {
+						// will filter out SELECTED CHILDREN categories if exists
+						let childCategory = _.find(rootCategory.children, {name: child_route});
+						if (!!gchild_route) {
+						// will filter out SELECTED GRANDCHILDREN categories if exists
+							let gChildCategory = _.find(childCategory.children, {name: gchild_route});
+								filter_ids = [gChildCategory.Id];
+						}
+						else {
+							filter_ids = _.concat(_.map(childCategory.children, 'Id'), childCategory.Id);
+						}
 					}
 					else {
-						filter_ids = _.concat(_.map(childCategory.children, 'Id'), childCategory.Id);
+						let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.Id});
+						filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.Id);
 					}
+					return _.filter(state.items, function(item) {
+						// check to see if any item ids match the filter ids
+						return !!_.intersection(filter_ids, item.catId).length;
+					})
 				}
-				else {
-					let childrenOfRoot = _.find(getters.childrenCategoryIds, {id:rootCategory.Id});
-					filter_ids = _.concat(childrenOfRoot.childrenIds, rootCategory.Id);
-				}
-				return _.filter(state.items, function(item) {
-					// check to see if any item ids match the filter ids
-					return !!_.intersection(filter_ids, item.catId).length;
-				})
 			}
 		}
 		return [];
@@ -212,6 +222,10 @@ const getters = {
 		return bc;
 	},
 	resultsTitle: state => {
+		if (state.route.name==='all') {
+			return "All Market Items";
+		}
+		
 		let filtername = state.route.params.searchFilter
 		|| state.route.params.grandchildFilter
 		|| state.route.params.childFilter

@@ -5,9 +5,9 @@
             <img :src="item.flag" alt="" />
         </div>
     </transition>
-        <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart="toggleActionsForDevices($event)">
+        <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart.passive="toggleActionsForDevices($event)">
             <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
-                <button v-for="action in actions" class="action" @click.once="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+                <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
 
             <div class="item-info" v-if="!!info" @click="infoClickHandler">
@@ -43,7 +43,8 @@ export default {
     data() {
         return {
             quantfocus:false,
-            showActionsOnDevices: false
+            showActionsOnDevices: false,
+            btnClickDisabler: false
         }
     },
     methods: {
@@ -93,25 +94,30 @@ export default {
             }
         },
         actionHandler(action) {
-            switch(action) {
-                case 'open':
-                case 'view':
-                    let item = _.clone(this.item);
-                    item.editmode = this.type==='cart';
-                    this.openItem(item);
-                    break;
-                case 'plus':
-                    this.addToCart(this.item);
-                    break;
-                case 'remove':
-                    this.removeFromCart(this.item);
-                    break;
-                default: 
-                    return '';
+            if (!this.btnClickDisabler) {
+                this.$set(this, 'btnClickDisabler', true);
+                switch(action) {
+                    case 'open':
+                    case 'view':
+                        let item = _.clone(this.item);
+                        item.editmode = this.type==='cart';
+                        this.openItem(item);
+                        break;
+                    case 'plus':
+                        this.addToCart(this.item);
+                        break;
+                    case 'remove':
+                        this.removeFromCart(this.item);
+                        break;
+                    default: 
+                        return '';
+                }
+                setTimeout(()=> {
+                    this.$set(this, 'btnClickDisabler', false);
+                }, 300)
             }
         },
         dragStart(e) {
-            console.log('drag start >> ', this.item)
             this.updateItemInLimbo(this.item);
         },
         dragEnd(e) {
@@ -170,7 +176,7 @@ export default {
     position absolute 0 false false 0
     overflow hidden
     z-index 9
-    box-shadow 3px 3px 7px rgba(#000, 0.2)
+    box-shadow 3px 3px 7px rgba(#000, 0.2), inset 2px 2px 10px rgba(#000, 0.5)
     img
         self-center()
         width 185%

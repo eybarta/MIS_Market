@@ -1,10 +1,11 @@
 <template>
 	<div class="search-box">
-		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @input="$emit('input', searchval)" @keyup.enter="search">
-		<i class="icon-search" @click="search"></i>
+		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @keyup="search($event)">
+		<i :class="[!!searchval.length && type!='intro' ? 'icon-clear' : 'icon-search']" @click="searchIconClickHandler"></i>
 	</div>
 </template>
 <script>
+import { mapState } from 'vuex';
 	export default {
 		props: ['placeholder', 'value', 'type'],
 		data() {
@@ -12,15 +13,48 @@
 				searchval:''
 			}
 		},
+		mounted() {
+			let vm = this;
+			let searchFromRoute = !!this.route.params.searchFilter ? this.route.params.searchFilter : null;
+			console.log("searchFromRoute >> ", searchFromRoute);
+			if (!!searchFromRoute) {
+				let time = 300;
+				_.each(searchFromRoute, (letter, index) => {
+					setTimeout(function() {
+						vm.$set(vm, 'searchval', vm.searchval+letter);
+					},time*(index+1))
+				})
+			}
+
+		},
 		methods: {
-			search() {
-				if (this.type==='intro') {
-					this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})
-				}
-				else {
-					this.$emit('input', this.searchval)
+			search: _.debounce(function(e) {
+					if (this.type==='intro') {
+						if (e.keyCode===13) {
+							this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})	
+						}
+					}
+					else if (!!this.searchval) {
+						this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})
+					}
+					else {
+						this.$router.push({ name: 'all'})
+					}
+						// this.$emit('input', this.searchval)
+			}, 300),
+			searchIconClickHandler() {
+				if (!!this.searchval.length) {
+					if (this.type!='intro') {
+						this.$set(this, 'searchval', '');
+					}
+					this.search();
 				}
 			}
+		},
+		computed: {
+			...mapState([
+				'route'
+			])
 		}
 	}
 </script>
@@ -32,13 +66,55 @@
 	height 80px
 	background #fff
 	z-index 2
-	i
-		position absolute 50% 3% false false
+	i.icon-search
+		position absolute 55% 1vw false false
 		transform translate(0,-50%)
-		font-size responsive 18px 32px
-		color #80858c
+		width 32px
+		height @width
 		cursor pointer
-		z-index 999
+		transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+		&:before
+			content ''
+			width 20px
+			height @width
+			border 1px solid #80858c
+			border-radius unit(@width/2, 'px');
+			position absolute 0 0 false false
+			transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+		&:after
+			content ''
+			width 15px
+			height 1px
+			background #80858c
+			position absolute 21px false false 50%
+			transform translate(-95%, 0) rotate(-45deg)
+			transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+	i.icon-clear
+		position absolute 50% 1vw false false
+		transform translate(0,-50%)
+		width 32px
+		height @width
+		cursor pointer
+		&:after, &:before
+			content ''
+			position absolute
+			top 50%
+			left 50%
+			width 1px
+			height 100%
+			transform translate(-50%, -50%) rotate(-45deg)
+			background #80858c
+			transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+		&:after
+			transform translate(-50%, -50%) rotate(45deg)
+		&:hover
+			&:after, &:before
+				background darken(#80858c, 15)
+		// transform translate(0,-50%)
+		// font-size responsive 18px 32px
+		// color #80858c
+		// cursor pointer
+		// z-index 999
 	input
 		position relative
 		height 90%

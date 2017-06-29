@@ -2,7 +2,7 @@
 <div class="main-categories">
 	<transition name="fade-top" mode="out-in" appear>
 		<swiper key="showing" v-if="!!categories" :options="swiperOption">
-			<swiper-slide v-for="category in categories">
+			<swiper-slide v-for="category in categories" :key="category">
 				<router-link :to="{ name: 'results-root', params: { rootFilter: category.name } }">
 					<img :src="category.src" alt="">
 					<span v-text="category.name"></span>
@@ -10,7 +10,7 @@
 			</swiper-slide>
 			<div class="swiper-pagination"  slot="pagination"></div>
 		</swiper>
-		<preloader key="loading" v-else :pretitle="'Categories loading...'"></preloader>
+		<preloader key="loading" v-else></preloader>
 	</transition>
 </div>
 </template>
@@ -29,7 +29,7 @@ export default {
 				slidesPerView: 6,
 				spaceBetween: 45,
 				freeMode: true,
-				preventClicks: false,
+				preventClicks: true,
 				breakpoints: {
 					1600: {
 						slidesPerView: 5.5,
@@ -87,10 +87,9 @@ export default {
 		top 50%
 		right 0
 		transform translateY(-50%)
-		height 80%
+		height 100%
 		width 20px
-		border-right 2px solid rgba(#6f6f6f, 0.9)
-		background url('assets/side-shadow.png') no-repeat 100% 50% / 100% auto
+		background url('assets/side-shadow-cats.png') no-repeat 100% 50% / 100% auto
 		z-index 999
 	.swiper-container
 		top 50%

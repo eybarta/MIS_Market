@@ -14,7 +14,7 @@
       <div class="sk-circle11 sk-child"></div>
       <div class="sk-circle12 sk-child"></div>
     </div>
-		<h5 v-text="pretitle"></h5>
+		<h5 v-if="pretitle" v-text="pretitle"></h5>
 	</div>
 </template>
 <script>
@@ -61,6 +61,7 @@ export default {
       background-color #fff
       border-radius 100%
       -webkit-animation sk-circleBounceDelay 1.2s infinite ease-in-out both
+      -ms-animation sk-circleBounceDelay 1.2s infinite ease-in-out both
   .sk-circle2
       transform rotate(30deg)
       &:before
@@ -108,10 +109,12 @@ export default {
 @keyframes sk-circleBounceDelay {
   0%, 80%, 100% {
     -webkit-transform: scale(0);
-            transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
   } 40% {
     -webkit-transform: scale(1);
-            transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
   }
 }
 </style>

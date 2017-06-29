@@ -1,7 +1,7 @@
 <template>
 	<div class="home">
 		<intro></intro>
-		<cat-strip v-if="!!user"></cat-strip>
+		<cat-strip></cat-strip>
 	</div>
 </template>
 <script>

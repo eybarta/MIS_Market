@@ -104,19 +104,21 @@ export default {
 		.user-drop
 			position absolute
 			width 100%
-			height 77px
-			bottom -77px
+			height 0
+			top 49px
 			right 0
 			background rgba(darkblue, 0.5)
-			transition opacity 200ms, transform 300ms
+			transition all 300ms weeeha
 			opacity 0
-			transform translate(0, -100%)
+			transform translate(0, -10%)
 			z-index 9
+			overflow hidden
 			/.app-results &
-				background rgba(darkblue, 0.85)
+				background #7a7a7a
 			&.active
 				opacity 1
 				transform translate(0, 0)
+				height 81px
 			button
 				self-center()
 				color #a9a9aa

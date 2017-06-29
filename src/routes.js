@@ -5,18 +5,23 @@ import Results from './ui/layout/pages/Results.vue';
 
 async function requireAuth(to,from,next) {
 	let isAuthenticated = await store.dispatch('initUser');
+	let categories = store.state.categories;
+		console.log('categories > ', categories);
+	
+	if (!categories) {
+		store.dispatch('initCategories');
+	}
 	if (!isAuthenticated) { 
-    	next({ name: 'login'})
+		to.name==='login'
+		? next()
+		: next({ name: 'login'})
   	} else {
-		let categories = store.state.categories;
+		
 		let items = store.state.items;
-		if (!categories) {
-			store.dispatch('initCategories');
-		}
+		
 		if (!items || items==='loading') {
 			store.dispatch('initItems');
 		}
-		console.log('categories > ', categories);
 		console.log('items  > ', items);
     	next()
   	}
@@ -53,13 +58,15 @@ const routes = [
 		component: Results,
 		beforeEnter: requireAuth
 	},
+	{ path: '/all', component:Results, name: 'all', beforeEnter: requireAuth},
 	{ path: '/', component:Home, name: 'home', beforeEnter: requireAuth},
-	{ path: '/login', component:Home, name: 'login'}
+	{ path: '/login', component:Home, name: 'login', beforeEnter: requireAuth}
 	
 ]
 
 
 export default {
-	root: 'marketcase/',
-	routes
+	root: '/',
+	routes,
+	// mode: 'history'
 }

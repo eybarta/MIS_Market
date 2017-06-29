@@ -17,10 +17,9 @@ const GET_MEMBER_CARTS = "GetMemberCarts"
  -------------
 */
 export const initUser = async ({commit}) => {
-    let _user = localStorage.getItem("_marketuser") || null;
+    let _user = storageSupport() ? localStorage.getItem("_marketuser") || null : null;
     if (!!_user) {
         _user = JSON.parse(_user);
-        console.log('_user > ', _user);
         if (!_.has(_user, 'itemsOrdered')) {
             _user.itemsOrdered = await fetchItemsOrdered(_user.member_id);
         }
@@ -28,47 +27,64 @@ export const initUser = async ({commit}) => {
     commit('INIT_USER', _user);
     return _user;
 }
-export const initCategories = async ({commit, dispatch}, categories) => {
-    console.log("INIT CATEGORIES !!!");
-    Vue.http.post(GET_CATEGORIES).then(response => {
-        if (!!response.body && !!response.body.d) {
-            let cats = JSON.parse(response.body.d);
-            cats.unshift({
-                Id: 111101,
-                name: 'Simple Campaign',
-                sort: 0, 
-                parent: -1,
-                children: []
-            })
-            cats.unshift({
-                Id: 111100,
-                name: 'New',
-                sort: 0, 
-                parent: -1,
-                children: []
-            })
-            _.each(cats, cat => cat.src='./dist/img/categories/'+cat.name.split(' ')[0].toLowerCase()+'.png');
-            commit('INIT_CATEGORIES', cats);
-        }
-        return response;
-    }, response => {
-        console.log('err > ', response);
-        return { 'err': response}
-    }, {headers: {'Access-Control-Allow-Origin': '*'}})
+export const initCategories = async ({commit, dispatch}) => {
+    let categories = storageSupport() ? localStorage.getItem("_marketcategories") || null : null;
+    if (!categories) {
+        Vue.http.post(GET_CATEGORIES, { id: 1 }).then(response => {
+            console.log("RESPONSE >> ", response);
+            if (!!response.body && !!response.body.d) {
+                let cats = JSON.parse(response.body.d);
+                cats.unshift({
+                    Id: 111101,
+                    name: 'Simple Campaign',
+                    sort: 0,
+                    parent: -1,
+                    children: []
+                })
+                cats.unshift({
+                    Id: 111100,
+                    name: 'New',
+                    sort: 0,
+                    parent: -1,
+                    children: []
+                })
+                _.each(cats, cat => cat.src = './dist/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
+
+                // save categories to local storage if available 
+                storageSupport() && localStorage.setItem('_marketcategories', JSON.stringify(cats));
+                commit('INIT_CATEGORIES', cats);
+            }
+            return response;
+        }, response => {
+            console.log('categories response err > ', response);
+            return { 'err': response }
+        }, { headers: { 'Access-Control-Allow-Origin': '*' } })
+    } else {
+        commit('INIT_CATEGORIES', JSON.parse(categories));
+    }
+    
 }
 export const initItems = async ({commit, dispatch}, items) => {
-    console.log("INIT ITEMS !!!");
-    Vue.http.post(GET_ITEMS).then( async response => {
-        if (!!response.body && !!response.body.d) {
-            console.log("ITEMS HAVE RETURNED ... ");
-            let items = await mapItems(JSON.parse(response.body.d));
-            commit('INIT_ITEMS', items);
-        }
-        return response;
-    }, response => {
-        console.log('err > ', response);
-        return { 'err': response}
-    }, {headers: {'Access-Control-Allow-Origin': '*'}})
+    let _items = storageSupport() ? sessionStorage.getItem("_marketitems") || null : null;
+    if (!_items) {
+        Vue.http.post(GET_ITEMS, { id: 1}).then( async response => {
+            if (!!response.body && !!response.body.d) {
+                console.log("ITEMS HAVE RETURNED ... ");
+                let items = await mapItems(JSON.parse(response.body.d));
+
+                // save items to session storage if available (will be saved only for current tab)
+                storageSupport() && sessionStorage.setItem('_marketitems', JSON.stringify(items));
+                commit('INIT_ITEMS', items);
+            }
+            return response;
+        }, response => {
+            console.log('err > ', response);
+            return { 'err': response}
+        }, {headers: {'Access-Control-Allow-Origin': '*'}})
+    }
+    else {
+        commit('INIT_ITEMS', JSON.parse(_items));
+    }
 }
 export const signInUser = async ({commit, dispatch}, user) => {
     console.log("SIGN IN USER ACTION > > ", user);
@@ -126,8 +142,10 @@ export const userSignout = ({commit, dispatch}) => {
     // OVERLAY
  -------------
 */
-export const toggleOverlay = async ({commit, dispatch}, type) => {
-     commit('TOGGLE_OVERLAY', type, await dispatch('hideShelf'));
+export const toggleOverlay = async ({commit, dispatch, state}, type) => {
+
+    let act = !!state.overlay.active ? 'HIDE_OVERLAY' : 'SHOW_OVERLAY';
+     commit(act, type, await dispatch('hideShelf'));
      return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve()
@@ -136,7 +154,8 @@ export const toggleOverlay = async ({commit, dispatch}, type) => {
     
 }
 export const showOverlay = async ({commit, dispatch}, type) => {
-    commit('SHOW_OVERLAY', type, await dispatch('hideShelf', false));
+    
+    commit('SHOW_OVERLAY', type);
 }
 export const hideOverlay = async ({commit}) => {
     commit('HIDE_OVERLAY');
@@ -185,7 +204,7 @@ export const hideShelf = async ({commit}, animate) => {
 export const bindCartMouseMove = ({commit, dispatch}) => {
     console.log('bind mouse events to shelf');
     clearTimeout(shelfTimer);
-    let time = 5500;
+    let time = 4000;
     $('#cartWrap').off();
     timedShelfClose(dispatch, time);
     setTimeout(function() {
@@ -244,12 +263,15 @@ export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
 export const addToCart = async ({commit, dispatch, state}, item) => {
     await dispatch('showShelf')
     await dispatch('hideOverlay');
-    console.log("ADD TO CART >> ", item, " :: ");
-    let _item = _.find(state.items, {id:item.id});
-    Vue.set(_item, 'inCart', true);
-    _item.amount = (!!_item.amount) ? _item.amount : 1;
-    commit('ADD_TO_CART', _item);
-    
+    console.log("ADD TO CART >> ", item);
+
+    console.log("item is already in cart?? ", !!item.inCart);
+    if (!item.inCart) {
+         let _item = _.find(state.items, {id:item.id});
+        Vue.set(_item, 'inCart', true);
+        _item.amount = (!!_item.amount) ? _item.amount : 1;
+        commit('ADD_TO_CART', _item);
+    }
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
     console.log("update item in cart>> ", item);
@@ -413,4 +435,13 @@ async function fetchItemsOrdered(id) {
         console.log('GET_MEMBER_CARTS error >> ', response);
         return [];
     })
+}
+
+// CHECK SUPPORT
+function storageSupport(){
+    try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+    } catch(e) {
+        return false;
+    }
 }

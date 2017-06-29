@@ -1,6 +1,6 @@
 <template>
 	<div class="menu-bar">
-		<span class="hamburger" :class="{active: overlay.active}" @click="toggleOverlay('sortmenu')"></span>
+		<span class="hamburger" :class="{active: overlay.active && overlay.type==='sortmenu'}" @click="toggleOverlay('sortmenu')"></span>
 		<h4 class="title" v-text="resultsTitle"></h4>
 		<search-box v-model="searchfilter" class="menu-search" type="menu" placeholder="TYPE TO SEARCH"></search-box>
 

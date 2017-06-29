@@ -1,6 +1,6 @@
 <template>
     <div class="item-overview backdrop">
-   
+        <button class="closebtn" @click="hideOverlay"></button>
         <div class="title">
             <h4>{{catNo}}</h4>
             <h5>{{name}}</h5>
@@ -54,7 +54,8 @@ export default {
     methods:{
         ...mapActions([
             'addToCart',
-            'updateItemInCart'
+            'updateItemInCart',
+            'hideOverlay'
         ]),
         onlyNumbers(e) {
             if (/enter/i.test(e.key)) {

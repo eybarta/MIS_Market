@@ -1,5 +1,5 @@
 <template>
-    <div class="result-items" :class="[singleLine ? 'single-line' : '']">
+    <div class="result-items">
         <div v-if="items!='loading'">
             <transition name="fade" appear>
                 <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
@@ -29,7 +29,7 @@
                 :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
             </div>
         </div>
-        <preloader key="loading" v-else :pretitle="'Items loading...'"></preloader>
+        <preloader key="loading" v-else></preloader>
     </div>
     
 </template>
@@ -111,7 +111,7 @@ export default {
 			})
 		},
 		enter: function (el, done) {
-			var delay = el.dataset.index * 100;
+			var delay = el.dataset.index * 120;
 			setTimeout(function () {
 				Velocity(
 				el,
@@ -135,10 +135,7 @@ export default {
         ...mapState([
 			'overlay',
             'itemsize'
-		]),
-        singleLine() {
-            return this.paginated('items').length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
-        }
+		])
     }
 }
 </script>
@@ -146,7 +143,7 @@ export default {
 @import '~settings';
 @import '~rupture';
 .result-items
-    padding 60px 0 0
+    padding 100px 0 0
     min-height 70vh
     clear both
     .paginate-langs
@@ -234,13 +231,13 @@ export default {
 				-webkit-filter blur(5px) !important
 				filter url('assets/blur.svg#blur')
 				filter blur(5px)
-        &.single-line
-            position absolute
-            bottom 0
-            width 100%
-            height 80%
-            .pager
-                position absolute
-                width 100%
-                bottom 0
+/.single-line
+    position absolute
+    bottom 0
+    width 100%
+    height 80%
+    .pager
+        position absolute
+        width 100%
+        bottom 0
 </style>
