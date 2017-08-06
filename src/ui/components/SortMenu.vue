@@ -4,18 +4,18 @@
             <div><span>SORT BY:</span></div>
             <div>
                 <ul class="categories">
-                    <li v-for="category in categories">
+                    <li v-for="category in categories" :key="category.name">
                         <router-link :to="{ name: 'results-root', params: { rootFilter: category.name } }">
                             <img :src="category.src" :alt="category.name">
                             <span v-text="category.name"></span>
                         </router-link>
                         <ul class='subnav' v-if="hasChildren(category)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)" @touchstart.passive="subnavHover($event)">
-                            <li v-for="child in category.children">
+                            <li v-for="child in category.children" :key="child.name">
                                 <router-link :to="{ name: 'results-child', params: { rootFilter: category.name, childFilter: child.name } }">
                                     <span>{{child.name}}</span>
                                 </router-link>
                                 <ul class='grandsubnav' v-if="hasChildren(child)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)"  @touchstart.passive="subnavHover($event)">
-                                    <li v-for="grandchild in child.children">
+                                    <li v-for="grandchild in child.children" :key="grandchild.name">
                                         <router-link :to="{ name: 'results-grandchild', params: { rootFilter: category.name, childFilter: child.name, grandchildFilter: grandchild.name } }">
                                             <span>{{grandchild.name}}</span>
                                         </router-link>
@@ -64,7 +64,7 @@ export default {
     padding-bottom 10vh
     height 87vh
     +below(1024px)
-        height 79vh
+        height 84vh
     .nav-wrap
         position absolute
         width 100%
@@ -127,7 +127,7 @@ export default {
                 padding 0
                 position absolute
                 list-style none
-                top 36%
+                top 50%
                 left 70%
                 padding-right 5%
                 padding-left 20%
@@ -153,8 +153,12 @@ export default {
                 span
                     color #fff
                 & > ul
-                    transform translateY(0)
+                    transform translateY(-45%)
                     opacity 1
+                    &.grandsubnav
+                        transform translateY(0)
+
+
                     
 
 

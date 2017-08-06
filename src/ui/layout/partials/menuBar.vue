@@ -4,7 +4,10 @@
 		<h4 class="title" v-text="resultsTitle"></h4>
 		<search-box v-model="searchfilter" class="menu-search" type="menu" placeholder="TYPE TO SEARCH"></search-box>
 
-		<transition name="fade" appear>
+		<transition 
+		name="custom-classes-transition"
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOut" appear>
 			<component :is="overlay.type" v-if="overlay.active"></component>
 		</transition>
 		
@@ -61,6 +64,7 @@ export default {
 <style lang="stylus">
 @import '~settings'
 .menu-bar
+	min-width 768px
 	position fixed
 	width 100%
 	@extend $inline-mid

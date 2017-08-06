@@ -8,7 +8,7 @@
                     <span>></span> <span>All</span>
                 </router-link>
 			</li>
-			<li v-for="crumb in breadCrumbs" :key="crumb">
+			<li v-for="crumb in breadCrumbs" :key="crumb.name">
 				<router-link :to="{ name: crumb.name, params: crumb.params }"><span>></span> <span>{{ crumb.label }}</span></router-link>
 			</li>
 		</ul>

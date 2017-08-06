@@ -2,15 +2,15 @@
     <div class="item-preview">
     <transition name="fadeLeft">
         <div v-if="!!item.flag" class="item-flag">
-            <img :src="item.flag" alt="" />
+            <img :src="item.flag" alt="">
         </div>
     </transition>
-        <div class="item-preview-image" :class="['item-'+size, quantfocus||!!activeActions ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchstart.passive="toggleActionsForDevices($event)">
-            <div class="item-actions" v-if="showActions || !!showActionsOnDevices">
-                <button v-for="action in actions" class="action" @click="actionHandler(action)"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
+        <div class="item-preview-image" :class="['item-'+size, !!showActionsOnDevices ? 'active' : '', !!isThisitemInLimbo ? 'flyin' : '', !!item.inCart&&type==='result' ? 'incart' : '']" :style="previewImageStyle" :draggable="draggable" @dragstart="dragStart" @dragend="dragEnd" @touchend.passive="toggleActionsForDevices($event)" @touchmove.passive="toggleActionsForDevices($event)"> <!--@touchstart.passive="toggleActionsForDevices($event)"-->
+            <div class="item-actions" v-if="!!actions.length">
+                <button v-for="action in actions" class="action" @click.prevent="actionHandler(action)" :key="action"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
 
-            <div class="item-info" v-if="!!info" @click="infoClickHandler">
+            <div class="item-info" v-if="!!info">
                 <!--
                 <div class="info" v-text="'$'+item.price+' per unit'"></div>
                 <div class="info">Quantity:  <div ref="quant" contenteditable="true"
@@ -42,9 +42,11 @@ export default {
     },
     data() {
         return {
-            quantfocus:false,
+            // quantfocus:false,
             showActionsOnDevices: false,
-            btnClickDisabler: false
+            btnClickDisabler: false,
+            inSwipeScroll: false,
+            defaultItemBg: 'dist/img/ImageNot.svg'
         }
     },
     methods: {
@@ -52,15 +54,22 @@ export default {
             item.amount =  this.$refs.quant.innerText.trim().replace(/\n /g, "")
         },
         toggleActionsForDevices(e) {
-            let vm = this;
-            console.log("toggle actions");
-            let t = e.target;
-            let isAction = !!$(t).parent("button.action").length || $(t).hasClass('action');
-            if (!!this.isTouchDevice) {
-                setTimeout(function() {
-                    vm.showActionsOnDevices = !vm.showActionsOnDevices;
-                },100)
+            console.log("[TOUCHED] e.type >> ", e.type);
+            if (e.type==='touchmove') {
+                this.$set(this, 'inSwipeScroll', true);
             }
+            else {
+                if (!this.inSwipeScroll) {
+                    if (!!this.isTouchDevice) {
+                        setTimeout(function() {
+                            this.showActionsOnDevices = !this.showActionsOnDevices;
+                        }.bind(this),100)
+                    }
+
+                }
+                this.$set(this, 'inSwipeScroll', false);
+            }
+            
         },
         updateItem(e, item) {
             if (!!e.key && /esc/gi.test(e.key)) {
@@ -71,15 +80,15 @@ export default {
                 let _item = _.clone(item);
                 _item.amount = parseInt(this.$refs.quant.innerText);
                 this.updateItemInCart(_item);
-                this.quantfocus = false;
+                // this.quantfocus = false;
                 this.$refs.quant.innerText = _.trim(this.$refs.quant.innerText)
                 e.target.blur();
             }
         },
-        infoClickHandler() {
-            this.$refs.quant.focus()
-            selectText(this.$refs.quant);
-        },
+        // infoClickHandler() {
+        //     // this.$refs.quant.focus()
+        //     // selectText(this.$refs.quant);
+        // },
         labelFor(action) {
             switch(action) {
                 case 'open':
@@ -138,27 +147,38 @@ export default {
             'updateItemInLimbo'
         ])
     },
+    asyncComputed: {
+        previewImageStyle() {
+            let vm = this;
+            return new Promise(resolve => {
+                let img = document.createElement('img');
+                $(img).on('load', (err,res) => {
+                    resolve(vm.type!='cart' && vm.item.inCart ? '' : 'background-image:url('+vm.item.image+')')
+                })
+                $(img).on('error', err => {
+                    resolve(vm.type!='cart' && vm.item.inCart ? '' : 'background-image:url('+vm.defaultItemBg+'); background-size: 50%')
+                })
+                img.src = vm.item.image;
+            })
+        },
+    },
     computed: {
         ...mapState([
             'itemInLimbo',
         ]),
-        previewImageStyle() {
-            // IF item is in CART, remove image-preview from RESULTS item
-            return this.type!='cart' && this.item.inCart ? '' : 'background-image:url('+this.item.image+');';
-        },
-        showActions() {
-            return  (!this.isThisitemInLimbo && !!this.actions && (this.type=='cart' || !this.item.inCart))
-        },
-        activeActions() {
-            return !!this.isTouchDevice && !!this.showActionsOnDevices
-        },
+        // showActions() {
+        //     return  (!this.isThisitemInLimbo && !!this.actions && (this.type=='cart' || !this.item.inCart))
+        // },
+        // activeActions() {
+        //     return !!this.isTouchDevice && !!this.showActionsOnDevices
+        // },
         isThisitemInLimbo() {
             return !!this.itemInLimbo && this.itemInLimbo.id==this.item.id;
         },
         isTouchDevice() {
-            return true //navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|BB10|Windows Phone|Tizen|Bada)/);
+            return true
         },
-        isIOSDevice() { return /iPad|iPhone|iPod/.test(navigator.platform)}
+        isIOSDevice() { return /iPad|iPhone|iPod/.test(window.navigator.platform)}
     }
 }
 </script>
@@ -166,9 +186,9 @@ export default {
 @import '~settings';
 @import '~rupture';
 .flyin
-    box-shadow inset 0px 0px 20px rgba(255,255,255,0.9) !important
     opacity 1 !important
-
+    /.no-touch &
+        box-shadow inset 0px 0px 20px rgba(255,255,255,0.9) !important
  ::selection
     background rgba(gray, 0.2)
     color darken(gray, 30)
@@ -176,10 +196,13 @@ export default {
     position absolute 0 false false 0
     overflow hidden
     z-index 9
-    box-shadow 3px 3px 7px rgba(#000, 0.2), inset 2px 2px 10px rgba(#000, 0.5)
+    /.no-touch &
+        box-shadow 3px 3px 7px rgba(#000, 0.2), inset 2px 2px 10px rgba(#000, 0.5)
     img
         self-center()
-        width 185%
+        // width 100%
+        min-width 100%
+        max-height 100%
     /.huge-item &
         width 120px
         height @width
@@ -188,7 +211,8 @@ export default {
         width 80px
         height @width
         border-radius unit(@width/2, 'px')
-
+    /.no-touch:not(.ie) & > img
+        width 185%
 .item-preview
     
     .label
@@ -217,8 +241,14 @@ export default {
         background-repeat no-repeat
         border-radius 50%
         margin 0 auto
-        box-shadow: inset 2px 2px 8px rgba(0,0,0,0.2)
-        background-color: #2e2e2e;
+        background-color #2e2e2e
+        /.no-touch &
+            box-shadow inset 2px 2px 8px rgba(0,0,0,0.2)
+        &.incart
+            &:after
+                self-center()
+                font-size 36px
+                color rgba(#fff, 0.2)
         &.item
             &-big
                 width 274px
@@ -273,6 +303,7 @@ export default {
             transition opacity 0.5s ease-out-circ
             border-radius 50%
             text-align center
+            pointer-events none
             .action
                 @extend $absolute-mid
                 position relative
@@ -317,11 +348,12 @@ export default {
                         color #03c6f3
                     span
                         opacity 1 
-        &.active
+        &.active:not(.incart)
             .item-actions, .item-info
+                pointer-events initial
                 opacity 1
-        +above(1025px)
-            &:hover
+        /.no-touch &:hover:not(.incart)
                 .item-actions, .item-info
+                    pointer-events initial
                     opacity 1
 </style>

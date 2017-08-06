@@ -1,35 +1,42 @@
 <template>
     <div class="result-items">
-        <div v-if="items!='loading'">
-            <transition name="fade" appear>
-                <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
-            </transition>
-            <paginate
-                name="items"
-                :list="items"
-                :per="itemsPerPage"
-                tag="div"
-                class="paginate-langs"
-                >
-                    <transition-group ref="list" name="list" tag="ul" appear
-                        class="item-list"
-                        @before-enter="beforeEnter"
-                        @enter="enter"
-                        @leave="leave"
-                        mode="out-in">
-                        <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
-                            <item-preview type="result" :item="item" :size="itemsize" :actions="['view','plus']" :draggable="true"></item-preview>
-                        </li>
-                    </transition-group>
-                </paginate>
-            <div class="pager" v-if="items.length > itemsPerPage">
-                <paginate-links id="pager" ref="pager" for="items" :limit="4" 
-                @change="onLangsPageChange"
-                :show-step-links="true"
-                :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
-            </div>
+        <transition v-if="items!='loading'" name="fade" appear>
+            <h4 class="no-items" v-if="!items.length">No items found, try to expand your search filter.</h4>
+        </transition>
+        <paginate
+            ref="paginator"
+            name="items"
+            :list="items"
+            :per="itemsPerPage"
+            tag="div"
+            class="paginate-langs"
+            v-if="items!='loading'"
+            >
+                <transition-group
+                    v-if="!isDevice"
+                    ref="list" name="list" tag="ul" appear
+                    class="item-list"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
+                    @leave="leave"
+                    mode="out-in">
+                    <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
+                        <item-preview type="result" :item="item" :size="itemsize" :actions="['view','plus']" :draggable="true"></item-preview>
+                    </li>
+                </transition-group>
+                <ul class="item-list" v-else>
+                     <li v-for="(item, index) in paginated('items')" v-if="!!item" :key="item.id" :data-index="index" :class="['item', itemsize+'-item', overlay.active ? 'blur' : '']">
+                        <item-preview type="result" :item="item" :size="itemsize" :actions="['view','plus']" :draggable="true"></item-preview>
+                    </li>
+                </ul>
+            </paginate>
+        <div class="pager" v-if="items!='loading' && items.length > itemsPerPage">
+            <paginate-links id="pager" ref="pager" for="items" :limit="4" 
+            @change="onLangsPageChange"
+            :show-step-links="true"
+            :step-links="{next: 'Next', prev: 'Prev'}"></paginate-links>
         </div>
-        <preloader key="loading" v-else></preloader>
+        <preloader key="loading" v-if="items=='loading'" ></preloader>
     </div>
     
 </template>
@@ -39,7 +46,6 @@ import Preloader from './Preloader.vue'
 
 import velocity from 'velocity-animate';
 import $ from 'jquery';
-import $velocity from 'velocity-animate/velocity.js';
 import ItemPreview from './ItemPreview.vue';
 
 export default {
@@ -66,33 +72,34 @@ export default {
             console.log('drag leave from results >> ', this.item)
         },
         onLangsPageChange(toPage, fromPage) {
-            $('html,body').animate({
-                scrollTop:0
-            }, 800)
-           
-
-            let $pager = $("#pager");
-            $pager.find('.first-page, .last-page').removeClass('disabled');
-            if (toPage===1) {
-                $pager.find('.first-page').addClass('disabled');
-            }
-            else if (toPage===this.$refs.pager.numberOfPages) {
-                $pager.find('.last-page').addClass('disabled');
+            console.log('onLangsPageChange>> prevent? ',this.preventPageChange, toPage, fromPage);
+            if (!this.preventPageChange) {
+                $('html,body').animate({
+                    scrollTop:0
+                }, 800)
+                let $pager = $("#pager");
+                $pager.find('.first-page, .last-page').removeClass('disabled');
+                if (toPage===1) {
+                    $pager.find('.first-page').addClass('disabled');
+                }
+                else if (toPage===this.$refs.pager.numberOfPages) {
+                    $pager.find('.last-page').addClass('disabled');                    
+                }
                 this.$nextTick(function() {
                     $pager.find('.last-page').insertAfter(".right-arrow")
                 })
-                
             }
-
+            else {
+                this.$refs.paginator.goToPage(fromPage);
+                this.toPreventPageChange(false);
+            }
         },
         bindFirstLastToPager() {
+            console.log('[RESULT ITEMS] bindFirstLastToPager');
             let vm = this;
             let $pager = $("#pager"),
                 $first = $("<li class='first-page disabled'><a>First</a></li>"),
                 $last = $("<li class='last-page'><a>Last</a></li>");
-
-            console.log("pager > ", $pager);
-            
             // FIRST / LAST (zero based)
             $first.on('click', () => {
                 vm.paginate['items'].page = 0;
@@ -102,6 +109,7 @@ export default {
             })
             $pager.prepend($first)
             $pager.append($last);
+            console.log("pager > ", $pager);
             
         },
 		beforeEnter: function (el) {
@@ -128,14 +136,19 @@ export default {
 			done();
 		},
         ...mapActions([
-            'showShelf'
+            'showShelf',
+            'toPreventPageChange'
         ])
     },
     computed: {
         ...mapState([
 			'overlay',
-            'itemsize'
-		])
+            'itemsize',
+            'preventPageChange'
+		]),
+        ...mapGetters([
+            'isDevice'
+        ])
     }
 }
 </script>
@@ -143,9 +156,13 @@ export default {
 @import '~settings';
 @import '~rupture';
 .result-items
-    padding 100px 0 0
+    padding 8.8vh 0 0
     min-height 70vh
     clear both
+    /.single-line &
+        padding-top 54px
+        +portrait()
+            min-height 77.6vh
     .paginate-langs
         padding 0 55px
     .pager
@@ -171,6 +188,9 @@ export default {
                 cursor pointer
                 opacity 0.7
                 transition opacity 200ms ease-out
+                line-height 30px
+                +tablet()
+                    line-height 1.6
                 a
                     font-size 20px
                 &.active
@@ -180,7 +200,6 @@ export default {
                     background #05a5e6
                     border-radius 100%
                     text-align center
-                    line-height 30px
                     margin 0
                     opacity 1
                 &.left-arrow
@@ -198,7 +217,7 @@ export default {
         margin 0 auto
         lost-utility clearfix
         transform translate3d(0,0,0)
-        backface-visibility hidden
+        // backface-visibility hidden
 		.item
             lost-column 1/6 6
             position relative
@@ -227,7 +246,7 @@ export default {
                     lost-column 1/2 2
                 +below(950px)
                     lost-column 1/1 1
-			&.blur
+			/.no-touch .blur
 				-webkit-filter blur(5px) !important
 				filter url('assets/blur.svg#blur')
 				filter blur(5px)

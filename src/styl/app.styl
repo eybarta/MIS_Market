@@ -30,8 +30,8 @@ a,button
 		padding-top 6vh
 .closebtn
 	position absolute
-	top 1vw
-	right 1vw
+	top 24px
+	right 24px
 	width 4vmin
 	height @width
 	&:after, &:before
@@ -90,6 +90,9 @@ a,button
 .h100
 	height 100%
 
+.vw100
+	width 100vw
+	overflow hidden
 
 .arw
 	border-left 1px solid #939393
@@ -98,6 +101,7 @@ a,button
 	width 7px
 	height @width
 	transition transform 300ms ease
+	transform-origin center
 	&.down
 		transform rotate(-45deg)
 	&.up

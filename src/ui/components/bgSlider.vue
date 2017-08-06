@@ -21,14 +21,21 @@
 	}
 </script>
 <style lang="stylus">
+@import '~rupture'
 .bg-slider
 	position relative 0 0 0 0
 	transform none
-	width 100%
+	width 100vw
 	height 100%
 	overflow hidden	
 	z-index 1
 	img
 		width 100%
-	
+		+portrait()
+			width auto
+			height 100%
+			position absolute
+			left 50%
+			top 0
+			transform translateX(-50%)
 </style>

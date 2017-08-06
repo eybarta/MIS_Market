@@ -2,7 +2,7 @@
 <div class="main-categories">
 	<transition name="fade-top" mode="out-in" appear>
 		<swiper key="showing" v-if="!!categories" :options="swiperOption">
-			<swiper-slide v-for="category in categories" :key="category">
+			<swiper-slide v-for="category in categories" :key="category.name">
 				<router-link :to="{ name: 'results-root', params: { rootFilter: category.name } }">
 					<img :src="category.src" alt="">
 					<span v-text="category.name"></span>
@@ -26,13 +26,13 @@ export default {
 		return {
 			swiperOption: {
 				// pagination: '.swiper-pagination',
-				slidesPerView: 6,
+				slidesPerView: 5,
 				spaceBetween: 45,
 				freeMode: true,
 				preventClicks: true,
 				breakpoints: {
 					1600: {
-						slidesPerView: 5.5,
+						slidesPerView: 4.5,
 					},
 					1400: {
 						slidesPerView: 4.5,
@@ -59,6 +59,8 @@ export default {
 }
 </script>
 <style lang="stylus">
+@import '~rupture'
+
 .fade-top-enter-active,
 .fade-top-leave-active
 	transition opacity 700ms ease, transform 700ms ease
@@ -77,15 +79,19 @@ export default {
 	display inline-block
 	vertical-align middle
 	white-space nowrap
-	width calc(100% - 364px)
+	width calc(100% - 640px)
 	height 240px
 	position relative
 	overflow hidden
+	+below(1272px)
+		width calc(100% - 440px)
+	+below(1040px)
+		width calc(100% - 340px)
 	&:after
 		content ''
 		position absolute
 		top 50%
-		right 0
+		right -2px
 		transform translateY(-50%)
 		height 100%
 		width 20px
@@ -96,6 +102,7 @@ export default {
 		transform translateY(-50%)
 		width 95%
 		overflow visible
+		max-height 100%
 		.swiper-wrapper
 			margin auto
 			top 10%
@@ -109,6 +116,7 @@ export default {
 					display inline-block
 	a
 		display inline-block
+		height 100%
 		margin-right 12px
 		text-align center
 		position relative

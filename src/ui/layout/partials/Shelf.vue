@@ -41,13 +41,14 @@ export default {
 </script>
 <style lang="stylus">
 .shelf-wrap
+    min-width 768px
     position fixed
     margin-top 80px
     height 60vh
     max-height 500px
     transform translateY(-100%)
     width 100%
-    transition transform 400ms ease-out-back
+    transition transform 400ms ease-out-cubic
     z-index 9
     .shelf-body
         position absolute

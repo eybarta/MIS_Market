@@ -1,14 +1,15 @@
 <template>
-	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && route.name.indexOf('result')>-1 ? 'app-results' : 'app-home']">
+	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && (route.name.indexOf('result')>-1||route.name.indexOf('all')>-1) ? 'app-results' : 'app-home', !isDevice ? 'no-touch' : '', isIE ? 'ie' : '']">
 		<top-bar></top-bar>
 			<router-view></router-view>
-		<footer>
+		<footer :class="shelf.active ? 'shelf-active' : ''">
 			 <span>Copyright © 2017 MIS Implants Technologies Ltd.</span>
 		</footer>
 	</div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import $ from 'jquery'
+import { mapState, mapGetters, mapActions } from 'vuex';
 import TopBar from './partials/TopBar.vue';
 export default {
 	components: {
@@ -17,18 +18,35 @@ export default {
 	computed: {
 		...mapState([
 			'overlay',
+			'shelf',
 			'route'
+		]),
+		...mapGetters([
+			'isDevice',
+			'isIE'
 		])
+	},
+	methods: {
+		...mapActions([
+			'updateMousePos'
+		])
+	},
+	mounted() {
+		let vm = this;
+		$('body').on('click.pos', function(e) {
+			vm.updateMousePos({ x: e.clientX, y: e.clientY})
+			console.log("POS CLICK>>> ", e.pageX, " :: ", e.pageY, e);
+		})
 	}
 }
 </script>
 <style lang="stylus">
+@import '~rupture'
 .app-wrap
 	height calc(100% - 36px)
 	min-width 768px
-	&.overlayed
-		height 100vh
-		overflow hidden
+	/.ie &.overlayed
+		height auto
 	&:after
 		content ''
 		display table
@@ -38,6 +56,8 @@ footer
 	height 78px
 	background #2e2e2e
 	lost-align center
+	transform translateY(0)
+	transition transform 400ms ease-out-cubic
 	.results + &
 		border-top 1px solid #50595e
 		background #061016
@@ -45,9 +65,17 @@ footer
 		font-size 10px
 		color #bcbcbd
 		opacity 0.5
+	&.shelf-active
+		transform translateY(475px)
 .home + footer
 	background #4b4b4b
 	height 36px
-.single-line + footer
+	transform none
+	+below(1050px)
+		height 38px
+		margin-top -1px
+
+.single-line + footer:not(.shelf-active)
 	border-top 0
+	transform none
 </style>

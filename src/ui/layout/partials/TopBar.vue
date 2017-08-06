@@ -12,12 +12,13 @@
 				<button :class="['arw', !showdrop ? 'down' : 'up']"></button>
 			</div>
 			<div :class="['user-drop', showdrop ? 'active' : '']">
-				<button @click="signout">Sign Out</button>
+				<button id="signout" @click="signout">Sign Out</button>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
+// import $ from 'jquery'
 import { mapState, mapActions } from 'vuex'
 export default {
 	data() {
@@ -25,9 +26,22 @@ export default {
 			showdrop: false
 		}
 	},
-	created() {
-		console.log("Top Bar  Created!");
-	},
+	// watch: {
+	// 	'showdrop'() {
+	// 		let vm = this;
+	// 		if (!!this.showdrop) {
+	// 			setTimeout(function() {
+	// 				$('body').on('click.userdrop touchstart.userdrop', function(e) {
+	// 					if (e.target.id != 'signout') {
+	// 						vm.$set(vm, 'showdrop', false);
+	// 					}
+	// 				})
+	// 			}, 300)
+	// 		} else {
+	// 			$('body').off('click.userdrop touchstart.userdrop');
+	// 		}
+	// 	}
+	// },
 	methods: {
 		...mapActions([
 			'userSignout'
@@ -56,6 +70,7 @@ export default {
 	vertical-align middle
 	line-height 1
 .topbar
+	min-width 768px
 	position fixed
 	top 0
 	height 49px
@@ -107,7 +122,7 @@ export default {
 			height 0
 			top 49px
 			right 0
-			background rgba(darkblue, 0.5)
+			background #fff
 			transition all 300ms weeeha
 			opacity 0
 			transform translate(0, -10%)

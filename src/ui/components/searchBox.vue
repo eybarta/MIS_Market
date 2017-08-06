@@ -1,7 +1,7 @@
 <template>
 	<div class="search-box">
 		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @keyup="search($event)">
-		<i :class="[!!searchval.length && type!='intro' ? 'icon-clear' : 'icon-search']" @click="searchIconClickHandler"></i>
+		<i :class="['icon-search', !!searchval.length && type!='intro' ? 'clear' : '']" @click="searchIconClickHandler"><span v-if="!!searchval.length && type!='intro'"></span></i>
 	</div>
 </template>
 <script>
@@ -67,12 +67,13 @@ import { mapState } from 'vuex';
 	background #fff
 	z-index 2
 	i.icon-search
-		position absolute 55% 1vw false false
+		position absolute 55% 24px false false
 		transform translate(0,-50%)
 		width 32px
 		height @width
 		cursor pointer
-		transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+		will-change width, height
+		transition width 300ms ease, height 300ms ease
 		&:before
 			content ''
 			width 20px
@@ -80,7 +81,7 @@ import { mapState } from 'vuex';
 			border 1px solid #80858c
 			border-radius unit(@width/2, 'px');
 			position absolute 0 0 false false
-			transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+			transition all 300ms ease
 		&:after
 			content ''
 			width 15px
@@ -88,7 +89,22 @@ import { mapState } from 'vuex';
 			background #80858c
 			position absolute 21px false false 50%
 			transform translate(-95%, 0) rotate(-45deg)
-			transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+		/.no-touch &:after
+			transition transform 300ms ease-out, left 300ms ease-out, top 300ms ease-out, width 300ms ease-out
+		&.clear
+			width 20px
+			height 20px
+			&:after
+				width 100%
+				top 50%
+				left 50%
+				transform translate(-50%, -50%) rotate(-45deg)
+			span
+				position absolute 50% false false 50%
+				width 100%
+				height 1px
+				background #80858c
+				transform translate(-50%, -50%) rotate(45deg)
 	i.icon-clear
 		position absolute 50% 1vw false false
 		transform translate(0,-50%)
@@ -110,11 +126,6 @@ import { mapState } from 'vuex';
 		&:hover
 			&:after, &:before
 				background darken(#80858c, 15)
-		// transform translate(0,-50%)
-		// font-size responsive 18px 32px
-		// color #80858c
-		// cursor pointer
-		// z-index 999
 	input
 		position relative
 		height 90%
@@ -127,6 +138,12 @@ import { mapState } from 'vuex';
 		border 0
 		outline 0
 		color darken(#bcbcbd, 30)
-		
-		
+		line-height 3.5
+::-ms-clear
+	display none
+::-webkit-search-decoration,
+::-webkit-search-cancel-button,
+::-webkit-search-results-button,
+::-webkit-search-results-decoration
+	display none	
 </style>

@@ -10,11 +10,11 @@
                 <div class="circle-item" :style="imageStyle"></div>
             </div>
             <div class="extras">
-                <p>The text shown here is a dummy text. It means nothing. Just a text to demonstrate how the text will look in it's final position. After we have the right text, we will replace this one with the right one.</p>
+                <p>{{ desc }}</p>
 
                 <div class="item-links">
                     <ul>
-                        <li v-for="attachment in attachments">
+                        <li v-for="attachment in attachments" :key="attachment.label">
                            <a target="_blank" :href="attachment.link"><i :class="['icon-'+attachment.type]"></i>  <span>{{attachment.label}}</span></a>
                         </li>
                     </ul>
@@ -45,11 +45,14 @@ export default {
         }
     },
     created() {
-        console.log("item page ", this.item);
         this.$set(this, 'quantity', _.has(this.item.data, 'amount') ? this.item.data.amount : 1)
     },
-    mounted(){
-        console.log("item page mounted ", this.item);
+    mounted() {
+         window.addEventListener("keyup", this.keyupHandler, false);
+    },
+    beforeDestroy() {
+        console.log('item destroy comp');
+         window.removeEventListener("keyup", this.keyupHandler, false);
     },
     methods:{
         ...mapActions([
@@ -57,6 +60,11 @@ export default {
             'updateItemInCart',
             'hideOverlay'
         ]),
+        keyupHandler(e) {
+            if (e.code==='Escape') {
+                this.hideOverlay();
+            }
+        },
         onlyNumbers(e) {
             if (/enter/i.test(e.key)) {
                 this.add();
@@ -67,14 +75,8 @@ export default {
             }
         },
         add() {
-            // let $d = this.item.data,
-            //     item = _.clone($d);
-
             let _item = _.find(this.items, { id: this.item.data.id})
-
-
             _item.amount = parseInt(this.quantity);
-            // item.price = this.priceTotal;
             if (this.editMode) {
                 this.updateItemInCart(_item);
             } else {
@@ -102,6 +104,10 @@ export default {
         name() {
             let item = this.item.data;
             return (!!item) ? item.name : '';
+        },
+        desc() {
+            let item = this.item.data;
+            return (!!item) ? item.description : '';
         },
         attachments() {
             let item = this.item.data;
@@ -176,6 +182,7 @@ export default {
                     bottom 0
                     a
                         @extend $inline-mid
+                        color #fff
                         fontsizer(16px, 20px)
                         transition color 200ms ease
                         i

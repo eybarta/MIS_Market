@@ -2,6 +2,7 @@
 const path = require('path');
 const poststylus = require('poststylus');
 
+const BabiliPlugin = require("babili-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const DashboardPlugin = require('webpack-dashboard/plugin');
 
@@ -36,14 +37,11 @@ const rules = [
 	{
 		test: /\.vue$/,
 		loader: 'vue-loader',
+		
 		options: {
+			extractCSS: true,
+			esModule: false,
 			postcss: [require('lost')(), require('autoprefixer')(), require('rucksack-css')()],
-			loaders: {
-				css: ExtractTextPlugin.extract({
-					use: 'vue-style-loader!css-loader!stylus-relative-loader?paths=src/styl',
-					fallback: 'style-loader',
-				}),
-			},
 		}
 	},
 	{
@@ -69,14 +67,12 @@ const rules = [
 	{ test: /\.css$/, loader: "style-loader!css-loader" },
 	{
 		test: /\.(png|jpg|gif|svg)$/,
-		loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=dist/&outputPath=img/',
+		loader: 'url-loader?limit=5000&name=img-[hash:6].[ext]&publicPath=/dist/&outputPath=img/',
 	},
 ]
 if (isProduction) {
 	// Production plugins
 	plugins.push(
-		// new webpack.optimize.OccurenceOrderPlugin(),
-		// new webpack.optimize.ModuleConcatenationPlugin(),
 		new webpack.optimize.CommonsChunkPlugin({
 			names: ['common', 'vendor'],
 			minChunks: Infinity,
@@ -92,6 +88,8 @@ if (isProduction) {
 			minimize: true,
 			debug: false,
 		}),
+		// new BabiliPlugin({removeConsole:true, removeDebugger:true}),
+
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,
@@ -142,7 +140,7 @@ module.exports = {
 	// where to place the compiled bundle
 	output: {
 		path: buildPath,
-		publicPath: "/",
+		publicPath: "/dist/",
 		filename: 'js/[name].js'
 	},
 

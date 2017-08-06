@@ -1,5 +1,5 @@
 <template>
-	<div :class="['results', singleLine ? 'single-line' : '']">
+	<div :class="['results', singleLine ? 'single-line' : '', items==='loading' ? 'loading' : '']">
 		<menu-bar></menu-bar>
 		<shelf></shelf>
 		<div class="content">
@@ -76,7 +76,8 @@ export default {
 	computed: {
 		...mapState([
 			'itemsFilterString',
-			'itemsize'
+			'itemsize',
+			'items'
 		]),
 		...mapGetters([
 			'filteredItems'
@@ -108,21 +109,29 @@ export default {
 @lost gutter 30px
 
 .results
+	min-width 768px
 	padding-top 49px
 	min-height calc(100% - 42px)
-	background #061016 url('assets/main-bg.jpg') repeat-x 0 bottom
 	color #fff
 	position relative
-	&.single-line
-		background-position 0 70%
+	backface-visibility hidden
+	-webkit-overflow-scrolling touch
+	@media screen and (max-height:750px) and (orientation:landscape)
+		min-height 660px
 	.content
-		margin-top 125px
+		padding-top 125px
+		background #061016 url('assets/main-bg.jpg') repeat-x 0 bottom
 		position relative
-		transition margin-top 460ms ease-out-cubic
+		transform translateY(0)
+		transition transform 400ms ease-out-cubic
 	.active + .content
-		margin-top 625px
+		transform translateY(475px)
+	&.single-line, &.loading
+		background-position 0 70%
+		.content
+			padding-top 148px
 	.results-options
-		position absolute 0 2% false false
+		position absolute 125px 2% false false
 		.item-size
 			display inline-block
 			color rgba(#fff, 0.4)

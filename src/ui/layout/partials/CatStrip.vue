@@ -3,7 +3,7 @@
 		<main-categories></main-categories>
 		<div class="text-box">
 			<span>
-				The text shown here is a dummy text. It means nothing. Just a text to demonstrate how the text will look in it's final position. After we have the right text, we will replace this one with the right one.
+				Welcome to the MIS marketing site! It's simple to find what you're looking for and place your order. Once your order is placed, it will be sent to your sales and marketing coordinator for processing.
 			</span>
 		</div>
 	</div>
@@ -20,6 +20,7 @@ export default {
 }
 </script>
 <style lang="stylus">
+@import '~rupture'
 .cat-strip
 	width 100%
 	height 260px
@@ -35,10 +36,17 @@ export default {
 	.text-box
 		display inline-block
 		vertical-align middle
-		width 360px
+		width 634px
 		height 198px
 		padding 0 70px 0 48px
 		text-align left
+		+below(1272px)
+			width 434px
+			padding 0 48px 0 32px
+		+below(1040px)
+			width 334px
+			padding 0 37px 0 25px
+			
 		&::before
 			content ''
 			vertical-align middle

@@ -16,26 +16,39 @@
                         </swiper>
                     </div>
                     <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
-                    <ul>
-                        <li v-for="status in checkoutStatus">
-                        <div class="circle-item">
-                                <count-up 
-                                    :start="0"
-                                    :end="status.amount"
-                                    :decimals="0"
-                                    :duration="4"
-                                    :options="countOptions"></count-up>
-                        </div> 
-                        <span class="label">{{status.label}}</span>
-                        </li>
-                    </ul>
-                </div>
+                        <swiper ref="swiper2" :options="swiper2Options">
+                            <swiper-slide  v-for="status in checkoutStatus" :key="status.label" :data-index="status.label">
+                                <div class="circle-item">
+                                    <count-up 
+                                        :start="0"
+                                        :end="status.amount"
+                                        :decimals="0"
+                                        :duration="4"
+                                        :options="countOptions"></count-up>
+                                </div> 
+                                <span class="label">{{status.label}}</span>
+                            </swiper-slide>
+                        </swiper>
+                        <!-- <ul>
+                            <li v-for="status in checkoutStatus" :key="status">
+                            <div class="circle-item">
+                                    <count-up 
+                                        :start="0"
+                                        :end="status.amount"
+                                        :decimals="0"
+                                        :duration="4"
+                                        :options="countOptions"></count-up>
+                            </div> 
+                            <span class="label">{{status.label}}</span>
+                            </li>
+                        </ul> -->
+                    </div>
                 </transition>
                 <div class="cart-info">
                     <div class="subtotal">
                         <div>
                             <h5>SUBTOTAL</h5>
-                            <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="subtotal % 1 != 0 ? 2 : 0" :duration="1" :options="countOptions"></count-up></div>
+                            <div class="amount">$ <count-up :start="0" :end="subtotal" :decimals="2" :duration="1" :options="countOptions"></count-up></div>
                         </div>
                     </div>
                     <div class="cart-actions">
@@ -44,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            <h4 v-show="items.length<1" class="not-me">There's no items in your cart.</h4>
+            <h4 v-show="items.length<1" class="not-me">There are no items in your cart yet.</h4>
             <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
 
             <h3 v-if="items.length>0" class="not-me">
@@ -85,6 +98,7 @@ import draggable from 'vuedraggable'
 export default {
     mounted() {
         this.$nextTick(() => {
+            console.log("swiper >> ", swiper);
             // WATCH AND UPDATE SLIDE PER VIEW FOR RESIZE EVENTS...
             this.$set(this, 'swiper', this.$refs.swiper['swiper'].params);
             this.$set(this, 'slidesPerView', this.swiper['slidesPerView']);
@@ -127,6 +141,29 @@ export default {
 					}                    
 				}
             },
+            swiper2Options: {
+                slidesPerView: 4,
+                freeMode: true,
+                freeModeMomentum: true,
+                spaceBetween: 5,
+                grabCursor: true,
+                preventClicks: false,
+                breakpoints: {
+                    1800: {
+                        slidesPerView: 4,
+                        spaceBetween: 5,
+					},
+					1500: {
+						slidesPerView: 3.5,
+					},
+					1300: {
+						slidesPerView: 2.5,
+					},
+					1040: {
+						slidesPerView: 2.5,
+					}                    
+				}
+            }
             
         }
     },
@@ -159,10 +196,7 @@ export default {
             'changeShelfType',
             'updateItemInLimbo',
             'addToCart',
-            'saveCart',
-            'calculateOldItemsOrdered'
-            
-
+            'saveCart'
         ]),
         buttonClickHandler() {
             if (this.shelf.type==='checkout') {
@@ -217,10 +251,16 @@ export default {
             'cart',
             'shelf',
             'itemInLimbo'
-        ]),
+        ]), 
         ...mapGetters({
             items:'cartItems',
         }),
+        subtotalDecimals() {
+            let subtotal = this.subtotal;
+            let d = subtotal % 1 != 0 ? 2 : 0;
+            console.log("decimalss... ", subtotal, " :: ",  d);
+            return d;
+        },
         noItems() {
             if (!!this.items) {
                 return this.items.length<1
@@ -250,6 +290,8 @@ export default {
                 categories = _.uniq(_.flatMap(items, 'catId')),
                 orderedBefore = _.intersection(this.itemIdsInCart,this.user.itemsOrdered).length,
                 orderedNew = items.length - orderedBefore;
+
+                console.log("category array >>  ", categories);
             return [
                 {
                     amount: items.length,
@@ -274,11 +316,12 @@ export default {
 </script>
 <style lang="stylus">
 @import '~settings';
+@import '~rupture';
 
 .slide-fade-enter-active
-    transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+    transition transform 500ms cubic-bezier(0.125, 0.585, 0.22, 1.1), opacity 200ms ease-out
 .slide-fade-leave-active
-    transition all .5s cubic-bezier(0.125, 0.585, 0.22, 1.1)
+    transition transform 500ms cubic-bezier(0.125, 0.585, 0.22, 1.1), opacity 200ms ease-out
 .slide-fade-enter
     transform translateX(-120%)
     opacity 0
@@ -356,6 +399,8 @@ export default {
         position absolute
         top 10%
         left 5%
+        +tablet()
+            top 6%
         @media (max-width:breaks.small)
             left 10%
             font-size 26px
@@ -430,9 +475,9 @@ export default {
             padding 0 1%
             @media (min-width:breaks.small)
                 padding 0 4%
-            ul
+            ul, .swiper-wrapper
                 @extend $zero
-                li
+                li, .swiper-slide
                     lost-column 1/4 4 30px
                     position relative
                     list-style none
@@ -440,16 +485,21 @@ export default {
                     .circle-item
                         background #fff
                         color blue
-                        fontsizer(65px, 140px)
+                        fontsizer(90px, 140px)
                         text-align center
                         margin-bottom 20px
                         width 75%
                         padding-top 75%
                         min-width 80px
                         min-height 80px
+                        span
+                            line-height 0
                         @extend $absolute-mid
                         @media (max-width: breaks.small)
                             margin-bottom 10px
+                        +tablet()
+                            & > span:first-child
+                                transform translate(-50%, -40%)
                     @media (max-width: breaks.small)
                         lost-column 1/4 4 5px
                     &:nth-child(4) .circle-item

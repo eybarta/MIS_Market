@@ -1,12 +1,12 @@
 import store from './store/index';
-import Home from './ui/layout/pages/Home.vue';
-import Results from './ui/layout/pages/Results.vue';
+const Home = () => import('./ui/layout/pages/Home.vue');
+const Results = () => import('./ui/layout/pages/Results.vue');
+// import Results from './ui/layout/pages/Results.vue';
 
 
 async function requireAuth(to,from,next) {
 	let isAuthenticated = await store.dispatch('initUser');
 	let categories = store.state.categories;
-		console.log('categories > ', categories);
 	
 	if (!categories) {
 		store.dispatch('initCategories');

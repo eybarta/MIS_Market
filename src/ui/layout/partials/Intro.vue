@@ -1,7 +1,7 @@
 <template>
 	<div :class="['intro']">
 		<sign-in v-if="!user"></sign-in>
-		<search-box v-else placeholder="FIND THE FORCE" type="intro"></search-box>
+		<search-box v-else placeholder="It's simple! Type in your search term." type="intro"></search-box>
 		<bg-slider :imglist="images"></bg-slider>
 	</div>
 </template>

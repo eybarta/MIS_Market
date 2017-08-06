@@ -6,9 +6,9 @@ Vue.config.devtools = true;
 
 // PLUGINS
 import VuePaginate from 'vue-paginate'
+import AsyncComputed from 'vue-async-computed'
 Vue.use(VuePaginate)
-
-
+Vue.use(AsyncComputed)
 
 /*
     // ROUTER & VUEX (store)

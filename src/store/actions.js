@@ -2,33 +2,32 @@ import $ from 'jquery'
 import Vue from 'vue'
 import * as types from './mutation-types'
 import {router} from '../index'
+
 const GET_CATEGORIES = "GetCategories"
 const GET_ITEMS = "GetItems"
 const GET_MEMBER = "GetMember"
 const SAVE_CART = "SaveCart"
 const GET_MEMBER_CARTS = "GetMemberCarts"
 
-
-
-
 /*
  -------------
     // API -- User, Categories, Items
  -------------
 */
-export const initUser = async ({commit}) => {
-    let _user = storageSupport() ? localStorage.getItem("_marketuser") || null : null;
+export const initUser = async ({commit, getters}) => {
+    let _user = getFromStorage(localStorage, "_marketuser");
     if (!!_user) {
         _user = JSON.parse(_user);
         if (!_.has(_user, 'itemsOrdered')) {
             _user.itemsOrdered = await fetchItemsOrdered(_user.member_id);
         }
+        // initIdleTimer()
     }
     commit('INIT_USER', _user);
     return _user;
 }
 export const initCategories = async ({commit, dispatch}) => {
-    let categories = storageSupport() ? localStorage.getItem("_marketcategories") || null : null;
+    let categories = getFromStorage(localStorage, "_marketcategories") // storageSupport() ? localStorage.getItem("_marketcategories") || null : null;
     if (!categories) {
         Vue.http.post(GET_CATEGORIES, { id: 1 }).then(response => {
             console.log("RESPONSE >> ", response);
@@ -48,10 +47,10 @@ export const initCategories = async ({commit, dispatch}) => {
                     parent: -1,
                     children: []
                 })
+                _.remove(cats, { Id: 85});
                 _.each(cats, cat => cat.src = './dist/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
-
                 // save categories to local storage if available 
-                storageSupport() && localStorage.setItem('_marketcategories', JSON.stringify(cats));
+                setToStorage(localStorage, '_marketcategories', JSON.stringify(cats), 30);
                 commit('INIT_CATEGORIES', cats);
             }
             return response;
@@ -64,16 +63,16 @@ export const initCategories = async ({commit, dispatch}) => {
     }
     
 }
-export const initItems = async ({commit, dispatch}, items) => {
-    let _items = storageSupport() ? sessionStorage.getItem("_marketitems") || null : null;
+export const initItems = async ({commit, dispatch, getters}, items) => {
+    let _items = getFromStorage(sessionStorage, "_marketitems");
     if (!_items) {
         Vue.http.post(GET_ITEMS, { id: 1}).then( async response => {
             if (!!response.body && !!response.body.d) {
                 console.log("ITEMS HAVE RETURNED ... ");
-                let items = await mapItems(JSON.parse(response.body.d));
+                let items = await mapItems(JSON.parse(response.body.d), getters.isDevice, getters.isIE);
 
                 // save items to session storage if available (will be saved only for current tab)
-                storageSupport() && sessionStorage.setItem('_marketitems', JSON.stringify(items));
+                setToStorage(sessionStorage, '_marketitems', JSON.stringify(items), 10)
                 commit('INIT_ITEMS', items);
             }
             return response;
@@ -87,22 +86,18 @@ export const initItems = async ({commit, dispatch}, items) => {
     }
 }
 export const signInUser = async ({commit, dispatch}, user) => {
-    console.log("SIGN IN USER ACTION > > ", user);
+    let errmsg = "Login failed, please try again."
     return Vue.http.post(GET_MEMBER, user).then(response => {
-        console.log("GET USER RESPONSE >> ", response);
         if (!!response.body && !!response.body.d) {
             let res = JSON.parse(response.body.d);
-            console.log("RES > ", res);
             if (_.has(res, 'Err')) {
-                console.log("HAS ERROR >> ", res);
-                return "Login failed, please try again.";
+                return errmsg;
             } else {
                 commitUser(res);
             }
         }        
     }, response => {
-        console.log('err > ', response);
-        return { 'err': response}
+        return errmsg;
     }, {headers: {'Access-Control-Allow-Origin': '*'}})
 
     async function commitUser(res) {
@@ -117,22 +112,17 @@ export const signInUser = async ({commit, dispatch}, user) => {
             timestamp: new Date()
         }
         if (!!res.country) {
-            console.log('commit with flag...');
             _user.itemsOrdered = await fetchItemsOrdered(_user.member_id);
             _user.flag = await fetchUserFlag(_user.country);
-            localStorage.setItem("_marketuser", JSON.stringify(_user));
-            commit('INIT_USER', _user);
         }
-        else {
-            console.log('commit with no flag...');
-            localStorage.setItem("_marketuser", JSON.stringify(_user));
-            commit('INIT_USER', _user);
-        }
+
+        setToStorage(localStorage, '_marketuser', JSON.stringify(_user), 3);
+        commit('INIT_USER', _user);
         router.push({ name: 'home'})
     }
 }
 export const userSignout = ({commit, dispatch}) => {
-    localStorage.removeItem("_marketuser");
+    removeFromStorage(localStorage, "_marketuser");
     commit('INIT_USER', null);
     router.push({ name: 'login'})
 }
@@ -201,30 +191,35 @@ export const hideShelf = async ({commit}, animate) => {
       }, 0)
     })
 }
-export const bindCartMouseMove = ({commit, dispatch}) => {
-    console.log('bind mouse events to shelf');
-    clearTimeout(shelfTimer);
-    let time = 4000;
-    $('#cartWrap').off();
-    timedShelfClose(dispatch, time);
-    setTimeout(function() {
-        $('#cartWrap').on('mouseenter mouseleave', function(e) {
-            console.log("event > ", e.type);
-            if (e.type==='mouseleave') {
-                timedShelfClose(dispatch, time);
-            }
-            else {
-                clearTimeout(shelfTimer);
-            }
-        })
-    }, 500)
-    function timedShelfClose(dispatch, time) {
-        shelfTimer = setTimeout(function() {
-            dispatch('hideShelf');
-        }, time)
-    }
+export const bindCartMouseMove = ({commit, dispatch, state}) => {
+    // console.log('bind mouse events to shelf');
+    // clearTimeout(shelfTimer);
+    // let time = 4000;
+    // $('#cartWrap').off();
+
+    // setTimeout(function () {
+    //     if (!state.mousepos || (state.mousepos.y < 130 || state.mousepos.y > 630)) {
+    //         timedShelfClose(dispatch, time);
+    //     }
+    //     $('#cartWrap').on('mouseenter mouseleave', function (e) {
+    //         if (e.type === 'mouseleave') {
+    //             timedShelfClose(dispatch, time);
+    //         }
+    //         else {
+    //             clearTimeout(shelfTimer);
+    //         }
+    //     })
+    // }, 500)
+    // function timedShelfClose(dispatch, time) {
+    //     shelfTimer = setTimeout(function () {
+    //         dispatch('hideShelf');
+    //     }, time)
+    // }
 }
 
+export const updateMousePos = ({commit}, pos) => {
+    commit('UPDATE_MOUSE_POS', pos);
+}
 
 /*
  -------------
@@ -260,13 +255,12 @@ export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
     // CART ACTIONS
  -------------
 */
+
 export const addToCart = async ({commit, dispatch, state}, item) => {
     await dispatch('showShelf')
     await dispatch('hideOverlay');
-    console.log("ADD TO CART >> ", item);
-
-    console.log("item is already in cart?? ", !!item.inCart);
     if (!item.inCart) {
+        dispatch('toPreventPageChange', true);
          let _item = _.find(state.items, {id:item.id});
         Vue.set(_item, 'inCart', true);
         _item.amount = (!!_item.amount) ? _item.amount : 1;
@@ -311,17 +305,15 @@ export const saveCart = async ({commit, dispatch, state}, subtotal) => {
     let _data = { 'cart': btoa(JSON.stringify(data)).toString()}
 
     console.log("data > ", _data);
-    Vue.http.post(SAVE_CART,_data).then(async response => {
-        console.log("SAVE_CART, RESPONSE >> ", response);
+    Vue.http.post(SAVE_CART,_data).then(async (err, response) => {
+        console.log("SAVE_CART, RESPONSE >> ", err, " :: ",  response);
 
         dispatch('changeShelfType', 'confirm');
         dispatch('bindCartMouseMove', await dispatch('emptyCart'));
+        localStorage.removeItem("_marketuser");
     }, response => {
         console.log('save cart error >> ', response);
     })
-}
-export const calculateOldItemsOrdered = async ({commit, dispatch,state}) => {
-
 }
 
 /*
@@ -329,11 +321,15 @@ export const calculateOldItemsOrdered = async ({commit, dispatch,state}) => {
     // HELPER FUNCTIONS
  -------------
 */
-async function mapItems(items) {
+export const toPreventPageChange = ({commit}, bool) => {
+    commit('PREVENT_PAGE_CHANGE', bool);
+}
+
+async function mapItems(items, isDevice,isIE) {
         // console.log('MAP ITEMS');
-        let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'Description'))), r => { return _.trim(r)!=''}).join(';');
+        let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'LangCC'))), r => { return _.trim(r)!=''}).join(';');
         console.log('2 countryCodes > ', countryCodes);
-        let item_country_flags = await fetchFlagsForItems(countryCodes);
+        let item_country_flags = await fetchFlagsForItems(countryCodes, isDevice, isIE);
 
         console.log("rAW ITEMS  > ", items);
         let mappedItems = _.map(items, item => {
@@ -361,6 +357,8 @@ async function mapItems(items) {
             }
 
             let catId = [item.CategoryId]; 
+            let catNo = _.trim(item.CatalogNo);
+            // let rootCatId = getRootId(item.CategoryId);
             if (!!item.TopSeller) {
                 catId.push(111100);
             }
@@ -368,11 +366,14 @@ async function mapItems(items) {
                 catId.push(111101);
             }
             
+
+
             return {
                 id: item.Id,
                 catId,
-                image: "./dist/img/items/"+item.CatalogNo.replace(/\s/g, '_') + ".png",
-                catNo: item.CatalogNo,
+                description: item.Description,
+                image: "./dist/img/items/"+catNo.replace(/\s/g, '_').replace(/\'/g, '').replace(/b\+/gi, 'BPLUS_') + ".png",
+                catNo,
                 name: item.Name,
                 price:item.Price || 0,
                 flag: !!item_country_flags ? item_country_flags[item.LangCC] || null : null,
@@ -383,27 +384,45 @@ async function mapItems(items) {
         })
         return _.sortBy(mappedItems, 'sort');
 }
-async function fetchFlagsForItems(countryCodes) {
-    let api = "https://restcountries.eu/rest/v2/alpha?codes=" + countryCodes;
-    return new Promise((resolve, reject) => {
-        Vue.http.get(api).then(response => {
-            let flagCollection = {};
-            if (!!response.body) {
-                for (var i = 0; i < response.body.length; i++) {
-                    let c = response.body[i];
-                    console.log("C >> ",c);
-                    if (!!c) {
-                        flagCollection[c.alpha2Code] = c.flag
-                    }
-                    
-                }
-            }
-            resolve(flagCollection);
-        }), response => {
-            resolve(null);
+
+async function fetchFlagsForItems(countryCodes, isDevice, isIE) {
+    console.log('fetchFlagsForItems >> isIE?? ', isIE);
+    let flagCollection = {};
+    if (isDevice || isIE) {
+        let ccArray = countryCodes.split(';');
+        // console.log("countryCodes .. ", countryCodes);
+        for (var i = 0; i< ccArray.length; i++ ) {
+            let cc = ccArray[i];
+            flagCollection[cc] = "./dist/img/flags/"+cc+".png";
         }
-    });
+        console.log('flagCollection >> ', flagCollection);
+        return flagCollection;
+    }
+    else {
+        let api = "https://restcountries.eu/rest/v2/alpha?codes=" + countryCodes;
+        return new Promise((resolve, reject) => {
+            Vue.http.get(api).then(response => {
+                
+                if (!!response.body) {
+                    for (var i = 0; i < response.body.length; i++) {
+                        let c = response.body[i];
+                        console.log("C >> ",c);
+                        if (!!c) {
+                            flagCollection[c.alpha2Code] = c.flag
+                        }
+                        
+                    }
+                }
+                resolve(flagCollection);
+            }), response => {
+                resolve(null);
+            }
+        });
+    }
+    
 }
+
+
 async function fetchUserFlag(country) {
     return new Promise((resolve, reject) => {
         let api = "https://restcountries.eu/rest/v2/name/"+country;
@@ -420,15 +439,10 @@ async function fetchUserFlag(country) {
 }
 
 async function fetchItemsOrdered(id) {
-    console.log("FETCH ITEMS >> ", id);
     return Vue.http.post(GET_MEMBER_CARTS, {MemberID:id}).then(async response => {
-        console.log("GET_MEMBER_CARTS, RESPONSE >> ", response);
         if (!!response && !!response.body.d) {
             let res = JSON.parse(response.body.d);
-            console.log("RES >> ", res);
-            let itemIds = _.uniq(_.map(_.flatMap(res, 'OrderItems'), 'Id'));
-            console.log(" itemIds > ", itemIds)
-            // resolve(itemIds);
+            let itemIds = _.uniq(_.map(_.flatMap(res, 'OrderItems'), 'ItemId'));
             return itemIds;
         }
     }, response => {
@@ -437,6 +451,11 @@ async function fetchItemsOrdered(id) {
     })
 }
 
+function initIdleTimer() {
+    // TODO:: kick idle user out after XX number if minutes...   
+}
+
+// LOCAL STORAGE
 // CHECK SUPPORT
 function storageSupport(){
     try {
@@ -444,4 +463,39 @@ function storageSupport(){
     } catch(e) {
         return false;
     }
+}
+
+// FETCH FROM STORAGE
+function getFromStorage(storageType, key) {
+    if (storageSupport()) {
+        checkStorageExpiration(storageType, key);
+        return storageType.getItem(key) || null
+    }
+    return null;
+}
+// SAVE TO STORAGE
+function setToStorage(storageType, key, data, daysToExpire) {
+    storageSupport() && storageType.setItem(key, data);
+    setStorageExpiration(storageType, key, daysToExpire);
+}
+ 
+// CHECK EXPIRATION
+function checkStorageExpiration(storageType, key) {
+    let curdate = new Date(),
+    date = new Date(storageType.getItem(key+'_expiration'));
+    if (!!date && curdate>date) {
+        removeFromStorage(storageType, key) 
+    }
+}
+// SET EXPIRATION
+function setStorageExpiration(storageType, key, days=10) {
+    let expiredate = new Date();
+    expiredate.setDate(expiredate.getDate() + days);  
+    storageType.setItem(key+'_expiration', expiredate);
+}
+
+// REMOVE FROM STORAGE
+function removeFromStorage(storageType, key) {
+    storageType.removeItem(key);
+    storageType.removeItem(key+"_expiration");
 }

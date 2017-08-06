@@ -7,11 +7,11 @@
 					<h4>SIGN IN</h4>
 					<div :class="['form', !!error ? 'error' : '']">
 						<div :class="['field', invalid ? 'invalid' : '']">
-							<input id="username" v-model="user" type="text" required>
+							<input id="username" v-model="user" type="email" :class="[!!user ? 'valid' : '']">
 							<label for="username">Username</label>
 						</div>
 						<div :class="['field', invalid ? 'invalid' : '']">
-							<input id="password" v-model="password" type="password" required>
+							<input id="password" v-model="password" type="password"  :class="[!!password ? 'valid' : '']">
 							<label for="password">Password</label>
 						</div>
 						<span v-if="!!error" class="err" v-text="error"></span>
@@ -62,26 +62,12 @@ export default {
 					pass: this.password
 				}
 				this.error = await this.signInUser(data);
-				// this.$set(this, 'loading', false);
+				if (!!this.error) {
+					this.$set(this, 'loading', false);
+					
+				}
+				console.log("ERRRROR >> ", this.error);
 			}
-			// let data = {
-			// 		user: this.user,
-			// 		pass: this.password
-			// 	}
-			//  this.$auth.login({
-			// 	body: {user: vm.user, pass: vm.password},
-			// 	success: function (res) {
-			// 		console.log(
-			// 			"login success >> ", res, " :: ", this.$auth, " :: ", this, " :: ", this.context
-			// 		);
-			// 		this.$auth.options.parseUserData(JSON.parse(res.body.d))
-			// 	},
-			// 	error: function (res) { console.log('login err > ', res);},
-			// 	rememberMe: true,
-			// 	redirect: '/',
-			// 	fetchUser: false
-			// 	// etc...
-			// });
 		}
 	}
 }
@@ -89,24 +75,25 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import '~settings';
-
+@import '~rupture';
 	.backdrop
 		position fixed 49px 0 0 0
 		transform none
 		opacity 0.98
 		z-index 999999
-		// background-color darkblue
-
 	.signin
 		self-center()
 		background #fff
-		border 1px solid #e1e1e1
-		border-radius 200px
 		width 400px
-		height 400px
+		height @width
+		border-radius unit(@width/2, 'px')
 		box-shadow 0 0 22px rgba(0,0,0,0.5)
+		+portrait()
+			width 600px
+			height @width
+			border-radius unit(@width/2, 'px')
 		&.loading
-			background blue
+			background #2e2e2e
 		
 		h4
 			text-align center
@@ -154,6 +141,7 @@ export default {
 		border-bottom 1px solid lighten(lightgray, 2)
 		height 36px
 		width 100%
+		border-radius 0
 		&:focus, &:active
 			outline 0
 	label
@@ -164,8 +152,8 @@ export default {
 		transform translate(0, -10px)
 		color lighten(lightgray, 2)
 		transition font-size 300ms ease, transform 300ms ease, color 300ms ease
-	input:focus
-	input:valid
+	input:focus,
+	input.valid
 		border-color lighten(darkblue, 20)
 		& + label
 			color darken(lightgray, 25)
@@ -174,7 +162,7 @@ export default {
 			&:after
 				content ':'
 	&.invalid
-		input:not(:valid)
+		input:not(.valid)
 			animation blink 700ms infinite ease-in-out;
 .error
 	.field input
