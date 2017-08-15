@@ -23,7 +23,7 @@ export default {
 @import '~rupture'
 .cat-strip
 	width 100%
-	height 260px
+	height 276px
 	background #4b4b4b
 	white-space nowrap
 	& > div

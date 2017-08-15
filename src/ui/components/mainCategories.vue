@@ -16,7 +16,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-import { swiper, swiperSlide } from 'vue-awesome-swiper'
+// import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import Preloader from './Preloader.vue'
 export default {
 	created() {
@@ -35,22 +35,25 @@ export default {
 						slidesPerView: 4.5,
 					},
 					1400: {
-						slidesPerView: 4.5,
-					},
-					1272: {
 						slidesPerView: 3.5,
-					},
-					1040: {
-						slidesPerView: 2.5,
-						spaceBetween: 10
+						spaceBetween: 20
 					}
+					// 1200: {
+					// 	slidesPerView: 2.5,
+					// 	spaceBetween: 10
+						
+					// },
+					// 1040: {
+					// 	slidesPerView: 3.5,
+					// 	spaceBetween: 10
+					// }
 				}
 			}
 		}
 	},
 	components: {
-		swiper,
-		swiperSlide,
+		swiper: () => import(/* webpackChunkName: "swiper" */ 'vue-awesome-swiper').then(({ swiper }) => swiper),
+		swiperSlide: () => import(/* webpackChunkName: "swiper" */ 'vue-awesome-swiper').then(({ swiperSlide }) => swiperSlide),
 		Preloader
 	},
 	computed:mapState([
@@ -117,6 +120,7 @@ export default {
 	a
 		display inline-block
 		height 100%
+		width 100%
 		margin-right 12px
 		text-align center
 		position relative

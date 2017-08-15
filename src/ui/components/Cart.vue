@@ -15,7 +15,7 @@
                             </swiper-slide>
                         </swiper>
                     </div>
-                    <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
+                    <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info many-items">
                         <swiper ref="swiper2" :options="swiper2Options">
                             <swiper-slide  v-for="status in checkoutStatus" :key="status.label" :data-index="status.label">
                                 <div class="circle-item">
@@ -52,13 +52,13 @@
                         </div>
                     </div>
                     <div class="cart-actions">
-                        <button class="btn" @click="buttonClickHandler">{{shelf.type==='cart' ? 'CHECKOUT' : 'PROCEED TO CONFIRMATION'}}</button>
+                        <button class="btn" @click="buttonClickHandler">{{shelf.type==='cart' ? 'CHECKOUT' : 'CONFIRM YOUR ORDER'}}</button>
                         <a href="#p" v-if="shelf.type=='checkout'" class="continue" @click.prevent="toggleShelf">CONTINUE SHOPPING</a>
                     </div>
                 </div>
             </div>
             <h4 v-show="items.length<1" class="not-me">There are no items in your cart yet.</h4>
-            <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> BACK</a>
+            <a v-if="shelf.type=='checkout'" href="#p" class="not-me back-link" @click.prevent="changeShelfType('cart')"><i class="left-arrow"></i> <span>BACK</span></a>
 
             <h3 v-if="items.length>0" class="not-me">
                 <i class="icon-cart">
@@ -93,18 +93,22 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper';
 import ItemPreview from './ItemPreview.vue';
 import CountUp from 'vue-countup-v2';
 import { countOptions } from 'utils';
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 
 export default {
     mounted() {
         this.$nextTick(() => {
-            console.log("swiper >> ", swiper);
             // WATCH AND UPDATE SLIDE PER VIEW FOR RESIZE EVENTS...
-            this.$set(this, 'swiper', this.$refs.swiper['swiper'].params);
-            this.$set(this, 'slidesPerView', this.swiper['slidesPerView']);
-            this.$watch('swiper.slidesPerView', function() {
+            setTimeout(function() {
+                console.log("1 this.$refs.swiper > ", this.$refs.swiper);
+                this.$set(this, 'swiper', this.$refs.swiper['swiper'].params);
+                console.log("2 this.swiper['slidesPerView'] > ", this.swiper['slidesPerView']);
                 this.$set(this, 'slidesPerView', this.swiper['slidesPerView']);
-            });
+                this.$watch('swiper.slidesPerView', function() {
+                    console.log("3 this.swiper['slidesPerView'] > ", this.swiper['slidesPerView']);
+                    this.$set(this, 'slidesPerView', this.swiper['slidesPerView']);
+                });
+            }.bind(this), 0)
         })
     },
     data() {
@@ -137,7 +141,7 @@ export default {
 						slidesPerView: 2.5,
 					},
 					1040: {
-						slidesPerView: 2.5,
+                        slidesPerView: 2.5,
 					}                    
 				}
             },
@@ -160,7 +164,8 @@ export default {
 						slidesPerView: 2.5,
 					},
 					1040: {
-						slidesPerView: 2.5,
+                        slidesPerView: 2.5,
+                        spaceBetween: 0,
 					}                    
 				}
             }
@@ -173,22 +178,16 @@ export default {
             setTimeout(_.bind(()=> {
                 this.typeAction = "erasing";
             }, this), 2000);
-            this.cartLabel = (this.shelf.type==='checkout') ? 'CHECKOUT OVERVIEW' : 'MY CART';
-        },
-        'cart.items': {
-            handler() {
-                console.log("cart item schanged");
-            },
-            deep: true
+            this.cartLabel = (this.shelf.type==='checkout') ? 'ORDER OVERVIEW' : 'MY CART';
         }
     },
     components: {
         ItemPreview,
-        swiper,
-		swiperSlide,
+        swiper: () => import(/* webpackChunkName: "swiper" */ 'vue-awesome-swiper').then(({ swiper }) => swiper),
+		swiperSlide: () => import(/* webpackChunkName: "swiper" */ 'vue-awesome-swiper').then(({ swiperSlide }) => swiperSlide),
         CountUp,
-        VueTyper,
-        draggable
+        VueTyper
+        // draggable
     },
     methods: {
         ...mapActions([
@@ -208,14 +207,9 @@ export default {
             
         },
         confirm() {
-            console.log("CONFIRM ORDER AND SHOW THANKYOU");
-
             this.saveCart(this.subtotal);
-
         },
         itemDropped(e) {
-                console.log('item dropped', e);
-            
             if ($(e.toElement).hasClass('cart-wrap')) {
                 // ADD TO CART
                 this.addToCart(this.itemInLimbo);
@@ -258,7 +252,6 @@ export default {
         subtotalDecimals() {
             let subtotal = this.subtotal;
             let d = subtotal % 1 != 0 ? 2 : 0;
-            console.log("decimalss... ", subtotal, " :: ",  d);
             return d;
         },
         noItems() {
@@ -285,17 +278,14 @@ export default {
             return checkedOutItemIds;
         },
         checkoutStatus() {
-            console.log("checkout >> ", this.itemIdsInCart,this.user.itemsOrdered);
             let items = this.cart.items,
                 categories = _.uniq(_.flatMap(items, 'catId')),
                 orderedBefore = _.intersection(this.itemIdsInCart,this.user.itemsOrdered).length,
                 orderedNew = items.length - orderedBefore;
-
-                console.log("category array >>  ", categories);
             return [
                 {
                     amount: items.length,
-                    label: 'Items'
+                    label: 'Total Items'
                 },
                 {
                     amount: categories.length,
@@ -303,11 +293,11 @@ export default {
                 },
                 {
                     amount: orderedBefore,
-                    label: 'Items ordered before'
+                    label: 'Previously Ordered'
                 },
                 {
                     amount: orderedNew,
-                    label: 'New items ordered'
+                    label: 'First-time Ordered'
                 },
             ]
         }
@@ -378,18 +368,23 @@ export default {
         color #989898
         padding-left 16px
         font-size 14px
+        height 20px
+        span
+            display inline-block
+            vertical-align middle
         .left-arrow
             width 12px
             height 12px
-            position absolute
+            display inline-block
+            vertical-align middle
             border 2px solid #989898
-            top 50%
-            left 0
-            transform translateY(-50%) rotate(135deg)
+            transform translateY(0px) rotate(135deg)
             transform-origin 50%
             border-top 0
             border-left 0
             transition transform 400ms ease
+            +tablet()
+                transform translateY(-3px) rotate(135deg)
     h3
         width 70%
         font-size 32px
@@ -451,6 +446,8 @@ export default {
                 padding-right 30px
                 margin-right 30px
                 border-right 2px solid rgba(#6f6f6f, 0.9)
+                +below(1050px)
+                    width 40%
                 h5
                     margin 0 0 5px 0
                     font-size 16px
@@ -463,6 +460,8 @@ export default {
                     white-space nowrap
             .cart-actions
                 width 60%
+                +below(1050px)
+                    width 50%
                 .btn
                     margin-bottom 10px
                 .continue
@@ -472,8 +471,8 @@ export default {
                     display block
         .checkout-info
             @extend .wider
-            padding 0 1%
-            @media (min-width:breaks.small)
+            padding 4% 0
+            +desktop()
                 padding 0 4%
             ul, .swiper-wrapper
                 @extend $zero
@@ -482,6 +481,7 @@ export default {
                     position relative
                     list-style none
                     text-align center
+                    padding-bottom 5px
                     .circle-item
                         background #fff
                         color blue
@@ -494,6 +494,8 @@ export default {
                         min-height 80px
                         span
                             line-height 0
+                            @media (max-device-width:1050px)
+                                line-height 1.6
                         @extend $absolute-mid
                         @media (max-width: breaks.small)
                             margin-bottom 10px
@@ -519,16 +521,6 @@ export default {
             @extend .wider
             position relative
             overflow hidden
-            &.many-items
-                &:after
-                    content ''
-                    height 100%
-                    background url('assets/side-shadow.png') no-repeat 100% 0 / auto 100%
-                    width 20px
-                    position absolute
-                    top 0
-                    right 0
-                    z-index 9
             ul,.swiper-container
                 width 100%
                 display inline-block
@@ -538,6 +530,17 @@ export default {
                     width 100%
                 li
                     display inline-block
+        .many-items
+            position relative
+            &:after
+                content ''
+                height 100%
+                background url('assets/side-shadow.png') no-repeat 100% 0 / auto 100%
+                width 20px
+                position absolute
+                top 0
+                right 0
+                z-index 9
 @keyframes living 
     0%
         top 30px

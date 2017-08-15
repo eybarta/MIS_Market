@@ -67,10 +67,18 @@ export default {
            
         })
     },
+    watch: {
+        'itemsFilterString'() {
+             $('html,body').animate({
+                scrollTop:0
+            }, 800)
+        }
+    },
     methods: {
         dragEnd(e) {
             console.log('drag leave from results >> ', this.item)
         },
+        
         onLangsPageChange(toPage, fromPage) {
             console.log('onLangsPageChange>> prevent? ',this.preventPageChange, toPage, fromPage);
             if (!this.preventPageChange) {
@@ -144,7 +152,8 @@ export default {
         ...mapState([
 			'overlay',
             'itemsize',
-            'preventPageChange'
+            'preventPageChange',
+            'itemsFilterString'
 		]),
         ...mapGetters([
             'isDevice'

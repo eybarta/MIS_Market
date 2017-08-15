@@ -13,9 +13,6 @@
 import { mapState, mapActions } from 'vuex';
 import Cart from '../../components/Cart.vue'
 export default {
-	created() {
-		console.log("shelf  partial created!");
-	},
 	data() {
 		return {
             active:false,
@@ -34,7 +31,6 @@ export default {
         ...mapState([
             'shelf'
         ])
-        
     }
 }
 

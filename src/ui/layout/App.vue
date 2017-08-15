@@ -1,7 +1,7 @@
 <template>
 	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && (route.name.indexOf('result')>-1||route.name.indexOf('all')>-1) ? 'app-results' : 'app-home', !isDevice ? 'no-touch' : '', isIE ? 'ie' : '']">
 		<top-bar></top-bar>
-			<router-view></router-view>
+		<router-view></router-view>
 		<footer :class="shelf.active ? 'shelf-active' : ''">
 			 <span>Copyright © 2017 MIS Implants Technologies Ltd.</span>
 		</footer>
@@ -35,7 +35,7 @@ export default {
 		let vm = this;
 		$('body').on('click.pos', function(e) {
 			vm.updateMousePos({ x: e.clientX, y: e.clientY})
-			console.log("POS CLICK>>> ", e.pageX, " :: ", e.pageY, e);
+			// console.log("POS CLICK>>> ", e.pageX, " :: ", e.pageY, e);
 		})
 	}
 }
@@ -43,7 +43,7 @@ export default {
 <style lang="stylus">
 @import '~rupture'
 .app-wrap
-	height calc(100% - 36px)
+	height 100%
 	min-width 768px
 	/.ie &.overlayed
 		height auto
@@ -54,6 +54,7 @@ export default {
 footer
 	width 100%
 	height 78px
+	min-width 768px
 	background #2e2e2e
 	lost-align center
 	transform translateY(0)
@@ -68,13 +69,15 @@ footer
 	&.shelf-active
 		transform translateY(475px)
 .home + footer
-	background #4b4b4b
-	height 36px
-	transform none
-	+below(1050px)
-		height 38px
-		margin-top -1px
-
+	position absolute
+	height 30px
+	bottom 276px
+	left 0
+	width 100%
+	background linear-gradient(to bottom, rgba(0,45,86,0) 0%,rgba(0,45,86,1) 35%,rgba(0,45,86,1) 100%) //linear-gradient(to-bottom, rgba(209,100,34,0) 0%, rgba(209,100,34,0) 100%)
+	z-index 2
+	span
+		top 60%
 .single-line + footer:not(.shelf-active)
 	border-top 0
 	transform none

@@ -13,7 +13,7 @@ import SignIn from '../../components/SignIn.vue';
 export default {
 	data() {
 		return {
-			images:['dist/img/backgrounds/background-1.jpg']
+			images:['static/img/backgrounds/background-1.jpg']
 		}
 	},
 	components: {
@@ -33,7 +33,7 @@ export default {
 .intro
 	lost-align center
 	width 100%
-	height calc(100% - 260px)
+	height calc(100% - 276px)
 	background-color #002d56
 	&.full-height
 		height 100%

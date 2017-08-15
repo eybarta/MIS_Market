@@ -29,7 +29,10 @@ const plugins = [
 			}
 		}
 	}),
-	new ExtractTextPlugin("css/style.css")
+	new ExtractTextPlugin({ 
+			filename: "css/style.css",
+			allChunks:true
+	})
 ]
 
 // COMMON RULES
@@ -37,10 +40,8 @@ const rules = [
 	{
 		test: /\.vue$/,
 		loader: 'vue-loader',
-		
 		options: {
 			extractCSS: true,
-			esModule: false,
 			postcss: [require('lost')(), require('autoprefixer')(), require('rucksack-css')()],
 		}
 	},
@@ -128,7 +129,6 @@ module.exports = {
 			'vuex',
 			'vue-router',
 			'vuex-router-sync',
-			'vue-awesome-swiper',
 			'vue-paginate'
 		],
 		vendor: [
@@ -141,7 +141,10 @@ module.exports = {
 	output: {
 		path: buildPath,
 		publicPath: "/dist/",
-		filename: 'js/[name].js'
+		filename: 'js/[name].js',
+		chunkFilename: 'js/chunks/[name].[chunkhash].js',
+		hotUpdateChunkFilename: 'hot/hot-update.js',
+    	hotUpdateMainFilename: 'hot/hot-update.json'
 	},
 
 	module: {

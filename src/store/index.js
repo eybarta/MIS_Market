@@ -45,11 +45,11 @@ const mutations = {
 		state.categories = categories;
 	},
 	INIT_ITEMS (state, items) {
-		console.log("INIT_ITEMS >> ", items);
+		// console.log("INIT_ITEMS >> ", items);
 		state.items = items;
 	},
 	INIT_USER (state, user) {
-		console.log("INIT USER MUTATION >> ", user, state, " :: ", state.router);
+		// console.log("INIT USER MUTATION >> ", user, state, " :: ", state.router);
 		state.user = user;
 		state.loaded = true;
 	},
@@ -171,10 +171,13 @@ const getters = {
 			return 'loading';
 		}
 		if (!!search_filter) {
+			console.log('search_filter> ', search_filter);
 			let counter = 0;
 			return _.filter(state.items, function(item) {
 				let item_string = (item.name+item.catNo).toLowerCase();
 				let filter = search_filter.toLowerCase();
+				console.log('filter > ', item_string, " :: ", filter, " match? ", item_string.indexOf(filter)>-1);
+				
 				return item_string.indexOf(filter)>-1;
 			})
 		}

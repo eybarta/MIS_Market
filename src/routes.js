@@ -1,6 +1,7 @@
 import store from './store/index';
-const Home = () => import('./ui/layout/pages/Home.vue');
-const Results = () => import('./ui/layout/pages/Results.vue');
+const Home = () => import(/* webpackChunkName: "home-chunk" */ './ui/layout/pages/Home.vue');
+const Results = () => import(/* webpackChunkName: "results-chunk" */ './ui/layout/pages/Results.vue');
+// import Home from './ui/layout/pages/Results.vue';
 // import Results from './ui/layout/pages/Results.vue';
 
 
@@ -22,7 +23,6 @@ async function requireAuth(to,from,next) {
 		if (!items || items==='loading') {
 			store.dispatch('initItems');
 		}
-		console.log('items  > ', items);
     	next()
   	}
 }

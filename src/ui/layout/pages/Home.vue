@@ -14,7 +14,7 @@ export default {
 	},
 	data() {
 		return {
-			images:['dist/img/backgrounds/background-1.jpg']
+			images:['static/img/backgrounds/background-1.jpg']
 		}
 	},
 	computed: {

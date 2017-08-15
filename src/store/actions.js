@@ -30,7 +30,7 @@ export const initCategories = async ({commit, dispatch}) => {
     let categories = getFromStorage(localStorage, "_marketcategories") // storageSupport() ? localStorage.getItem("_marketcategories") || null : null;
     if (!categories) {
         Vue.http.post(GET_CATEGORIES, { id: 1 }).then(response => {
-            console.log("RESPONSE >> ", response);
+            // console.log("RESPONSE >> ", response);
             if (!!response.body && !!response.body.d) {
                 let cats = JSON.parse(response.body.d);
                 cats.unshift({
@@ -48,14 +48,14 @@ export const initCategories = async ({commit, dispatch}) => {
                     children: []
                 })
                 _.remove(cats, { Id: 85});
-                _.each(cats, cat => cat.src = './dist/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
+                _.each(cats, cat => cat.src = './static/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
                 // save categories to local storage if available 
                 setToStorage(localStorage, '_marketcategories', JSON.stringify(cats), 30);
                 commit('INIT_CATEGORIES', cats);
             }
             return response;
         }, response => {
-            console.log('categories response err > ', response);
+            // console.log('categories response err > ', response);
             return { 'err': response }
         }, { headers: { 'Access-Control-Allow-Origin': '*' } })
     } else {
@@ -68,7 +68,7 @@ export const initItems = async ({commit, dispatch, getters}, items) => {
     if (!_items) {
         Vue.http.post(GET_ITEMS, { id: 1}).then( async response => {
             if (!!response.body && !!response.body.d) {
-                console.log("ITEMS HAVE RETURNED ... ");
+                // console.log("ITEMS HAVE RETURNED ... ");
                 let items = await mapItems(JSON.parse(response.body.d), getters.isDevice, getters.isIE);
 
                 // save items to session storage if available (will be saved only for current tab)
@@ -77,7 +77,7 @@ export const initItems = async ({commit, dispatch, getters}, items) => {
             }
             return response;
         }, response => {
-            console.log('err > ', response);
+            // console.log('err > ', response);
             return { 'err': response}
         }, {headers: {'Access-Control-Allow-Origin': '*'}})
     }
@@ -158,7 +158,7 @@ export const hideOverlay = async ({commit}) => {
 */
 var shelfTimer = 0;
 export const toggleShelf = async ({commit, dispatch}, type) => {
-    console.log("TOGGLE SHELF");
+    // console.log("TOGGLE SHELF");
     dispatch('bindCartMouseMove');
     clearTimeout(shelfTimer);
     type = (!!type && typeof type==='string') ? type : 'cart';
@@ -193,28 +193,28 @@ export const hideShelf = async ({commit}, animate) => {
 }
 export const bindCartMouseMove = ({commit, dispatch, state}) => {
     // console.log('bind mouse events to shelf');
-    // clearTimeout(shelfTimer);
-    // let time = 4000;
-    // $('#cartWrap').off();
+    clearTimeout(shelfTimer);
+    let time = 4000;
+    $('#cartWrap').off();
 
-    // setTimeout(function () {
-    //     if (!state.mousepos || (state.mousepos.y < 130 || state.mousepos.y > 630)) {
-    //         timedShelfClose(dispatch, time);
-    //     }
-    //     $('#cartWrap').on('mouseenter mouseleave', function (e) {
-    //         if (e.type === 'mouseleave') {
-    //             timedShelfClose(dispatch, time);
-    //         }
-    //         else {
-    //             clearTimeout(shelfTimer);
-    //         }
-    //     })
-    // }, 500)
-    // function timedShelfClose(dispatch, time) {
-    //     shelfTimer = setTimeout(function () {
-    //         dispatch('hideShelf');
-    //     }, time)
-    // }
+    setTimeout(function () {
+        if (!state.mousepos || (state.mousepos.y < 130 || state.mousepos.y > 630)) {
+            timedShelfClose(dispatch, time);
+        }
+        $('#cartWrap').on('mouseenter mouseleave', function (e) {
+            if (e.type === 'mouseleave') {
+                timedShelfClose(dispatch, time);
+            }
+            else {
+                clearTimeout(shelfTimer);
+            }
+        })
+    }, 500)
+    function timedShelfClose(dispatch, time) {
+        shelfTimer = setTimeout(function () {
+            dispatch('hideShelf');
+        }, time)
+    }
 }
 
 export const updateMousePos = ({commit}, pos) => {
@@ -233,6 +233,8 @@ export const searchFilterString = ({commit, dispatch, state}, filter_string) => 
     if (!!state.overlay.active) {
         dispatch('hideOverlay');
     }
+
+    console.log('commit SEARCH_FILTER_STRING >>> ', filter_string);
     commit('SEARCH_FILTER_STRING', filter_string);
 }
 
@@ -257,8 +259,13 @@ export const updateItemInLimbo = async ({commit, dispatch, state}, item) => {
 */
 
 export const addToCart = async ({commit, dispatch, state}, item) => {
-    await dispatch('showShelf')
-    await dispatch('hideOverlay');
+    if (!state.shelf.active) {
+        await dispatch('showShelf')
+        await dispatch('hideOverlay');
+    }
+    else {
+        dispatch('bindCartMouseMove');
+    }
     if (!item.inCart) {
         dispatch('toPreventPageChange', true);
          let _item = _.find(state.items, {id:item.id});
@@ -268,7 +275,7 @@ export const addToCart = async ({commit, dispatch, state}, item) => {
     }
 }
 export const updateItemInCart = async ({commit, dispatch}, item) => {
-    console.log("update item in cart>> ", item);
+    // console.log("update item in cart>> ", item);
     commit('UPDATE_ITEM_IN_CART', item);
     setTimeout(function() {
         dispatch('showShelf')
@@ -304,15 +311,15 @@ export const saveCart = async ({commit, dispatch, state}, subtotal) => {
     let data = {cartData: items, mId, token}
     let _data = { 'cart': btoa(JSON.stringify(data)).toString()}
 
-    console.log("data > ", _data);
+    // console.log("data > ", _data);
     Vue.http.post(SAVE_CART,_data).then(async (err, response) => {
-        console.log("SAVE_CART, RESPONSE >> ", err, " :: ",  response);
+        // console.log("SAVE_CART, RESPONSE >> ", err, " :: ",  response);
 
         dispatch('changeShelfType', 'confirm');
         dispatch('bindCartMouseMove', await dispatch('emptyCart'));
         localStorage.removeItem("_marketuser");
     }, response => {
-        console.log('save cart error >> ', response);
+        // console.log('save cart error >> ', response);
     })
 }
 
@@ -328,10 +335,10 @@ export const toPreventPageChange = ({commit}, bool) => {
 async function mapItems(items, isDevice,isIE) {
         // console.log('MAP ITEMS');
         let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'LangCC'))), r => { return _.trim(r)!=''}).join(';');
-        console.log('2 countryCodes > ', countryCodes);
+        // console.log('2 countryCodes > ', countryCodes);
         let item_country_flags = await fetchFlagsForItems(countryCodes, isDevice, isIE);
 
-        console.log("rAW ITEMS  > ", items);
+        // console.log("rAW ITEMS  > ", items);
         let mappedItems = _.map(items, item => {
             let attachments = [];
             if (!!item.PrintCatalog) {
@@ -372,7 +379,7 @@ async function mapItems(items, isDevice,isIE) {
                 id: item.Id,
                 catId,
                 description: item.Description,
-                image: "./dist/img/items/"+catNo.replace(/\s/g, '_').replace(/\'/g, '').replace(/b\+/gi, 'BPLUS_') + ".png",
+                image: "./static/img/items/"+catNo.replace(/\s/g, '_').replace(/\'/g, '').replace(/b\+/gi, 'BPLUS_') + ".png",
                 catNo,
                 name: item.Name,
                 price:item.Price || 0,
@@ -386,16 +393,16 @@ async function mapItems(items, isDevice,isIE) {
 }
 
 async function fetchFlagsForItems(countryCodes, isDevice, isIE) {
-    console.log('fetchFlagsForItems >> isIE?? ', isIE);
+    // console.log('fetchFlagsForItems >> isIE?? ', isIE);
     let flagCollection = {};
     if (isDevice || isIE) {
         let ccArray = countryCodes.split(';');
         // console.log("countryCodes .. ", countryCodes);
         for (var i = 0; i< ccArray.length; i++ ) {
             let cc = ccArray[i];
-            flagCollection[cc] = "./dist/img/flags/"+cc+".png";
+            flagCollection[cc] = "./static/img/flags/"+cc+".png";
         }
-        console.log('flagCollection >> ', flagCollection);
+        // console.log('flagCollection >> ', flagCollection);
         return flagCollection;
     }
     else {
@@ -406,7 +413,7 @@ async function fetchFlagsForItems(countryCodes, isDevice, isIE) {
                 if (!!response.body) {
                     for (var i = 0; i < response.body.length; i++) {
                         let c = response.body[i];
-                        console.log("C >> ",c);
+                        // console.log("C >> ",c);
                         if (!!c) {
                             flagCollection[c.alpha2Code] = c.flag
                         }
@@ -446,7 +453,7 @@ async function fetchItemsOrdered(id) {
             return itemIds;
         }
     }, response => {
-        console.log('GET_MEMBER_CARTS error >> ', response);
+        // console.log('GET_MEMBER_CARTS error >> ', response);
         return [];
     })
 }

@@ -1,16 +1,23 @@
 <template>
 	<div class="search-box">
-		<input v-model.trim="searchval" type="text" :value="value" :placeholder="placeholder" @keyup="search($event)">
+		<input ref="searchfield" v-model="searchval" type="text" :placeholder="placeholder" @keyup="search($event)">
 		<i :class="['icon-search', !!searchval.length && type!='intro' ? 'clear' : '']" @click="searchIconClickHandler"><span v-if="!!searchval.length && type!='intro'"></span></i>
 	</div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 	export default {
 		props: ['placeholder', 'value', 'type'],
 		data() {
 			return {
 				searchval:''
+			}
+		},
+		watch: {
+			'itemsFilterString'() {
+				if (this.itemsFilterString != this.searchval) {
+					this.$set(this, 'searchval', '');
+				}
 			}
 		},
 		mounted() {
@@ -28,7 +35,11 @@ import { mapState } from 'vuex';
 
 		},
 		methods: {
+			...mapActions([
+				'searchFilterString'
+			]),
 			search: _.debounce(function(e) {
+					this.searchFilterString(this.searchval);
 					if (this.type==='intro') {
 						if (e.keyCode===13) {
 							this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})	
@@ -48,17 +59,21 @@ import { mapState } from 'vuex';
 						this.$set(this, 'searchval', '');
 					}
 					this.search();
+				} else {
+					this.$refs.searchfield.focus();
 				}
 			}
 		},
 		computed: {
 			...mapState([
-				'route'
+				'route',
+				'itemsFilterString'
 			])
 		}
 	}
 </script>
 <style lang="stylus">
+@import '~rupture'
 .search-box
 	width 60%
 	min-width 220px
@@ -138,7 +153,10 @@ import { mapState } from 'vuex';
 		border 0
 		outline 0
 		color darken(#bcbcbd, 30)
-		line-height 3.5
+		line-height normal
+		+tablet()
+			&::-webkit-input-placeholder
+				transform translateY(2px)
 ::-ms-clear
 	display none
 ::-webkit-search-decoration,

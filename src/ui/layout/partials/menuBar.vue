@@ -25,7 +25,7 @@ export default {
 	data() {
 		return {
 			searchfilter: '',
-			images:['dist/img/backgrounds/background-1.jpg']
+			images:['static/img/backgrounds/background-1.jpg']
 		}
 	},
 	destroyed() {
@@ -53,7 +53,8 @@ export default {
 	},
 	computed: {
 		...mapState([
-			'overlay'
+			'overlay',
+			'itemsFilterString'
 		]),
 		...mapGetters([
 			'resultsTitle'
@@ -63,6 +64,7 @@ export default {
 </script>
 <style lang="stylus">
 @import '~settings'
+@import '~rupture'
 .menu-bar
 	min-width 768px
 	position fixed
@@ -95,6 +97,7 @@ export default {
 		position relative
 		cursor pointer
 		border-radius 0px
+		user-select none
 		transition width 100ms ease-out, border-radius 100ms ease-out, margin-right 100ms ease-out, color 100ms ease, border-color 100ms ease
 		&:after
 			content ''
@@ -106,10 +109,11 @@ export default {
 			height 2px
 			background #2e2e2e
 			transition width 400ms ease-out-back, background-color 400ms ease
-		&:hover
-			border-color darken(blue, 10)
-			&:after
-				background darken(blue, 10)
+		+desktop()
+			&:hover
+				border-color darken(blue, 10)
+				&:after
+					background darken(blue, 10)
 		&.active
 			color blue
 			border-color blue
@@ -119,11 +123,12 @@ export default {
 			&:after
 				width 120%
 				background-color blue
-			&:hover
-				border-color lighten(blue, 15)
-				&:after
-					transition width 400ms ease-out-back, background-color 400ms ease
-					background lighten(blue, 15)
-					width 135%
+			+desktop()
+				&:hover
+					border-color lighten(blue, 15)
+					&:after
+						transition width 400ms ease-out-back, background-color 400ms ease
+						background lighten(blue, 15)
+						width 135%
 			
 </style>

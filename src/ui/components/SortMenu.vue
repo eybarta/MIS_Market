@@ -60,8 +60,9 @@ export default {
 @import '~settings';
 @import '~rupture';
 .sort-nav-menu
-    padding-top 10vh
-    padding-bottom 10vh
+    // padding-top 10vh
+    // padding-bottom 10vh
+    padding 0 !important
     height 87vh
     +below(1024px)
         height 84vh

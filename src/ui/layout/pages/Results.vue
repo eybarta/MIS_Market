@@ -44,6 +44,12 @@ export default {
 	},
 	watch: {
 		'$route' (to, from) {
+			console.log("route changed.. ", to, " <><><><> ", from );
+			console.log("is search filter ?? ", to.params.searchFilter);
+			if (!to.params.searchFilter) {
+				console.log("NOPE..clear searchfield ");
+				this.searchFilterString('');
+			}
 			this.hideOverlay();
 		}
 	},
@@ -76,28 +82,30 @@ export default {
 	computed: {
 		...mapState([
 			'itemsFilterString',
-			'itemsize',
-			'items'
+			'itemsize'
+			// 'items'
 		]),
-		...mapGetters([
-			'filteredItems'
-		]),
+		...mapGetters({
+			items:	'filteredItems'
+		}
+		
+		),
 		totalResults() {
 			return this.items.length
 		},
-		items() {
-            let filter = this.itemsFilterString;
-			console.log(" >> ", filter);
-            if (!!filter) {
-                return _.filter(this.filteredItems, item => {
-				    let item_string = (item.name+item.catNo).toLowerCase();
-				    return item_string.indexOf(filter)>-1;
-                })
-            }
-            else {
-                return this.filteredItems;
-            }
-        },
+		// items() {
+        //     // let filter = this.itemsFilterString;
+		// 	// console.log(" >> ", filter);
+        //     // if (!!filter) {
+        //     //     return _.filter(this.filteredItems, item => {
+		// 	// 	    let item_string = (item.name+item.catNo).toLowerCase();
+		// 	// 	    return item_string.indexOf(filter)>-1;
+        //     //     })
+        //     // }
+        //     // else {
+        //         return this.filteredItems;
+        //     // }
+        // },
         singleLine() {
             return this.items.length < Math.max(($(window).width()<1024 ? 4 : 5), 1)
         }
@@ -111,7 +119,8 @@ export default {
 .results
 	min-width 768px
 	padding-top 49px
-	min-height calc(100% - 42px)
+	// min-height calc(100% - 42px)
+	min-height calc(100% - 78px)
 	color #fff
 	position relative
 	backface-visibility hidden
