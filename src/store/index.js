@@ -20,7 +20,6 @@ const state = {
 	itemsFilterString,
 	itemInLimbo: null,
 	loaded: false,
-	preventPageChange: false,
 	cart:{
 		items:[],
 		subtotal:0
@@ -69,11 +68,6 @@ const mutations = {
 	},
 	SEARCH_FILTER_STRING (state, filter_string) {
 		state.itemsFilterString = filter_string;
-	},
-	PREVENT_PAGE_CHANGE (state, bool) {
-		// temp fix for vue-paginate issue,
-		// [GITHUB] https://github.com/TahaSh/vue-paginate/issues/58
-		state.preventPageChange = bool;
 	},
 	// DRAG N DROP
 	UPDATE_ITEM_IN_LIMBO (state, item) {
@@ -171,12 +165,12 @@ const getters = {
 			return 'loading';
 		}
 		if (!!search_filter) {
-			console.log('search_filter> ', search_filter);
+			// console.log('search_filter> ', search_filter);
 			let counter = 0;
 			return _.filter(state.items, function(item) {
 				let item_string = (item.name+item.catNo).toLowerCase();
 				let filter = search_filter.toLowerCase();
-				console.log('filter > ', item_string, " :: ", filter, " match? ", item_string.indexOf(filter)>-1);
+				// console.log('filter > ', item_string, " :: ", filter, " match? ", item_string.indexOf(filter)>-1);
 				
 				return item_string.indexOf(filter)>-1;
 			})

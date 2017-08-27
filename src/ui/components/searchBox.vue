@@ -1,11 +1,20 @@
 <template>
 	<div class="search-box">
-		<input ref="searchfield" v-model="searchval" type="text" :placeholder="placeholder" @keyup="search($event)">
+		<input ref="searchfield" v-model="searchval" type="text" :placeholder="placeholder" @keyup="search($event)"> 
+		<!-- <div 
+			v-else
+			ref="searchfield"
+			class="searchin"
+			id="searchin"
+			@keyup="editHandler($event)"
+			contenteditable="true">
+				<span v-if="searchval.length<1" class="ph" v-text="placeholder" contenteditable="false"></span>
+			</div> -->
 		<i :class="['icon-search', !!searchval.length && type!='intro' ? 'clear' : '']" @click="searchIconClickHandler"><span v-if="!!searchval.length && type!='intro'"></span></i>
 	</div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 	export default {
 		props: ['placeholder', 'value', 'type'],
 		data() {
@@ -29,19 +38,28 @@ import { mapState, mapActions } from 'vuex';
 				_.each(searchFromRoute, (letter, index) => {
 					setTimeout(function() {
 						vm.$set(vm, 'searchval', vm.searchval+letter);
+						if (!!vm.editable) {
+							vm.$refs.searchfield.innerHTML = vm.searchval;
+						}
 					},time*(index+1))
 				})
 			}
-
 		},
 		methods: {
 			...mapActions([
 				'searchFilterString'
 			]),
+			editHandler(e) {
+				this.$set(this, 'searchval', e.target.textContent);
+				if (e.target.textContent.length>0) {
+					this.search(e);
+				}
+			},
 			search: _.debounce(function(e) {
+				console.log("search >> ", e);
 					this.searchFilterString(this.searchval);
 					if (this.type==='intro') {
-						if (e.keyCode===13) {
+						if (e==='icon clicked' || e.keyCode===13) {
 							this.$router.push({ name: 'results-search', params: { searchFilter: this.searchval }})	
 						}
 					}
@@ -58,7 +76,7 @@ import { mapState, mapActions } from 'vuex';
 					if (this.type!='intro') {
 						this.$set(this, 'searchval', '');
 					}
-					this.search();
+					this.search('icon clicked');
 				} else {
 					this.$refs.searchfield.focus();
 				}
@@ -68,6 +86,9 @@ import { mapState, mapActions } from 'vuex';
 			...mapState([
 				'route',
 				'itemsFilterString'
+			]),
+			...mapGetters([
+				'isDevice'
 			])
 		}
 	}
@@ -141,7 +162,8 @@ import { mapState, mapActions } from 'vuex';
 		&:hover
 			&:after, &:before
 				background darken(#80858c, 15)
-	input
+	input,
+	.searchin
 		position relative
 		height 90%
 		width 86%
@@ -155,8 +177,22 @@ import { mapState, mapActions } from 'vuex';
 		color darken(#bcbcbd, 30)
 		line-height normal
 		+tablet()
-			&::-webkit-input-placeholder
-				transform translateY(2px)
+			height auto
+			transform translateY(-37%)
+			// &::-webkit-input-placeholder
+			// 	transform translateY(8px)
+	.searchin
+		white-space nowrap
+		height auto
+		.ph
+			color lightgray
+			pointer-events none
+		&:focus .ph
+			display none
+		+tablet()
+			transform translateY(-40%)
+		br
+			display none
 ::-ms-clear
 	display none
 ::-webkit-search-decoration,

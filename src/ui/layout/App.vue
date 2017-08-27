@@ -70,8 +70,8 @@ footer
 		transform translateY(475px)
 .home + footer
 	position absolute
-	height 30px
-	bottom 276px
+	height 40px
+	bottom 246px
 	left 0
 	width 100%
 	background linear-gradient(to bottom, rgba(0,45,86,0) 0%,rgba(0,45,86,1) 35%,rgba(0,45,86,1) 100%) //linear-gradient(to-bottom, rgba(209,100,34,0) 0%, rgba(209,100,34,0) 100%)

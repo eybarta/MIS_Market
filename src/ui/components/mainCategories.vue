@@ -37,6 +37,10 @@ export default {
 					1400: {
 						slidesPerView: 3.5,
 						spaceBetween: 20
+					},
+					770: {
+						slidesPerView: 2.5,
+						spaceBetween: 15
 					}
 					// 1200: {
 					// 	slidesPerView: 2.5,
@@ -105,10 +109,10 @@ export default {
 		transform translateY(-50%)
 		width 95%
 		overflow visible
-		max-height 100%
+		// max-height 90%
 		.swiper-wrapper
 			margin auto
-			top 10%
+			height auto
 		.swiper-pagination
 			bottom 0 !important
 			left 50% 
@@ -119,8 +123,6 @@ export default {
 					display inline-block
 	a
 		display inline-block
-		height 100%
-		width 100%
 		margin-right 12px
 		text-align center
 		position relative

@@ -80,6 +80,8 @@ export default {
 		padding 0 0 0 36px
 		font-size 30px
 		font-weight 400
+		+tablet()
+			vertical-align sub
 	.menu-search
 		position absolute
 		right 0

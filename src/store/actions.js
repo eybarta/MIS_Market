@@ -61,9 +61,9 @@ export const initCategories = async ({commit, dispatch}) => {
     } else {
         commit('INIT_CATEGORIES', JSON.parse(categories));
     }
-    
 }
 export const initItems = async ({commit, dispatch, getters}, items) => {
+    console.log("[initItems]");
     let _items = getFromStorage(sessionStorage, "_marketitems");
     if (!_items) {
         Vue.http.post(GET_ITEMS, { id: 1}).then( async response => {
@@ -191,32 +191,35 @@ export const hideShelf = async ({commit}, animate) => {
       }, 0)
     })
 }
-export const bindCartMouseMove = ({commit, dispatch, state}) => {
+export const bindCartMouseMove = ({commit, dispatch, state, getters}) => {
     // console.log('bind mouse events to shelf');
     clearTimeout(shelfTimer);
     let time = 4000;
     $('#cartWrap').off();
-
-    setTimeout(function () {
-        if (!state.mousepos || (state.mousepos.y < 130 || state.mousepos.y > 630)) {
-            timedShelfClose(dispatch, time);
-        }
-        $('#cartWrap').on('mouseenter mouseleave', function (e) {
-            if (e.type === 'mouseleave') {
+    if (!!getters.isDevice) {
+        timedShelfClose(dispatch, time);
+    }
+    else {
+        setTimeout(function () {
+            if (!state.mousepos || (state.mousepos.y < 130 || state.mousepos.y > 630)) {
                 timedShelfClose(dispatch, time);
             }
-            else {
-                clearTimeout(shelfTimer);
-            }
-        })
-    }, 500)
+            $('#cartWrap').on('mouseenter mouseleave', function (e) {
+                if (e.type === 'mouseleave') {
+                    timedShelfClose(dispatch, time);
+                }
+                else {
+                    clearTimeout(shelfTimer);
+                }
+            })
+        }, 500)
+    }
     function timedShelfClose(dispatch, time) {
         shelfTimer = setTimeout(function () {
             dispatch('hideShelf');
         }, time)
     }
 }
-
 export const updateMousePos = ({commit}, pos) => {
     commit('UPDATE_MOUSE_POS', pos);
 }
@@ -267,7 +270,7 @@ export const addToCart = async ({commit, dispatch, state}, item) => {
         dispatch('bindCartMouseMove');
     }
     if (!item.inCart) {
-        dispatch('toPreventPageChange', true);
+        // dispatch('toPreventPageChange', true);
          let _item = _.find(state.items, {id:item.id});
         Vue.set(_item, 'inCart', true);
         _item.amount = (!!_item.amount) ? _item.amount : 1;
@@ -285,6 +288,9 @@ export const removeFromCart = ({commit, dispatch}, item) => {
     commit('REMOVE_FROM_CART', item);
 }
 export const emptyCart = async ({commit, dispatch, state}) => {
+    setTimeout(function() {
+        return true
+    }, 500);
     while (!!state.cart.items.length) {
         dispatch('removeFromCart', state.cart.items[0]);
     }
@@ -317,7 +323,7 @@ export const saveCart = async ({commit, dispatch, state}, subtotal) => {
 
         dispatch('changeShelfType', 'confirm');
         dispatch('bindCartMouseMove', await dispatch('emptyCart'));
-        localStorage.removeItem("_marketuser");
+        // localStorage.removeItem("_marketuser");
     }, response => {
         // console.log('save cart error >> ', response);
     })
@@ -328,10 +334,6 @@ export const saveCart = async ({commit, dispatch, state}, subtotal) => {
     // HELPER FUNCTIONS
  -------------
 */
-export const toPreventPageChange = ({commit}, bool) => {
-    commit('PREVENT_PAGE_CHANGE', bool);
-}
-
 async function mapItems(items, isDevice,isIE) {
         // console.log('MAP ITEMS');
         let countryCodes = _.filter(_.compact(_.uniq(_.map(items, 'LangCC'))), r => { return _.trim(r)!=''}).join(';');
@@ -506,3 +508,11 @@ function removeFromStorage(storageType, key) {
     storageType.removeItem(key);
     storageType.removeItem(key+"_expiration");
 }
+
+// RESTART CACHING
+function clearCache() {
+    removeFromStorage(localStorage, "_marketcategories");
+    removeFromStorage(sessionStorage, "_marketitems");
+}
+
+window._cc = clearCache;

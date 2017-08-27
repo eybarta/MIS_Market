@@ -9,7 +9,6 @@
             <div class="item-actions" v-if="!!actions.length">
                 <button v-for="action in actions" class="action" @click.prevent="actionHandler(action)" :key="action"><i :class="['icon-'+action]"></i><span> {{ labelFor(action) }} </span></button>
             </div>
-
             <div class="item-info" v-if="!!info">
                 <!--
                 <div class="info" v-text="'$'+item.price+' per unit'"></div>
@@ -212,7 +211,8 @@ export default {
         height @width
         border-radius unit(@width/2, 'px')
     /.no-touch:not(.ie) & > img
-        width 185%
+        max-width 200%
+        min-height 105%
 .item-preview
     
     .label
@@ -241,7 +241,7 @@ export default {
         background-repeat no-repeat
         border-radius 50%
         margin 0 auto
-        background-color #2e2e2e
+        background-color darken(#2e2e2e, 5)
         /.no-touch &
             box-shadow inset 2px 2px 8px rgba(0,0,0,0.2)
         &.incart

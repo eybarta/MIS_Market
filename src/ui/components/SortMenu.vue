@@ -4,17 +4,17 @@
             <div><span>SORT BY:</span></div>
             <div>
                 <ul class="categories">
-                    <li v-for="category in categories" :key="category.name">
-                        <router-link :to="{ name: 'results-root', params: { rootFilter: category.name } }">
-                            <img :src="category.src" :alt="category.name">
-                            <span v-text="category.name"></span>
+                    <li class="parent" v-for="category in categories" :key="category.name" @touchstart="subnavHover($event)">
+                        <router-link class="parent-link" :to="{ name: 'results-root', params: { rootFilter: category.name } }">
+                            <img class="parent-icon" :src="category.src" :alt="category.name">
+                            <span class="parent-label" v-text="category.name"></span>
                         </router-link>
-                        <ul class='subnav' v-if="hasChildren(category)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)" @touchstart.passive="subnavHover($event)">
-                            <li v-for="child in category.children" :key="child.name">
+                        <ul class='subnav' v-if="hasChildren(category)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)" @touchstart="subnavHover($event)">
+                            <li class="parent" v-for="child in category.children" :key="child.name">
                                 <router-link :to="{ name: 'results-child', params: { rootFilter: category.name, childFilter: child.name } }">
                                     <span>{{child.name}}</span>
                                 </router-link>
-                                <ul class='grandsubnav' v-if="hasChildren(child)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)"  @touchstart.passive="subnavHover($event)">
+                                <ul class='grandsubnav' v-if="hasChildren(child)" @mouseenter="subnavHover($event)" @mouseleave="subnavOut($event)"  @touchstart="subnavHover($event)">
                                     <li v-for="grandchild in child.children" :key="grandchild.name">
                                         <router-link :to="{ name: 'results-grandchild', params: { rootFilter: category.name, childFilter: child.name, grandchildFilter: grandchild.name } }">
                                             <span>{{grandchild.name}}</span>
@@ -34,18 +34,40 @@ import $ from 'jquery';
 import { mapState } from 'vuex';
 
 export default {
-    created() {
-        
+    mounted() {
+        window.addEventListener("resize", this.setScreen);
+        this.setScreen();
+    },
+    destroy() {
+        console.log('sortmenu destroyed');
+        window.removeEventListener("resize", this.setScreen, false);
     },
     methods: {
+        setScreen() {
+            
+            let wrap = this.$el;
+            console.log('set screen >> ', wrap);
+            window.scrollTo(0, 0);
+            setTimeout(function () {
+                let vpheight = window.innerHeight; //Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                wrap.style.height = (vpheight - 129) + "px";
+            }, 200)
+        },
         hasChildren(cat) {
             return _.has(cat, 'children');
         },
         subnavHover(e) {
-            if (e.type=="touchstart" && !$(e.target).hasClass('active')) {
+            let $parent = $(e.target).parents('.parent:first');
+
+            console.log('subnavHover > ', $parent, " :: ", $parent.hasClass('active'));
+            if (e.type=="touchstart" && !!$parent && !$parent.hasClass('active')) {
                 e.preventDefault();
+                if ($parent.parent().hasClass('categories')) {
+                    $(".categories > .parent").removeClass('active');
+                }
+                $parent.addClass('active');
+                
             }
-            $(e.target).addClass('active');
         },
         subnavOut(el) {
             $(el.target).removeClass('active');
@@ -149,7 +171,8 @@ export default {
                 &.active
                     transform translateY(0)
                     opacity 1
-            &:hover
+            &:hover,
+            &.active
                 opacity 1
                 span
                     color #fff

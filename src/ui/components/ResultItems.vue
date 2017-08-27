@@ -44,7 +44,7 @@
 import { mapGetters, mapState, mapActions } from 'vuex';
 import Preloader from './Preloader.vue'
 
-import velocity from 'velocity-animate';
+import Velocity from 'velocity-animate';
 import $ from 'jquery';
 import ItemPreview from './ItemPreview.vue';
 
@@ -54,7 +54,8 @@ export default {
         return {
             paginate: ['items'],
             itemsPerPage: 24,
-            cartzone: -1
+            cartzone: -1,
+            totalItems: 0
         }
     },
 	components: {
@@ -62,48 +63,44 @@ export default {
         Preloader
 	},
     mounted() {
+        this.$set(this, 'totalItems', this.items.length)
         this.$nextTick(() => {
            this.bindFirstLastToPager();
-           
         })
     },
     watch: {
         'itemsFilterString'() {
-             $('html,body').animate({
-                scrollTop:0
-            }, 800)
+             this.fixPaginationPosition()
+        },
+        'items'() {
+            if (this.totalItems != this.items.length) {
+                this.$set(this, 'totalItems', this.items.length)
+                this.fixPaginationPosition()
+            }
         }
     },
     methods: {
-        dragEnd(e) {
-            console.log('drag leave from results >> ', this.item)
-        },
-        
         onLangsPageChange(toPage, fromPage) {
-            console.log('onLangsPageChange>> prevent? ',this.preventPageChange, toPage, fromPage);
-            if (!this.preventPageChange) {
-                $('html,body').animate({
-                    scrollTop:0
-                }, 800)
-                let $pager = $("#pager");
-                $pager.find('.first-page, .last-page').removeClass('disabled');
-                if (toPage===1) {
-                    $pager.find('.first-page').addClass('disabled');
-                }
-                else if (toPage===this.$refs.pager.numberOfPages) {
-                    $pager.find('.last-page').addClass('disabled');                    
-                }
-                this.$nextTick(function() {
-                    $pager.find('.last-page').insertAfter(".right-arrow")
-                })
+            this.fixPaginationPosition()
+        },
+        fixPaginationPosition() {
+            $('html,body').animate({
+                scrollTop:0
+            }, 800)
+            let curpage = this.$refs.paginator.currentPage
+            let $pager = $("#pager");
+            $pager.find('.first-page, .last-page').removeClass('disabled');
+            if (curpage===1) {
+                $pager.find('.first-page').addClass('disabled');
             }
-            else {
-                this.$refs.paginator.goToPage(fromPage);
-                this.toPreventPageChange(false);
+            else if (curpage===this.$refs.pager.numberOfPages) {
+                $pager.find('.last-page').addClass('disabled');                    
             }
+            this.$nextTick(function() {
+                $pager.find('.last-page').insertAfter(".right-arrow")
+            })
         },
         bindFirstLastToPager() {
-            console.log('[RESULT ITEMS] bindFirstLastToPager');
             let vm = this;
             let $pager = $("#pager"),
                 $first = $("<li class='first-page disabled'><a>First</a></li>"),
@@ -117,8 +114,6 @@ export default {
             })
             $pager.prepend($first)
             $pager.append($last);
-            console.log("pager > ", $pager);
-            
         },
 		beforeEnter: function (el) {
 			$(el).css({
@@ -145,7 +140,8 @@ export default {
 		},
         ...mapActions([
             'showShelf',
-            'toPreventPageChange'
+            'toPreventPageChange',
+            'toAfterPreventPageChange'
         ])
     },
     computed: {
@@ -153,6 +149,7 @@ export default {
 			'overlay',
             'itemsize',
             'preventPageChange',
+            'afterPreventPageChange',
             'itemsFilterString'
 		]),
         ...mapGetters([
@@ -168,6 +165,8 @@ export default {
     padding 8.8vh 0 0
     min-height 70vh
     clear both
+    +tablet(orientation: portrait)
+        min-height 73vh
     /.single-line &
         padding-top 54px
         +portrait()

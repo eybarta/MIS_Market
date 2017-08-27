@@ -59,7 +59,8 @@ export default {
 }
 </script>
 <style lang="stylus">
-@import '~settings';
+@import '~rupture'
+@import '~settings'
 
 .gradient1
 	background linear-gradient(to bottom, #fff, #c8c7c7)
@@ -103,6 +104,9 @@ export default {
 				text-transform uppercase
 				padding-left 10px
 				color #939393
+				+tablet()
+					position relative
+					transform translateY(4px)
 					
 			.user-flag
 				display inline-block
@@ -157,7 +161,7 @@ export default {
 		line-height 47px
 		height 100%
 		width 240px
-		background url('./assets/logo.svg') no-repeat 0 50%
+		background url('./assets/logo-marketcase.svg') no-repeat 0 50%
 		i
 			@extend .inmid
 			@extend .gradient1

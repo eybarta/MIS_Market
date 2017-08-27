@@ -15,7 +15,7 @@
                             </swiper-slide>
                         </swiper>
                     </div>
-                    <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info many-items">
+                    <div key="checkout" v-if="shelf.type=='checkout'" class="checkout-info">
                         <swiper ref="swiper2" :options="swiper2Options">
                             <swiper-slide  v-for="status in checkoutStatus" :key="status.label" :data-index="status.label">
                                 <div class="circle-item">
@@ -86,7 +86,7 @@
 </template>
 <script>
 import $ from 'jquery'
-import velocity from 'velocity-animate';
+import Velocity from 'velocity-animate';
 import { VueTyper } from 'vue-typer'
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { swiper, swiperSlide } from 'vue-awesome-swiper';
@@ -146,14 +146,14 @@ export default {
 				}
             },
             swiper2Options: {
-                slidesPerView: 4,
+                slidesPerView: 5,
                 freeMode: true,
                 freeModeMomentum: true,
                 spaceBetween: 5,
                 grabCursor: true,
                 preventClicks: false,
                 breakpoints: {
-                    1800: {
+                    1600: {
                         slidesPerView: 4,
                         spaceBetween: 5,
 					},
@@ -338,6 +338,17 @@ export default {
     transform translate(0,0)
     opacity 1
 
+.many-items
+    position relative
+    &:after
+        content ''
+        height 100%
+        background url('assets/side-shadow.png') no-repeat 100% 0 / auto 100%
+        width 20px
+        position absolute
+        top 0
+        right 0
+        z-index 9
 
 .wider
     width calc(97% - 500px)
@@ -394,16 +405,20 @@ export default {
         position absolute
         top 10%
         left 5%
-        +tablet()
+        +below(1366px)
+            width auto
+            top 7%
+            left 25%
+        +below(1024px)
             top 6%
-        @media (max-width:breaks.small)
-            left 10%
             font-size 26px
         & > i
             position relative
             font-size 70px
             color lightgray
             vertical-align sub
+            +below(1366px)
+                font-size 60px
             @media (max-width:breaks.small)
                 font-size 54px
             .icon-wrap
@@ -431,7 +446,7 @@ export default {
                 top 12px !important
     .cart
         width 100%
-        margin-top 7%
+        margin-top 6%
         @extend $inline-mid
         .cart-info
             @extend $inline-mid
@@ -471,9 +486,19 @@ export default {
                     display block
         .checkout-info
             @extend .wider
-            padding 4% 0
-            +desktop()
-                padding 0 4%
+            padding 0
+            margin-top -1%
+            +below(1500px)
+                position relative
+                &:after
+                    content ''
+                    height 100%
+                    background url('assets/side-shadow.png') no-repeat 100% 0 / auto 100%
+                    width 20px
+                    position absolute
+                    top 0
+                    right 0
+                    z-index 9
             ul, .swiper-wrapper
                 @extend $zero
                 li, .swiper-slide
@@ -489,9 +514,10 @@ export default {
                         text-align center
                         margin-bottom 20px
                         width 75%
-                        padding-top 75%
                         min-width 80px
                         min-height 80px
+                        width 197px
+                        height 198px
                         span
                             line-height 0
                             @media (max-device-width:1050px)
@@ -517,10 +543,12 @@ export default {
                         color rgba(#fff, 0.4)
                         display block
                         text-align center
+        
         .cart-item-slider
             @extend .wider
             position relative
             overflow hidden
+            margin-top 2%
             ul,.swiper-container
                 width 100%
                 display inline-block
@@ -530,17 +558,6 @@ export default {
                     width 100%
                 li
                     display inline-block
-        .many-items
-            position relative
-            &:after
-                content ''
-                height 100%
-                background url('assets/side-shadow.png') no-repeat 100% 0 / auto 100%
-                width 20px
-                position absolute
-                top 0
-                right 0
-                z-index 9
 @keyframes living 
     0%
         top 30px
