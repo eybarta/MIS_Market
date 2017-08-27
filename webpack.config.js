@@ -2,6 +2,7 @@
 const path = require('path');
 const poststylus = require('poststylus');
 
+const MinifyPlugin = require("babel-minify-webpack-plugin");
 const BabiliPlugin = require("babili-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const DashboardPlugin = require('webpack-dashboard/plugin');
@@ -90,25 +91,25 @@ if (isProduction) {
 			debug: false,
 		}),
 		// new BabiliPlugin({removeConsole:true, removeDebugger:true}),
-
-		new webpack.optimize.UglifyJsPlugin({
-			compress: {
-				warnings: false,
-				screw_ie8: true,
-				conditionals: true,
-				unused: true,
-				comparisons: true,
-				sequences: true,
-				dead_code: true,
-				evaluate: true,
-				if_return: true,
-				join_vars: true,
-				drop_console: true
-			},
-			output: {
-				comments: false,
-			},
-		})
+		new MinifyPlugin()
+		// new webpack.optimize.UglifyJsPlugin({
+		// 	compress: {
+		// 		warnings: false,
+		// 		screw_ie8: true,
+		// 		conditionals: true,
+		// 		unused: true,
+		// 		comparisons: true,
+		// 		sequences: true,
+		// 		dead_code: true,
+		// 		evaluate: true,
+		// 		if_return: true,
+		// 		join_vars: true,
+		// 		drop_console: true
+		// 	},
+		// 	output: {
+		// 		comments: false,
+		// 	},
+		// })
 	);
 }
 else {
