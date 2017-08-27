@@ -142,7 +142,7 @@ module.exports = {
 		path: buildPath,
 		publicPath: "/dist/",
 		filename: 'js/[name].js',
-		chunkFilename: 'js/chunks/[name].[chunkhash].js',
+		chunkFilename: 'js/chunks/[name].js',
 		hotUpdateChunkFilename: 'hot/hot-update.js',
     	hotUpdateMainFilename: 'hot/hot-update.json'
 	},
