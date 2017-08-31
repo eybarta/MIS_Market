@@ -66,6 +66,9 @@ export default {
         this.$set(this, 'totalItems', this.items.length)
         this.$nextTick(() => {
            this.bindFirstLastToPager();
+
+
+           
         })
     },
     watch: {
@@ -87,16 +90,16 @@ export default {
             $('html,body').animate({
                 scrollTop:0
             }, 800)
-            let curpage = this.$refs.paginator.currentPage
-            let $pager = $("#pager");
-            $pager.find('.first-page, .last-page').removeClass('disabled');
-            if (curpage===1) {
-                $pager.find('.first-page').addClass('disabled');
-            }
-            else if (curpage===this.$refs.pager.numberOfPages) {
-                $pager.find('.last-page').addClass('disabled');                    
-            }
             this.$nextTick(function() {
+                let curpage = this.$refs.paginator.currentPage
+                let $pager = $("#pager");
+                $pager.find('.first-page, .last-page').removeClass('disabled');
+                if (curpage===1) {
+                    $pager.find('.first-page').addClass('disabled');
+                }
+                else if (curpage===this.$refs.pager.numberOfPages) {
+                    $pager.find('.last-page').addClass('disabled');                    
+                }
                 $pager.find('.last-page').insertAfter(".right-arrow")
             })
         },

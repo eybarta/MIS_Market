@@ -42,6 +42,10 @@ export default {
 			countOptions
 		}
 	},
+	mounted() {
+		// FOR PRE-RENDER
+           document.dispatchEvent(new Event('now-you-shall-prerender'))
+	},
 	watch: {
 		'$route' (to, from) {
 			console.log("route changed.. ", to, " <><><><> ", from );

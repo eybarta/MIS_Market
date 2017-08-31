@@ -13,7 +13,7 @@ import SignIn from '../../components/SignIn.vue';
 export default {
 	data() {
 		return {
-			images:['static/img/backgrounds/background-1.jpg']
+			images:['/static/img/backgrounds/background-1.jpg']
 		}
 	},
 	components: {

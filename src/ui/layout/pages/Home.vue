@@ -10,11 +10,12 @@ import CatStrip from '../partials/CatStrip.vue';
 import { mapState } from 'vuex';
 export default {
 	created() {
-		console.log("Intro search partial created!");
+		 // FOR PRE-RENDER
+           document.dispatchEvent(new Event('now-you-shall-prerender'))
 	},
 	data() {
 		return {
-			images:['static/img/backgrounds/background-1.jpg']
+			images:['/static/img/backgrounds/background-1.jpg']
 		}
 	},
 	computed: {

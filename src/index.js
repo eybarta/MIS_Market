@@ -16,7 +16,7 @@ Vue.use(AsyncComputed)
 import routes from './routes'
 import store from './store/index';
 
-Vue.http.options.root = './wsMain.asmx';
+Vue.http.options.root = '/wsMain.asmx';
 Vue.use(VueRouter);
 export const router = new VueRouter(routes);
 
@@ -35,8 +35,14 @@ import App from './ui/layout/App.vue';
 /* 
     // Start App
 */
-const app = new Vue({
+
+var root = new Vue({
     router, 
     store,
     render: h => h(App)
-}).$mount('#app');
+});
+document.addEventListener('DOMContentLoaded', function () {
+    root.$mount('#app');
+    document.dispatchEvent(new Event('now-you-shall-prerender'))
+    
+})

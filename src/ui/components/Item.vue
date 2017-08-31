@@ -24,7 +24,7 @@
                 <div>
                     <div>
                         <label for="quantity">Order Quantity:</label>
-                        <input v-model="quantity" type="text" @keypress="onlyNumbers($event)">
+                        <input v-model="quantity" type="number" @keypress="onlyNumbers($event)">
                     </div>
                     <div>
                         <label>Price:</label>

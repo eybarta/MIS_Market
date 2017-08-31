@@ -25,7 +25,7 @@ export default {
 	data() {
 		return {
 			searchfilter: '',
-			images:['static/img/backgrounds/background-1.jpg']
+			images:['/static/img/backgrounds/background-1.jpg']
 		}
 	},
 	destroyed() {

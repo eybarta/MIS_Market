@@ -1,9 +1,13 @@
-﻿const webpack = require('webpack');
+﻿const PrerenderSpaPlugin = require('prerender-spa-plugin')
+
+const webpack = require('webpack');
 const path = require('path');
 const poststylus = require('poststylus');
 
-const MinifyPlugin = require("babel-minify-webpack-plugin");
-const BabiliPlugin = require("babili-webpack-plugin");
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const MinifyPlugin = require("babel-minify-webpack-plugin");
+// const BabiliPlugin = require("babili-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const DashboardPlugin = require('webpack-dashboard/plugin');
 
@@ -31,9 +35,24 @@ const plugins = [
 		}
 	}),
 	new ExtractTextPlugin({ 
-			filename: "css/style.css",
+			filename: "css/style.[contenthash].css",
 			allChunks:true
 	})
+	,
+	new HtmlWebpackPlugin({
+		template: '../src/index-template.html',
+		title: 'MIS Market',
+		filename: path.resolve(__dirname, 'dist/index.html'),
+		inject: true,
+		minify: {
+		  removeComments: true,
+		//   collapseWhitespace: true,
+		  removeAttributeQuotes: true
+		  // more options:
+		  // https://github.com/kangax/html-minifier#options-quick-reference
+		},
+		chunksSortMode: 'dependency'
+	  })
 ]
 
 // COMMON RULES
@@ -75,6 +94,7 @@ const rules = [
 if (isProduction) {
 	// Production plugins
 	plugins.push(
+		
 		new webpack.optimize.CommonsChunkPlugin({
 			names: ['common', 'vendor'],
 			minChunks: Infinity,
@@ -91,25 +111,17 @@ if (isProduction) {
 			debug: false,
 		}),
 		// new BabiliPlugin({removeConsole:true, removeDebugger:true}),
-		new MinifyPlugin()
-		// new webpack.optimize.UglifyJsPlugin({
-		// 	compress: {
-		// 		warnings: false,
-		// 		screw_ie8: true,
-		// 		conditionals: true,
-		// 		unused: true,
-		// 		comparisons: true,
-		// 		sequences: true,
-		// 		dead_code: true,
-		// 		evaluate: true,
-		// 		if_return: true,
-		// 		join_vars: true,
-		// 		drop_console: true
-		// 	},
-		// 	output: {
-		// 		comments: false,
-		// 	},
-		// })
+		// new MinifyPlugin(),
+		new UglifyJSPlugin()
+		,
+		new PrerenderSpaPlugin(
+			buildPath,
+			[ '/', '/categories/Printed%20Materials' ],
+			{
+				captureAfterDocumentEvent: 'now-you-shall-prerender'
+				// captureAfterTime: 20000
+			}
+		)		
 	);
 }
 else {
@@ -142,8 +154,8 @@ module.exports = {
 	output: {
 		path: buildPath,
 		publicPath: "/dist/",
-		filename: 'js/[name].js',
-		chunkFilename: 'js/chunks/[name].js',
+		filename: 'js/[name].[hash].js',
+		chunkFilename: 'js/chunks/[name].[hash].js',
 		hotUpdateChunkFilename: 'hot/hot-update.js',
     	hotUpdateMainFilename: 'hot/hot-update.json'
 	},

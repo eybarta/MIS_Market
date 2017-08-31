@@ -1,14 +1,15 @@
 import store from './store/index';
-const Home = () => import(/* webpackChunkName: "home-chunk" */ './ui/layout/pages/Home.vue');
-const Results = () => import(/* webpackChunkName: "results-chunk" */ './ui/layout/pages/Results.vue');
-// import Home from './ui/layout/pages/Results.vue';
-// import Results from './ui/layout/pages/Results.vue';
+// const Home = () => import(/* webpackChunkName: "home-chunk" */ './ui/layout/pages/Home.vue');
+// const Results = () => import(/* webpackChunkName: "results-chunk" */ './ui/layout/pages/Results.vue');
+import Home from './ui/layout/pages/Home.vue';
+import Results from './ui/layout/pages/Results.vue';
 
 
 async function requireAuth(to,from,next) {
 	let isAuthenticated = await store.dispatch('initUser');
 	let categories = store.state.categories;
 	
+	console.log("isAuthenticated >>??", isAuthenticated);
 	if (!categories) {
 		store.dispatch('initCategories');
 	}
@@ -60,13 +61,14 @@ const routes = [
 	},
 	{ path: '/all', component:Results, name: 'all', beforeEnter: requireAuth},
 	{ path: '/', component:Home, name: 'home', beforeEnter: requireAuth},
-	{ path: '/login', component:Home, name: 'login', beforeEnter: requireAuth}
+	{ path: '/login', component:Home, name: 'login', beforeEnter: requireAuth},
+	{ path: '*', redirect: { name: 'home' } }
 	
 ]
 
 
 export default {
-	root: '/',
+	root: '/dist',
 	routes,
-	// mode: 'history'
+	mode: 'history'
 }

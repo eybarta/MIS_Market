@@ -30,7 +30,7 @@ export const initCategories = async ({commit, dispatch}) => {
     let categories = getFromStorage(localStorage, "_marketcategories") // storageSupport() ? localStorage.getItem("_marketcategories") || null : null;
     if (!categories) {
         Vue.http.post(GET_CATEGORIES, { id: 1 }).then(response => {
-            // console.log("RESPONSE >> ", response);
+            console.log("[GET_CATEGORIES] RESPONSE >> ", response);
             if (!!response.body && !!response.body.d) {
                 let cats = JSON.parse(response.body.d);
                 cats.unshift({
@@ -48,7 +48,7 @@ export const initCategories = async ({commit, dispatch}) => {
                     children: []
                 })
                 _.remove(cats, { Id: 85});
-                _.each(cats, cat => cat.src = './static/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
+                _.each(cats, cat => cat.src = '/static/img/categories/' + cat.name.split(' ')[0].toLowerCase() + '.png');
                 // save categories to local storage if available 
                 setToStorage(localStorage, '_marketcategories', JSON.stringify(cats), 30);
                 commit('INIT_CATEGORIES', cats);
@@ -381,7 +381,7 @@ async function mapItems(items, isDevice,isIE) {
                 id: item.Id,
                 catId,
                 description: item.Description,
-                image: "./static/img/items/"+catNo.replace(/\s/g, '_').replace(/\'/g, '').replace(/b\+/gi, 'BPLUS_') + ".png",
+                image: "/static/img/items/"+catNo.replace(/\s/g, '_').replace(/\'/g, '').replace(/b\+/gi, 'BPLUS_') + ".png",
                 catNo,
                 name: item.Name,
                 price:item.Price || 0,
@@ -402,7 +402,7 @@ async function fetchFlagsForItems(countryCodes, isDevice, isIE) {
         // console.log("countryCodes .. ", countryCodes);
         for (var i = 0; i< ccArray.length; i++ ) {
             let cc = ccArray[i];
-            flagCollection[cc] = "./static/img/flags/"+cc+".png";
+            flagCollection[cc] = "/static/img/flags/"+cc+".png";
         }
         // console.log('flagCollection >> ', flagCollection);
         return flagCollection;

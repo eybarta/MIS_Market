@@ -45,7 +45,7 @@ export default {
             showActionsOnDevices: false,
             btnClickDisabler: false,
             inSwipeScroll: false,
-            defaultItemBg: 'static/img/ImageNot.svg'
+            defaultItemBg: '/static/img/ImageNot.svg'
         }
     },
     methods: {

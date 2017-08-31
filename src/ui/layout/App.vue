@@ -1,8 +1,8 @@
 <template>
-	<div :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && (route.name.indexOf('result')>-1||route.name.indexOf('all')>-1) ? 'app-results' : 'app-home', !isDevice ? 'no-touch' : '', isIE ? 'ie' : '']">
+	<div id="app" :class="['app-wrap', !!overlay.active ? 'overlayed' : '', !!route && !!route.name && (route.name.indexOf('result')>-1||route.name.indexOf('all')>-1) ? 'app-results' : 'app-home', !isDevice ? 'no-touch' : '', isIE ? 'ie' : '']">
 		<top-bar></top-bar>
 		<router-view></router-view>
-		<footer :class="shelf.active ? 'shelf-active' : ''">
+		<footer id="render" :class="shelf.active ? 'shelf-active' : ''">
 			 <span>Copyright © 2017 MIS Implants Technologies Ltd.</span>
 		</footer>
 	</div>
